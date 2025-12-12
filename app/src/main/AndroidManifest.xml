@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StepCheck">
         <activity
+            android:name=".Register"
+            android:exported="false" />
+        <activity
+            android:name=".Qr_Code_main_Screen"
+            android:exported="false" />
+        <activity
             android:name=".Login"
             android:exported="false" />
         <activity

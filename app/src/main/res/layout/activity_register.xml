@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="top|center_horizontal"
+    android:background="#F2F4F7">
+
+    <!-- כותרת -->
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign up"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="#1A1A1A"
+        android:paddingTop="40dp"
+        android:paddingBottom="8dp"/>
+
+    <!-- טקסט משנה -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create a new account to get started"
+        android:textSize="16sp"
+        android:textColor="#666" />
+
+    <!-- שדה אימייל -->
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_marginTop="32dp"
+        android:background="@android:drawable/editbox_background"
+        android:hint="Email Address"
+        android:inputType="textEmailAddress"
+        android:padding="12dp" />
+
+    <!-- שם מלא -->
+    <EditText
+        android:id="@+id/fullName"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:drawable/editbox_background"
+        android:hint="Full Name"
+        android:padding="12dp" />
+
+    <!-- סיסמה -->
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:drawable/editbox_background"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="12dp" />
+
+    <!-- אישור סיסמה -->
+
+    <!-- Spinner דרגה -->
+
+    <!-- כפתור הירשם -->
+    <Spinner
+        android:id="@+id/roleSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:drawable/editbox_background" />
+
+    <Button
+        android:id="@+id/btnRegister"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="#2D7FF9"
+        android:onClick="Register_click"
+        android:text="Sign up"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
+
+    <!-- כפתור התחברות -->
+    <Button
+        android:id="@+id/btnGoToLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@android:color/transparent"
+        android:onClick="go_Login"
+        android:padding="0dp"
+        android:text="Already have an account? Login"
+        android:textColor="#2D7FF9"
+        android:textSize="16sp" />
+
+</LinearLayout>

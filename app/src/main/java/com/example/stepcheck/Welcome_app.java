@@ -34,7 +34,7 @@ public class Welcome_app extends AppCompatActivity {
         Boolean isChecked = getSharedPreferences("RemeberMe", MODE_PRIVATE).getBoolean("stayConnect", false);
         if (refAuth.getCurrentUser() != null && isChecked) {
             FirebaseUser user = refAuth.getCurrentUser();
-            Intent si = new Intent(this, Login. class);
+            Intent si = new Intent(this, Qr_Code_main_Screen. class);
             startActivity(si);
             finish();
 
@@ -46,8 +46,8 @@ public class Welcome_app extends AppCompatActivity {
         startActivity(intent);
     }
     public void Sign_up(View view) {
-      //  Intent intent = new Intent(this, Register.class);
-        //startActivity(intent);
+        Intent intent = new Intent(this, Register.class);
+        startActivity(intent);
     }
 
 

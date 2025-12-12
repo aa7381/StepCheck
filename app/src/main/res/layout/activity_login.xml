@@ -169,6 +169,7 @@
                 android:background="@android:color/transparent"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
+                android:onClick="Sign_up"
                 android:text="Sign up now"
                 android:textAllCaps="false"
                 android:textColor="#5146F0"
@@ -183,7 +184,7 @@
                 android:textColor="#6B7280"
                 android:textSize="16sp" />
 
-            <!-- כפתור הרשמה (מראה טקסטואלי אך Button כדי לקבל התנהגות לחיצה) -->
+
         </LinearLayout>
 
     </LinearLayout>
