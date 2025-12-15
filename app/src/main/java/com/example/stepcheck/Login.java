@@ -13,12 +13,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,6 +23,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 
+/**
+ * An activity that provides the user with a login interface.
+ * It handles user authentication via Firebase, input validation, and a "Remember Me" feature.
+ */
 public class Login extends AppCompatActivity {
 
     Button login_button;
@@ -34,6 +34,13 @@ public class Login extends AppCompatActivity {
     CheckBox remember_checkbox;
     Boolean remember_me = false;
 
+    /**
+     * Called when the activity is first created. Initializes the UI components.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *                           previously being shut down then this Bundle contains the data it most
+     *                           recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +51,12 @@ public class Login extends AppCompatActivity {
         remember_checkbox = findViewById(R.id.remember_checkbox);
     }
 
+    /**
+     * Handles the login button click event. Validates user input and attempts to sign in
+     * with Firebase Authentication. Navigates to the main screen on success.
+     *
+     * @param view The view that was clicked.
+     */
     public void Login_click(View view)
     {
         String email = email_input.getText().toString();
@@ -102,12 +115,21 @@ public class Login extends AppCompatActivity {
         }
     }
 
+    /**
+     * Navigates the user to the registration screen.
+     *
+     * @param view The view that was clicked.
+     */
     public void Sign_up(View view)
     {
         Intent intent = new Intent(this, Register.class);
         startActivity(intent);
     }
 
+    /**
+     * Logs the current user out, clears the "Remember Me" preference, and navigates
+     * to the welcome screen.
+     */
     private void logout() {
         refAuth.signOut();
         SharedPreferences settings = getSharedPreferences("RemeberMe", MODE_PRIVATE);

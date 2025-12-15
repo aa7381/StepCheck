@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@android:drawable/ic_menu_camera"
+        android:title="Scanner" />
+    <item
+        android:id="@+id/navigation_shift_entry"
+        android:icon="@android:drawable/ic_menu_today"
+        android:title="כניסה למשמרת" />
+    <item
+        android:id="@+id/navigation_inventory"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="סחורה"
+        android:visible="false" />
+    <item
+        android:id="@+id/navigation_manage_shift"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="ניהול עובדים"
+        android:visible="false" />
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@android:drawable/ic_menu_manage"
+        android:title="הגדרות" />
+</menu>

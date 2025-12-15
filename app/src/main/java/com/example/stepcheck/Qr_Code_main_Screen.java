@@ -1,36 +1,125 @@
 package com.example.stepcheck;
 
-import static com.example.stepcheck.FBRef.refAuth;
-
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 
-public class Qr_Code_main_Screen extends AppCompatActivity {
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
+/**
+ * The main activity of the application after the user logs in.
+ * This activity hosts the main UI, including a BottomNavigationView for navigating
+ * between different features (Fragments). It is responsible for setting up user-specific
+ * permissions and loading the appropriate fragments based on user interaction.
+ */
+public class Qr_Code_main_Screen extends AppCompatActivity implements BottomNavigationView.OnItemSelectedListener {
+
+    private BottomNavigationView bottomNavigationView;
+
+    /**
+     * Called when the activity is first created.
+     * This method initializes the activity's layout, sets up the BottomNavigationView,
+     * configures user permissions for the navigation menu, and loads the default fragment.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *                           previously being shut down then this Bundle contains the data it most
+     *                           recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr_code_main_screen);
 
-    }
-    public void clicked(View view)
-    {
-        refAuth.signOut();
-        SharedPreferences settings = getSharedPreferences("RemeberMe", MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean("stayConnect", false);
-        editor.commit();
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnItemSelectedListener(this);
 
-        Intent intent = new Intent(this, Welcome_app.class);
-        startActivity(intent);
-        finish();
+        setupPermissions();
+
+        // Set home as the default selected item, which will load the scanner fragment
+        if (savedInstanceState == null) {
+            bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+        }
+    }
+
+    /**
+     * Configures the visibility of navigation items based on the current user's role.
+     * It fetches the worker's data from Firebase and adjusts the visibility of items
+     * like "Inventory" and "Manage Shift" in the BottomNavigationView.
+     */
+    private void setupPermissions() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String uid = currentUser.getUid();
+            FBRef.refBase.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Worker worker = snapshot.getValue(Worker.class);
+                    if (worker != null) {
+                        Menu navMenu = bottomNavigationView.getMenu();
+                        if (worker.getCanEditInventory()) {
+                            navMenu.findItem(R.id.navigation_inventory).setVisible(true);
+                        }
+                        if (worker.getCan_manage_shift()) {
+                            navMenu.findItem(R.id.navigation_manage_shift).setVisible(true);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    // Handle error
+                }
+            });
+        }
+    }
+
+    /**
+     * Helper method to replace the content of the fragment container with a new fragment.
+     *
+     * @param fragment The fragment to display.
+     * @return true if the fragment was loaded successfully, false otherwise.
+     */
+    private boolean loadFragment(Fragment fragment) {
+        if (fragment != null) {
+            getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Called when an item in the bottom navigation menu is selected.
+     * This method determines which fragment to load based on the selected menu item.
+     *
+     * @param item The selected menu item.
+     * @return true to display the item as the selected item, false otherwise.
+     */
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Fragment fragment = null;
+        int itemId = item.getItemId();
+        if (itemId == R.id.navigation_home) {
+            fragment = new QrCodeMainScreenFragment();
+        } else if (itemId == R.id.navigation_shift_entry) {
+            // fragment = new ShiftEntryFragment(); // Add this later
+        } else if (itemId == R.id.navigation_inventory) {
+            // fragment = new InventoryFragment(); // Add this later
+        } else if (itemId == R.id.navigation_manage_shift) {
+            // fragment = new ManageShiftFragment(); // Add this later
+        } else if (itemId == R.id.navigation_settings) {
+            fragment = new SettingsFragment();
+        }
+        return loadFragment(fragment);
     }
 }
