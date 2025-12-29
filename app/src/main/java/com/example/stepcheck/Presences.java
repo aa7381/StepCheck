@@ -11,6 +11,8 @@ public class Presences
     private String start_your_Shift;//start time of worker Shift
     private String end_your_Shift ;//end time of worker Shift
 
+    private String time ;
+
     /**
      * Constructs a new Presences object with specified details.
      *
@@ -18,11 +20,12 @@ public class Presences
      * @param start_your_Shift The time the worker started their shift.
      * @param end_your_Shift The time the worker ended their shift.
      */
-    public Presences(String worker_id, String start_your_Shift, String end_your_Shift)
+    public Presences(String worker_id, String start_your_Shift, String end_your_Shift, String time)
     {
         this.worker_id = worker_id;
         this.start_your_Shift = start_your_Shift;
         this.end_your_Shift = end_your_Shift;
+        this.time = time;
     }
 
     /**
@@ -33,12 +36,23 @@ public class Presences
         this.worker_id = "";
         this.start_your_Shift = "";
         this.end_your_Shift = "";
+        this.time = "";
+
     }
 
     /**
      * Gets the worker's ID.
      * @return The worker ID.
      */
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
     public String getWorker_id() {
         return worker_id;
     }

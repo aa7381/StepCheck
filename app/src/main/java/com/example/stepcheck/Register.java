@@ -166,9 +166,6 @@ public class Register extends AppCompatActivity  implements AdapterView.OnItemSe
                     }
                 }
             });
-
         }
-
-
     }
 }
