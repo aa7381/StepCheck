@@ -26,24 +26,17 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:layout_marginTop="390dp">
+        android:layout_marginTop="450dp">
 
         <Button
             android:id="@+id/btn_start_scanning"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:text="Start Scanning"
+            android:onClick="Start_Scanning"
             android:backgroundTint="#6C6FF5"
             android:textColor="@android:color/white"
             android:layout_marginBottom="20dp" />
-
-        <Button
-            android:id="@+id/btn_upload_gallery"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="Upload from Gallery"
-            android:backgroundTint="#6C6FF5"
-            android:textColor="@android:color/white" />
 
     </LinearLayout>
 

@@ -4,36 +4,59 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-/**
- * A simple {@link Fragment} subclass that displays the main QR code scanner screen.
- * This fragment presents the primary user interface for initiating a QR code scan or
- * uploading a QR code from the device's gallery.
- */
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
+
 public class QrCodeMainScreenFragment extends Fragment {
 
-    /**
-     * Called to have the fragment instantiate its user interface view.
-     * This is optional, and non-graphical fragments can return null. This will be called between
-     * {@link #onCreate(Bundle)} and {@link #onViewCreated(View, Bundle)}.
-     *
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
-     *
-     * @return Return the View for the fragment's UI, or null.
-     */
+    private Button btn_start_scanning;
+    private String qr_code_data = "";
+
+    private ActivityResultLauncher<ScanOptions> barLauncher;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_qr_code_main_screen, container, false);
     }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        btn_start_scanning= view.findViewById(R.id.btn_start_scanning);
+
+        barLauncher = registerForActivityResult(new ScanContract(), result -> {
+            if (result != null && result.getContents() != null) {
+                qr_code_data = result.getContents();
+                Toast.makeText(getActivity(), "QR Data: " + qr_code_data, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        if (btn_start_scanning != null) {
+            btn_start_scanning.setOnClickListener(v -> {
+                scanCode();
+            });
+        }
+    }
+    private void scanCode() {
+        ScanOptions options = new ScanOptions();
+        options.setPrompt("Volume up to flash on");
+        options.setBeepEnabled(true);
+        options.setOrientationLocked(true);
+        options.setCaptureActivity(CaptureAct.class);
+        barLauncher.launch(options);
+    }
+
+
 }

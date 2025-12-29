@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    android:padding="24dp">
+
+    <!-- TITLE -->
+    <TextView
+        android:id="@+id/titleStockCheck"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stock Check"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="48dp"/>
+
+    <!-- INPUT -->
+    <EditText
+        android:id="@+id/etProductSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter product name or barcode"
+        android:padding="16dp"
+        android:layout_marginBottom="32dp"
+        android:inputType="text"/>
+
+    <!-- CHECK BUTTON -->
+    <Button
+        android:id="@+id/btnCheck"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Check Stock"
+        android:textStyle="bold"
+        android:backgroundTint="#6C6FF5"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="20dp"/>
+
+    <!-- SCAN QR -->
+    <Button
+        android:id="@+id/btnScanQr"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginBottom="40dp"
+        android:text="Scan QR"
+        android:textStyle="bold"
+        android:backgroundTint="#6C6FF5"
+        android:textColor="@android:color/white" />
+
+    <!-- SPACE PUSHER -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <!-- ADD NEW SHOE -->
+    <Button
+        android:id="@+id/AddNewShoe"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Add New Shoe"
+        android:textStyle="bold"
+        android:backgroundTint="#4CAF50"
+        android:textColor="@android:color/white"/>
+
+</LinearLayout>

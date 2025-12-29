@@ -126,20 +126,6 @@ public class Login extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /**
-     * Logs the current user out, clears the "Remember Me" preference, and navigates
-     * to the welcome screen.
-     */
-    private void logout() {
-        refAuth.signOut();
-        SharedPreferences settings = getSharedPreferences("RemeberMe", MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean("stayConnect", false);
-        editor.commit();
 
-        Intent intent = new Intent(this, Welcome_app.class);
-        startActivity(intent);
-        finish();
-    }
 }
 

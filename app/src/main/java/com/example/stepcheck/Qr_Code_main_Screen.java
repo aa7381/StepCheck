@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -14,6 +15,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 /**
  * The main activity of the application after the user logs in.
@@ -25,15 +27,8 @@ public class Qr_Code_main_Screen extends AppCompatActivity implements BottomNavi
 
     private BottomNavigationView bottomNavigationView;
 
-    /**
-     * Called when the activity is first created.
-     * This method initializes the activity's layout, sets up the BottomNavigationView,
-     * configures user permissions for the navigation menu, and loads the default fragment.
-     *
-     * @param savedInstanceState If the activity is being re-initialized after
-     *                           previously being shut down then this Bundle contains the data it most
-     *                           recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
-     */
+    private ActivityResultLauncher<ScanOptions> barLauncher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +37,8 @@ public class Qr_Code_main_Screen extends AppCompatActivity implements BottomNavi
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(this);
 
+
+
         setupPermissions();
 
         // Set home as the default selected item, which will load the scanner fragment
@@ -49,6 +46,7 @@ public class Qr_Code_main_Screen extends AppCompatActivity implements BottomNavi
             bottomNavigationView.setSelectedItemId(R.id.navigation_home);
         }
     }
+
 
     /**
      * Configures the visibility of navigation items based on the current user's role.
@@ -114,7 +112,7 @@ public class Qr_Code_main_Screen extends AppCompatActivity implements BottomNavi
         } else if (itemId == R.id.navigation_shift_entry) {
             // fragment = new ShiftEntryFragment(); // Add this later
         } else if (itemId == R.id.navigation_inventory) {
-            // fragment = new InventoryFragment(); // Add this later
+            fragment = new InventoryFragment();
         } else if (itemId == R.id.navigation_manage_shift) {
             // fragment = new ManageShiftFragment(); // Add this later
         } else if (itemId == R.id.navigation_settings) {

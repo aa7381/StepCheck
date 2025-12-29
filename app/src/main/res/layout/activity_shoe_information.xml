@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFA">
+
+    <LinearLayout
+        android:id="@+id/rootLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- HERO IMAGE -->
+        <FrameLayout
+            android:id="@+id/heroContainer"
+            android:layout_width="match_parent"
+            android:layout_height="260dp">
+
+            <ImageView
+                android:id="@+id/shoeImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="shoe image"/>
+
+            <View
+                android:id="@+id/overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#55000000"/>
+
+            <TextView
+                android:id="@+id/shoeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sneaker Pro"
+                android:textColor="@android:color/white"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:layout_gravity="bottom|start"
+                android:layout_margin="20dp"/>
+        </FrameLayout>
+
+        <!-- CONTENT -->
+        <LinearLayout
+            android:id="@+id/contentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- SIZE TITLE -->
+            <TextView
+                android:id="@+id/sizeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Size"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- SIZE GRID -->
+            <GridLayout
+                android:id="@+id/sizeGrid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="5"
+                android:useDefaultMargins="true"
+                android:layout_marginBottom="24dp">
+
+                <Button android:id="@+id/size35" style="@style/SizeChip" android:text="35"/>
+                <Button android:id="@+id/size36" style="@style/SizeChip" android:text="36"/>
+                <Button android:id="@+id/size37" style="@style/SizeChip" android:text="37"/>
+                <Button android:id="@+id/size38" style="@style/SizeChip" android:text="38"/>
+                <Button android:id="@+id/size39" style="@style/SizeChip" android:text="39"/>
+
+                <Button android:id="@+id/size40" style="@style/SizeChip" android:text="40"/>
+                <Button android:id="@+id/size41" style="@style/SizeChip" android:text="41"/>
+                <Button android:id="@+id/size42" style="@style/SizeChip" android:text="42"/>
+                <Button android:id="@+id/size43" style="@style/SizeChip" android:text="43"/>
+                <Button android:id="@+id/size44" style="@style/SizeChip" android:text="44"/>
+            </GridLayout>
+
+            <!-- FIT TYPE -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/fitCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                card_view:cardCornerRadius="14dp"
+                card_view:cardElevation="6dp"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:id="@+id/fitLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/fitLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fit Type"
+                        android:textStyle="bold"
+                        android:textSize="14sp"/>
+
+                    <TextView
+                        android:id="@+id/fitType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Regular Fit"
+                        android:textSize="16sp"
+                        android:textColor="#444444"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- PRICE -->
+            <TextView
+                android:id="@+id/priceText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="₪ 500"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- ACTIONS -->
+            <Button
+                android:id="@+id/btnScanAgain"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Scan Again"
+                android:textStyle="bold"
+                android:backgroundTint="#000000"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:id="@+id/btnClose"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Close scanning"
+                android:gravity="center"
+                android:textColor="#777777"
+                android:textSize="14sp"
+                android:padding="12dp"/>
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
