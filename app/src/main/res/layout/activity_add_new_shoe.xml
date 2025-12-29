@@ -24,7 +24,7 @@
 
         <!-- Scan QR Code button -->
         <Button
-            android:id="@+id/btnScanQR"
+            android:id="@+id/ScanQR"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:text="Scan QR Code"
@@ -34,23 +34,43 @@
 
         <!-- Upload Image button -->
         <Button
-            android:id="@+id/btnUploadImage"
+            android:id="@+id/UploadImage"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="Upload Image"
-            android:textColor="#FFFFFF"
+            android:layout_marginTop="12dp"
             android:backgroundTint="#000000"
-            android:layout_marginTop="12dp"/>
+            android:onClick="upload_image"
+            android:text="Upload Image"
+            android:textColor="#FFFFFF" />
 
         <!-- Shoe Name input -->
         <EditText
             android:id="@+id/etShoeName"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="Shoe Name"
+            android:layout_marginTop="12dp"
             android:background="@drawable/rounded_edittext"
-            android:padding="12dp"
-            android:layout_marginTop="12dp"/>
+            android:hint="Shoe Name"
+            android:padding="12dp" />
+
+        <EditText
+            android:id="@+id/etmanufacturing_company"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/rounded_edittext"
+            android:hint="manufacturing_company"
+            android:padding="12dp" />
+
+        <EditText
+            android:id="@+id/etColor"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/rounded_edittext"
+            android:hint="Color"
+            android:padding="12dp" />
+
 
         <!-- Shoe Type input -->
         <EditText
@@ -136,12 +156,13 @@
             <Button
                 android:id="@+id/btnSaveShoe"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="50dp"
-                android:text="Save Shoe"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
                 android:backgroundTint="#000000"
-                android:textColor="#FFFFFF"
-                android:layout_marginEnd="8dp"/>
+                android:onClick="Save_shoe"
+                android:text="Save Shoe"
+                android:textColor="#FFFFFF" />
 
             <Button
                 android:id="@+id/btnBack"
@@ -149,6 +170,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:backgroundTint="#000000"
+                android:onClick="back"
                 android:text="Back"
                 android:textColor="#FFFFFF" />
         </LinearLayout>

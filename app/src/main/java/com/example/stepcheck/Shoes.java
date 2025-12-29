@@ -38,7 +38,7 @@ public class Shoes
     /**
      * Default constructor for Firebase serialization.
      */
-    public Shoes() {
+    public Shoes(String qr_code_data, String shoeName, String shoeType, String price, String manufacturing_company) {
         this.id = "";
         this.shoe_name = "";
         this.color = "";

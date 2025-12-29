@@ -24,4 +24,8 @@ public class FBRef
      * Static reference to the "Worker" node in the Firebase Realtime Database.
      */
     public static DatabaseReference refBase = FBDB.getReference("Worker");
+    public static DatabaseReference refBase2 = FBDB.getReference("Shoe");
+
+
+
 }
