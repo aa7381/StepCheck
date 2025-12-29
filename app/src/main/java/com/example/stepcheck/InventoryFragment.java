@@ -20,6 +20,7 @@ public class InventoryFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_inventory, container, false);
     }
 
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 

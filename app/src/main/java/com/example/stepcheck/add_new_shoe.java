@@ -15,5 +15,7 @@ public class add_new_shoe extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_shoe);
 
+
+
     }
 }
