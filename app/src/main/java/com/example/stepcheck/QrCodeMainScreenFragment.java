@@ -1,5 +1,6 @@
 package com.example.stepcheck;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +39,7 @@ public class QrCodeMainScreenFragment extends Fragment {
         barLauncher = registerForActivityResult(new ScanContract(), result -> {
             if (result != null && result.getContents() != null) {
                 qr_code_data = result.getContents();
-                Toast.makeText(getActivity(), "QR Data: " + qr_code_data, Toast.LENGTH_SHORT).show();
+                open_inform_shoe();
 
             }
         });
@@ -58,5 +59,12 @@ public class QrCodeMainScreenFragment extends Fragment {
         barLauncher.launch(options);
     }
 
+    private void open_inform_shoe()
+    {
+        Intent intent = new Intent(requireActivity(), Shoe_information.class);
+        intent.putExtra("qr_code_data", qr_code_data);
+        startActivity(intent);
+        requireActivity().finish();
+    }
 
 }

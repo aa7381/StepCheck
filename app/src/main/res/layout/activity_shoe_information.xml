@@ -61,28 +61,69 @@
                 android:layout_marginBottom="12dp"/>
 
             <!-- SIZE GRID -->
-            <GridLayout
-                android:id="@+id/sizeGrid"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:columnCount="5"
-                android:useDefaultMargins="true"
-                android:layout_marginBottom="24dp">
-
-                <Button android:id="@+id/size35" style="@style/SizeChip" android:text="35"/>
-                <Button android:id="@+id/size36" style="@style/SizeChip" android:text="36"/>
-                <Button android:id="@+id/size37" style="@style/SizeChip" android:text="37"/>
-                <Button android:id="@+id/size38" style="@style/SizeChip" android:text="38"/>
-                <Button android:id="@+id/size39" style="@style/SizeChip" android:text="39"/>
-
-                <Button android:id="@+id/size40" style="@style/SizeChip" android:text="40"/>
-                <Button android:id="@+id/size41" style="@style/SizeChip" android:text="41"/>
-                <Button android:id="@+id/size42" style="@style/SizeChip" android:text="42"/>
-                <Button android:id="@+id/size43" style="@style/SizeChip" android:text="43"/>
-                <Button android:id="@+id/size44" style="@style/SizeChip" android:text="44"/>
-            </GridLayout>
 
             <!-- FIT TYPE -->
+            <GridLayout
+                android:id="@+id/sizeGrid"
+                android:layout_width="383dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:columnCount="5"
+                android:useDefaultMargins="true">
+
+                <Button
+                    android:id="@+id/size35"
+                    style="@style/SizeChip"
+                    android:layout_row="0"
+                    android:layout_column="0"
+                    android:text="35" />
+
+                <Button
+                    android:id="@+id/size36"
+                    style="@style/SizeChip"
+                    android:text="36" />
+
+                <Button
+                    android:id="@+id/size37"
+                    style="@style/SizeChip"
+                    android:text="37" />
+
+                <Button
+                    android:id="@+id/size38"
+                    style="@style/SizeChip"
+                    android:text="38" />
+
+                <Button
+                    android:id="@+id/size39"
+                    style="@style/SizeChip"
+                    android:text="39" />
+
+                <Button
+                    android:id="@+id/size40"
+                    style="@style/SizeChip"
+                    android:text="40" />
+
+                <Button
+                    android:id="@+id/size41"
+                    style="@style/SizeChip"
+                    android:text="41" />
+
+                <Button
+                    android:id="@+id/size42"
+                    style="@style/SizeChip"
+                    android:text="42" />
+
+                <Button
+                    android:id="@+id/size43"
+                    style="@style/SizeChip"
+                    android:text="43" />
+
+                <Button
+                    android:id="@+id/size44"
+                    style="@style/SizeChip"
+                    android:text="44" />
+            </GridLayout>
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/fitCard"
                 android:layout_width="match_parent"
@@ -138,15 +179,15 @@
                 android:textColor="@android:color/white"
                 android:layout_marginBottom="12dp"/>
 
-            <TextView
+            <Button
                 android:id="@+id/btnClose"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Close scanning"
-                android:gravity="center"
-                android:textColor="#777777"
-                android:textSize="14sp"
-                android:padding="12dp"/>
+                android:layout_height="56dp"
+                android:text="Scan Again"
+                android:textStyle="bold"
+                android:backgroundTint="#ffffff"
+                android:textColor="@android:color/black"
+                android:layout_marginBottom="12dp"/>
 
         </LinearLayout>
     </LinearLayout>
