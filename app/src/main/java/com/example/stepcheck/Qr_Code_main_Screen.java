@@ -1,12 +1,14 @@
 package com.example.stepcheck;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -15,18 +17,18 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
 /**
  * The main activity of the application after the user logs in.
- * This activity hosts the main UI, including a BottomNavigationView for navigating
- * between different features (Fragments). It is responsible for setting up user-specific
- * permissions and loading the appropriate fragments based on user interaction.
+ * Inherits from MasterClass to handle network and phone state changes.
  */
-public class Qr_Code_main_Screen extends AppCompatActivity implements BottomNavigationView.OnItemSelectedListener {
+public class Qr_Code_main_Screen extends MasterClass implements BottomNavigationView.OnItemSelectedListener {
 
+    private Button ScanQR;
+    private String qr_code_data = "";
     private BottomNavigationView bottomNavigationView;
-
     private ActivityResultLauncher<ScanOptions> barLauncher;
 
     @Override
@@ -34,25 +36,57 @@ public class Qr_Code_main_Screen extends AppCompatActivity implements BottomNavi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr_code_main_screen);
 
+        ScanQR = findViewById(R.id.ScanQR);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(this);
 
+        barLauncher = registerForActivityResult(new ScanContract(), result -> {
+            if (result != null && result.getContents() != null) {
+                qr_code_data = result.getContents();
+                Toast.makeText(this, "QR: " + qr_code_data, Toast.LENGTH_SHORT).show();
+            }
+        });
 
+        if (ScanQR != null) {
+            ScanQR.setOnClickListener(view -> scanCode());
+        }
 
         setupPermissions();
 
-        // Set home as the default selected item, which will load the scanner fragment
-        if (savedInstanceState == null) {
+        handleFragmentNavigation(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleFragmentNavigation(intent);
+    }
+
+    /**
+     * Checks if a target fragment was requested via Intent extras.
+     */
+    private void handleFragmentNavigation(Intent intent) {
+        if (intent != null && intent.hasExtra("TARGET_FRAGMENT")) {
+            String target = intent.getStringExtra("TARGET_FRAGMENT");
+            if ("INVENTORY".equals(target)) {
+                bottomNavigationView.setSelectedItemId(R.id.navigation_inventory);
+            }
+        } else if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) == null) {
+            // Default fragment
             bottomNavigationView.setSelectedItemId(R.id.navigation_home);
         }
     }
 
+    public void scanCode() {
+        ScanOptions options = new ScanOptions();
+        options.setPrompt("Volume up to flash on");
+        options.setBeepEnabled(true);
+        options.setOrientationLocked(true);
+        options.setCaptureActivity(CaptureAct.class);
+        barLauncher.launch(options);
+    }
 
-    /**
-     * Configures the visibility of navigation items based on the current user's role.
-     * It fetches the worker's data from Firebase and adjusts the visibility of items
-     * like "Inventory" and "Manage Shift" in the BottomNavigationView.
-     */
     private void setupPermissions() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
@@ -74,18 +108,11 @@ public class Qr_Code_main_Screen extends AppCompatActivity implements BottomNavi
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    // Handle error
                 }
             });
         }
     }
 
-    /**
-     * Helper method to replace the content of the fragment container with a new fragment.
-     *
-     * @param fragment The fragment to display.
-     * @return true if the fragment was loaded successfully, false otherwise.
-     */
     private boolean loadFragment(Fragment fragment) {
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction()
@@ -96,28 +123,18 @@ public class Qr_Code_main_Screen extends AppCompatActivity implements BottomNavi
         return false;
     }
 
-    /**
-     * Called when an item in the bottom navigation menu is selected.
-     * This method determines which fragment to load based on the selected menu item.
-     *
-     * @param item The selected menu item.
-     * @return true to display the item as the selected item, false otherwise.
-     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Fragment fragment = null;
         int itemId = item.getItemId();
         if (itemId == R.id.navigation_home) {
             fragment = new QrCodeMainScreenFragment();
-        } else if (itemId == R.id.navigation_shift_entry) {
-            // fragment = new ShiftEntryFragment(); // Add this later
         } else if (itemId == R.id.navigation_inventory) {
             fragment = new InventoryFragment();
-        } else if (itemId == R.id.navigation_manage_shift) {
-            // fragment = new ManageShiftFragment(); // Add this later
         } else if (itemId == R.id.navigation_settings) {
             fragment = new SettingsFragment();
         }
+        // Add other fragments as needed
         return loadFragment(fragment);
     }
 }

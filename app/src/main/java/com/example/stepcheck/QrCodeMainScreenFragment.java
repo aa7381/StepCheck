@@ -1,7 +1,10 @@
 package com.example.stepcheck;
 
+import static com.example.stepcheck.FBRef.refBase2;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
@@ -59,12 +65,34 @@ public class QrCodeMainScreenFragment extends Fragment {
         barLauncher.launch(options);
     }
 
-    private void open_inform_shoe()
-    {
-        Intent intent = new Intent(requireActivity(), Shoe_information.class);
-        intent.putExtra("qr_code_data", qr_code_data);
-        startActivity(intent);
-        requireActivity().finish();
+    private void open_inform_shoe() {
+        if (qr_code_data != null && !qr_code_data.isEmpty()) {
+
+            String safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
+
+            refBase2.child(safeKey).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DataSnapshot snapshot = task.getResult();
+                    if (snapshot.exists()) {
+                        // הנעל קיימת - שולחים את הנתון ל־Activity
+                        Intent intent = new Intent(requireActivity(), Shoe_information.class);
+                        intent.putExtra("qr_code_data", qr_code_data);
+                        startActivity(intent);
+                        requireActivity().finish();
+                    } else {
+                        // הנעל לא קיימת
+                        Toast.makeText(requireContext(), "נעל לא קיימת במערכת", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    // שגיאה בגישה ל־Firebase
+                    Toast.makeText(requireContext(), "שגיאה בגישה לשרת", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        } else {
+            Toast.makeText(requireContext(), "לא נמצא QR Code תקין", Toast.LENGTH_SHORT).show();
+        }
     }
+
 
 }

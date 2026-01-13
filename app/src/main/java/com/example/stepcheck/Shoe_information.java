@@ -4,6 +4,7 @@ import static com.example.stepcheck.FBRef.refBase2;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,26 +14,23 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-public class Shoe_information extends AppCompatActivity {
+public class Shoe_information extends MasterClass {
 
     private TextView shoeTitle, fitType, priceText;
-    private String qr_code_data; // משתנה גלובלי של המחלקה
+    private String qr_code_data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shoe_information);
 
-        // אתחול ה-TextViews
         shoeTitle = findViewById(R.id.shoeTitle);
         fitType = findViewById(R.id.fitType);
         priceText = findViewById(R.id.priceText);
 
-        // קבלת ה-Intent
         Intent intent = getIntent();
         qr_code_data = intent.getStringExtra("qr_code_data");
 
-        // בדיקה אם יש ערך
         if (qr_code_data != null && !qr_code_data.isEmpty()) {
             give_all_inform();
         }
@@ -57,8 +55,14 @@ public class Shoe_information extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // טיפול בשגיאה אם יש
             }
         });
+    }
+    public void Close_Scan(View view) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new QrCodeMainScreenFragment())
+                .addToBackStack(null)
+                .commit();
     }
 }

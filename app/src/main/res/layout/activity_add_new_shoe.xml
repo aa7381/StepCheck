@@ -59,7 +59,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="12dp"
             android:background="@drawable/rounded_edittext"
-            android:hint="manufacturing_company"
+            android:hint="Manufacturing Company"
             android:padding="12dp" />
 
         <EditText
@@ -71,8 +71,6 @@
             android:hint="Color"
             android:padding="12dp" />
 
-
-        <!-- Shoe Type input -->
         <EditText
             android:id="@+id/etShoeType"
             android:layout_width="match_parent"
@@ -82,7 +80,6 @@
             android:padding="12dp"
             android:layout_marginTop="12dp"/>
 
-        <!-- Price input -->
         <EditText
             android:id="@+id/etPrice"
             android:layout_width="match_parent"
@@ -109,7 +106,22 @@
             android:layout_height="50dp"
             android:layout_marginTop="8dp"/>
 
-        <!-- Quantity per size -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gender"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginTop="16dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerSizeGender"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"/>
+
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -125,7 +137,6 @@
             android:layout_height="50dp"
             android:layout_marginTop="8dp"/>
 
-        <!-- Quantity input for selected size -->
         <EditText
             android:id="@+id/etQuantity"
             android:layout_width="match_parent"
@@ -145,7 +156,7 @@
             android:textColor="#FFFFFF"
             android:layout_marginTop="16dp"/>
 
-        <!-- Horizontal layout for save shoe and back -->
+        <!-- Horizontal layout for Save Shoe and Back -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"

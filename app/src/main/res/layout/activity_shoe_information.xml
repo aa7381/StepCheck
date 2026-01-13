@@ -183,11 +183,12 @@
                 android:id="@+id/btnClose"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:text="Scan Again"
-                android:textStyle="bold"
+                android:layout_marginBottom="12dp"
                 android:backgroundTint="#ffffff"
+                android:onClick="Close_Scan"
+                android:text="Close Scanning"
                 android:textColor="@android:color/black"
-                android:layout_marginBottom="12dp"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
     </LinearLayout>

@@ -14,7 +14,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -25,22 +24,15 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 
 /**
  * An activity that provides the user with a login interface.
- * It handles user authentication via Firebase, input validation, and a "Remember Me" feature.
+ * Inherits from MasterClass to handle network and phone state changes.
  */
-public class Login extends AppCompatActivity {
+public class Login extends MasterClass {
 
     Button login_button;
     EditText email_input,password_input;
     CheckBox remember_checkbox;
     Boolean remember_me = false;
 
-    /**
-     * Called when the activity is first created. Initializes the UI components.
-     *
-     * @param savedInstanceState If the activity is being re-initialized after
-     *                           previously being shut down then this Bundle contains the data it most
-     *                           recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,12 +43,6 @@ public class Login extends AppCompatActivity {
         remember_checkbox = findViewById(R.id.remember_checkbox);
     }
 
-    /**
-     * Handles the login button click event. Validates user input and attempts to sign in
-     * with Firebase Authentication. Navigates to the main screen on success.
-     *
-     * @param view The view that was clicked.
-     */
     public void Login_click(View view)
     {
         String email = email_input.getText().toString();
@@ -101,13 +87,11 @@ public class Login extends AppCompatActivity {
                                 if (e instanceof FirebaseAuthInvalidUserException)
                                     Toast.makeText(Login.this, "Invalid info", Toast.LENGTH_SHORT).show();
                                 else if (e instanceof FirebaseAuthInvalidCredentialsException)
-
                                     Toast.makeText(Login.this, "Invalid info", Toast.LENGTH_SHORT).show();
                                 else if (e instanceof FirebaseNetworkException)
                                     Toast.makeText(Login.this, "No internet connection", Toast.LENGTH_SHORT).show();
                                 else
                                     Toast.makeText(Login.this, "Login failed try again later", Toast.LENGTH_SHORT).show();
-
                             }
                             pd.dismiss();
                         }
@@ -115,17 +99,9 @@ public class Login extends AppCompatActivity {
         }
     }
 
-    /**
-     * Navigates the user to the registration screen.
-     *
-     * @param view The view that was clicked.
-     */
     public void Sign_up(View view)
     {
         Intent intent = new Intent(this, Register.class);
         startActivity(intent);
     }
-
-
 }
-
