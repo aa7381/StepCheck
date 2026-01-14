@@ -148,13 +148,14 @@
 
         <!-- Save button -->
         <Button
-            android:id="@+id/btnSave"
+            android:id="@+id/save_size_btn"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="Save"
+            android:layout_marginTop="16dp"
             android:backgroundTint="#000000"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="16dp"/>
+            android:onClick="save_size"
+            android:text="Save"
+            android:textColor="#FFFFFF" />
 
         <!-- Horizontal layout for Save Shoe and Back -->
         <LinearLayout

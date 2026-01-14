@@ -40,16 +40,7 @@ public class Qr_Code_main_Screen extends MasterClass implements BottomNavigation
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(this);
 
-        barLauncher = registerForActivityResult(new ScanContract(), result -> {
-            if (result != null && result.getContents() != null) {
-                qr_code_data = result.getContents();
-                Toast.makeText(this, "QR: " + qr_code_data, Toast.LENGTH_SHORT).show();
-            }
-        });
 
-        if (ScanQR != null) {
-            ScanQR.setOnClickListener(view -> scanCode());
-        }
 
         setupPermissions();
 
@@ -78,14 +69,6 @@ public class Qr_Code_main_Screen extends MasterClass implements BottomNavigation
         }
     }
 
-    public void scanCode() {
-        ScanOptions options = new ScanOptions();
-        options.setPrompt("Volume up to flash on");
-        options.setBeepEnabled(true);
-        options.setOrientationLocked(true);
-        options.setCaptureActivity(CaptureAct.class);
-        barLauncher.launch(options);
-    }
 
     private void setupPermissions() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();

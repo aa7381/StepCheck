@@ -39,6 +39,7 @@ dependencies {
     implementation libs.zxing.android.embedded
     implementation libs.core.v341
     implementation libs.firebase.database
+    implementation libs.firebase.storage
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

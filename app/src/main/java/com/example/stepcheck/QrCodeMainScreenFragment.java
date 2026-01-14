@@ -74,17 +74,14 @@ public class QrCodeMainScreenFragment extends Fragment {
                 if (task.isSuccessful()) {
                     DataSnapshot snapshot = task.getResult();
                     if (snapshot.exists()) {
-                        // הנעל קיימת - שולחים את הנתון ל־Activity
                         Intent intent = new Intent(requireActivity(), Shoe_information.class);
-                        intent.putExtra("qr_code_data", qr_code_data);
+                        intent.putExtra("qr_code_data", safeKey);
                         startActivity(intent);
                         requireActivity().finish();
                     } else {
-                        // הנעל לא קיימת
                         Toast.makeText(requireContext(), "נעל לא קיימת במערכת", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    // שגיאה בגישה ל־Firebase
                     Toast.makeText(requireContext(), "שגיאה בגישה לשרת", Toast.LENGTH_SHORT).show();
                 }
             });

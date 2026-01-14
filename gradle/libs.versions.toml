@@ -13,6 +13,7 @@ firebaseDatabase = "22.0.1"
 core = "3.5.3"
 coreVersion = "3.4.1"
 journeyappsZxingAndroidEmbedded = "4.3.0"
+firebaseStorage = "22.0.1"
 
 
 
@@ -30,6 +31,7 @@ firebase-database = { group = "com.google.firebase", name = "firebase-database",
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "journeyappsZxingAndroidEmbedded" }
 core = { module = "com.google.zxing:core", version.ref = "core" }
 core-v341 = { module = "com.google.zxing:core", version.ref = "coreVersion" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 
 
 [plugins]

@@ -2,9 +2,13 @@ package com.example.stepcheck;
 
 import static com.example.stepcheck.FBRef.refAuth;
 import static com.example.stepcheck.FBRef.refBase2;
+import static com.example.stepcheck.FBRef.refStorage;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -14,17 +18,28 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
+
+import java.util.UUID;
 
 /**
  * Activity for adding a new shoe to the inventory.
  */
 public class add_new_shoe extends MasterClass implements AdapterView.OnItemSelectedListener {
 
-    private Button ScanQR, UploadImage;
+    private Button ScanQR, UploadImage, Save_shoe;
     private String qr_code_data = "";
 
     private EditText etShoeName, etShoeType, etPrice, etmanufacturing_company, etColor;
@@ -33,12 +48,24 @@ public class add_new_shoe extends MasterClass implements AdapterView.OnItemSelec
 
     private int selectedSizeTypePosition = 0;
 
-    private String[] sizeType = {"uk", "eu", "us"};
 
-    private String[] us_sizes = { "usMen", "usWomen", "usKidsY","usYoungerKids", "usBabies"};
-    private String[] uk_sizes = {"ukSizes","ukKidsY","ukYoungerKids","ukBabies"};
+    private static final int REQUEST_PICK_IMAGE = 300;
 
-    private String[] eu_sizes = {"euSizes","euKidsY","euYoungerKids","euBabies"};
+    private String fileName ;
+
+
+
+    String safeKey ;
+
+
+    private String[] sizeType = {"adult", "adult_kids", "youngerkids","babies"};
+
+    private String[] adult_sizes = { "usMen", "usWomen", "euSizes", "ukSizes",};
+    private String[] adult_kids_sizes = {"usKidsY","ukKidsY","euKidsY"};
+    private String[] youngerkids_sizes = {"usYoungerKids","ukYoungerKids","euYoungerKids"};
+    private String[] babies_sizes = {"usBabies","ukBabies","euBabies"};
+
+
 
 
     String[] euSizes = {
@@ -66,7 +93,7 @@ public class add_new_shoe extends MasterClass implements AdapterView.OnItemSelec
             "5", "5.5", "6", "6.5", "7", "7.5", "8", "8.5", "9", "9.5",
             "10", "10.5", "11", "11.5", "12", "12.5", "13", "13.5", "14",
             "14.5", "15", "15.5", "16", "16.5", "17", "17.5", "18", "18.5",
-            "19", "19.5", "20", "20.5", "21", "21.5", "22", "22.5", "23", "23.5"
+            "19", "19.5", "20", "20.5", "21", "21.5", "22", "22.5", "23"
     };
 
     //🧒 Youth / Big Kids (US Y)
@@ -121,12 +148,17 @@ public class add_new_shoe extends MasterClass implements AdapterView.OnItemSelec
             "22","22.5","23.5","24","25","25.5","26","26.5","27"
     };
 
+    Uri imageUri ;
+
 
     private int selectedSizePosition = 0;
 
     private final ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> {
         if (result.getContents() != null) {
+
             qr_code_data = result.getContents();
+            safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
+
             Toast.makeText(this, "Scanned: " + qr_code_data, Toast.LENGTH_SHORT).show();
         }
     });
@@ -146,6 +178,9 @@ public class add_new_shoe extends MasterClass implements AdapterView.OnItemSelec
         spinnerSizeType = findViewById(R.id.spinnerSizeType);
         spinnerQuantitySize = findViewById(R.id.spinnerQuantitySize);
         spinnerSizeGender = findViewById(R.id.spinnerSizeGender);
+        Save_shoe = findViewById(R.id.save_size_btn);
+
+
 
 
         FirebaseUser currentUser = refAuth.getCurrentUser();
@@ -171,10 +206,10 @@ public class add_new_shoe extends MasterClass implements AdapterView.OnItemSelec
                             break;
                         case 1:
                             ArrayAdapter<String> adp2 = new ArrayAdapter<>(add_new_shoe.this, android.R.layout.simple_spinner_dropdown_item, ukKidsY);
-                            spinnerSizeGender.setAdapter(adp2);
+                            spinnerQuantitySize.setAdapter(adp2);
                         case 2:
                             ArrayAdapter<String> adp3 = new ArrayAdapter<>(add_new_shoe.this, android.R.layout.simple_spinner_dropdown_item, ukYoungerKids);
-                            spinnerSizeGender.setAdapter(adp3);
+                            spinnerQuantitySize.setAdapter(adp3);
                             break;
                         case 3:
                             ArrayAdapter<String> adp4 = new ArrayAdapter<>(add_new_shoe.this, android.R.layout.simple_spinner_dropdown_item, ukBabies);
@@ -243,6 +278,12 @@ public class add_new_shoe extends MasterClass implements AdapterView.OnItemSelec
         });
     }
 
+    public void save_size(View view)
+    {
+        Size s = new Size();
+        if(selectedSizeTypePosition == 2);
+    }
+
     public void scanCode() {
         ScanOptions options = new ScanOptions();
         options.setPrompt("Volume up to flash on");
@@ -257,21 +298,90 @@ public class add_new_shoe extends MasterClass implements AdapterView.OnItemSelec
         switch (position) {
             case 0:
                 selectedSizeTypePosition = position;
-                ArrayAdapter<String> adp = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, uk_sizes);
+                ArrayAdapter<String> adp = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, adult_sizes);
                 spinnerSizeGender.setAdapter(adp);
                 break;
             case 1:
                 selectedSizeTypePosition = position;
-                ArrayAdapter<String> adp1 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, eu_sizes);
+                ArrayAdapter<String> adp1 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, adult_kids_sizes);
                 spinnerSizeGender.setAdapter(adp1);
                 break;
             case 2:
                 selectedSizeTypePosition = position;
-                ArrayAdapter<String> adp2 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item,us_sizes);
+                ArrayAdapter<String> adp2 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, youngerkids_sizes);
                 spinnerSizeGender.setAdapter(adp2);
+                break;
+            case 3:
+                selectedSizeTypePosition = position;
+                ArrayAdapter<String> adp3 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, babies_sizes);
+                spinnerSizeGender.setAdapter(adp3);
                 break;
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+    }
+
+    public void upload_image(View view)
+    {
+        if(safeKey ==null || safeKey.isEmpty()) {
+            Toast.makeText(this, "Please scan the QR code first", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Intent si = new Intent(Intent.ACTION_PICK, android. provider.MediaStore. Images.Media. EXTERNAL_CONTENT_URI);
+            startActivityForResult(si, REQUEST_PICK_IMAGE);
+        }
+
+
+    }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,@Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_PICK_IMAGE && resultCode == RESULT_OK && data != null) {
+            imageUri = data.getData();
+
+        }
+    }
+
+    private void uploadImage(Uri imageUri) {
+        if (imageUri == null) {
+            Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            fileName = UUID.randomUUID().toString() + ".jpg";
+
+            StorageReference reFfile = refStorage.child("shoes").child(safeKey).child(fileName);
+
+            ProgressDialog pd = new ProgressDialog(this);
+            pd.setTitle("Uploading...");
+            pd.show();
+
+            UploadTask uploadTask = reFfile. putFile(imageUri);
+            uploadTask. addOnSuccessListener(new OnSuccessListener<UploadTask. TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask. TaskSnapshot taskSnapshot) {
+                    pd.dismiss();
+                    Toast.makeText(add_new_shoe.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                }
+                }).addOnFailureListener(new OnFailureListener () {
+                    @Override
+                    public void onFailure(@NonNull Exception e){
+                        pd.dismiss();
+                        Toast.makeText(add_new_shoe.this, "Upload failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Failed to read image", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
         }
     }
 
@@ -280,13 +390,6 @@ public class add_new_shoe extends MasterClass implements AdapterView.OnItemSelec
 
 
 
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-    }
-
-    public void upload_image(View view) {
-    }
 
     public void Save_shoe(View view) {
         String shoeName = etShoeName.getText().toString();
@@ -295,22 +398,44 @@ public class add_new_shoe extends MasterClass implements AdapterView.OnItemSelec
         String manufacturing_company = etmanufacturing_company.getText().toString();
         String priceStr = etPrice.getText().toString();
 
-        if (shoeName.isEmpty() || shoeType.isEmpty() || priceStr.isEmpty() || qr_code_data.isEmpty() || manufacturing_company.isEmpty() || color.isEmpty()) {
+        if (shoeName.isEmpty() || shoeType.isEmpty() || priceStr.isEmpty() || safeKey.isEmpty() || manufacturing_company.isEmpty() || color.isEmpty()) {
             Toast.makeText(this, "Information is missing", Toast.LENGTH_SHORT).show();
         } else {
             try {
                 double price = Double.parseDouble(priceStr);
-                Shoes shoes = new Shoes(qr_code_data, shoeName, color, shoeType, price, manufacturing_company);
-                refBase2.child(qr_code_data).setValue(shoes);
-                Toast.makeText(this, "Shoe saved successfully", Toast.LENGTH_SHORT).show();
 
-                // After saving, go back to inventory fragment
-                back(view);
+                refBase2.child(safeKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+
+                            Toast.makeText(getApplicationContext(), "Shoe with this QR already exists", Toast.LENGTH_SHORT).show();
+                        } else {
+
+                            uploadImage(imageUri);
+                            Shoes shoes = new Shoes(safeKey, shoeName, color, shoeType, price, manufacturing_company);
+                            refBase2.child(safeKey).setValue(shoes)
+                                    .addOnSuccessListener(aVoid ->
+                                            Toast.makeText(getApplicationContext(), "Shoe saved successfully", Toast.LENGTH_SHORT).show()
+                                    )
+                                    .addOnFailureListener(e ->
+                                            Toast.makeText(getApplicationContext(), "Failed to save shoe", Toast.LENGTH_SHORT).show()
+                                    );
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(getApplicationContext(), "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             } catch (NumberFormatException e) {
                 Toast.makeText(this, "Invalid price format", Toast.LENGTH_SHORT).show();
             }
         }
-    }
+        }
+
 
     /**
      * Returns to the main screen and specifically to the inventory fragment.

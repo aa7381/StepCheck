@@ -3,6 +3,8 @@ package com.example.stepcheck;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 /**
  * A utility class for holding static references to Firebase services.
@@ -25,6 +27,10 @@ public class FBRef
      */
     public static DatabaseReference refBase = FBDB.getReference("Worker");
     public static DatabaseReference refBase2 = FBDB.getReference("Shoe");
+
+    public static FirebaseStorage Storage = FirebaseStorage.getInstance();
+    public static StorageReference refStorage = Storage.getReference();
+
 
 
 
