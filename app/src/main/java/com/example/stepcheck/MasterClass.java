@@ -21,58 +21,30 @@ import androidx.appcompat.app.AppCompatDelegate;
  */
 public class MasterClass extends AppCompatActivity {
 
-    private ConnectivityManager cm;
-    private ConnectivityManager.NetworkCallback callback;
-    private AlertDialog dialog;
+    private NetworkChangeReceiver networkReceiver;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        networkReceiver = new NetworkChangeReceiver(this);
 
-        callback = new ConnectivityManager.NetworkCallback() {
-            @Override
-            public void onAvailable(Network network) {
-                runOnUiThread(() -> dismissDialog());
-            }
 
-            @Override
-            public void onLost(Network network) {
-                runOnUiThread(() -> showDialog());
-            }
-        };
     }
 
-    @Override
     protected void onStart() {
         super.onStart();
-        cm.registerDefaultNetworkCallback(callback);
+        // Registering starts the automatic monitoring
+        IntentFilter networkFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkReceiver, networkFilter);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        cm.unregisterNetworkCallback(callback);
-    }
-
-    private void showDialog() {
-        if (dialog == null || !dialog.isShowing()) {
-            dialog = new AlertDialog.Builder(this)
-                    .setTitle("Connection Lost")
-                    .setMessage("SpeakUp requires internet connection")
-                    .setCancelable(false)
-                    .setPositiveButton("Settings",
-                            (d, w) -> startActivity(
-                                    new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS)))
-                    .show();
-        }
-    }
-
-    private void dismissDialog() {
-        if (dialog != null) {
-            dialog.dismiss();
-            dialog = null;
-        }
+        // Crucial: Unregister to avoid leaking the Activity context
+        unregisterReceiver(networkReceiver);
     }
 }

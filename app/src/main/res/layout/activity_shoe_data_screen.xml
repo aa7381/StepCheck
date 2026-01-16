@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
+
+        <!-- Shoe Image Placeholder -->
+        <ImageView
+            android:id="@+id/imgShoe"
+            android:layout_width="200dp"
+            android:layout_height="184dp"
+            android:layout_marginBottom="2dp"
+            android:background="#DDDDDD"
+            android:contentDescription="Shoe Image"
+            android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <Space
+            android:layout_width="120dp"
+            android:layout_height="match_parent"/>
+
+
+        <Button
+            android:id="@+id/btn_change_photo"
+            android:layout_width="52dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="#000000"
+            android:onClick="change_photo"
+            android:text="change photo"
+            android:textColor="#FFFFFF" />
+        </LinearLayout>
+
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="שם הנעל "
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:layout_marginTop="0dp"/>
+        <!-- Shoe Type -->
+
+
+        <EditText
+            android:id="@+id/ShoeName"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="2dp"
+            android:background="@drawable/rounded_edittext"
+            android:hint="שם הנעל"
+            android:padding="12dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="מחיר הנעל"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:layout_marginTop="2dp"/>
+        <!-- Shoe Type -->
+        <EditText
+            android:id="@+id/ShoePrice"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="מחיר"
+            android:background="@drawable/rounded_edittext"
+            android:padding="12dp"
+            android:layout_marginBottom="2dp"/>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="סוג נעל"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:layout_marginTop="2dp"/>
+        <!-- Shoe Type -->
+        <EditText
+            android:id="@+id/ShoeType"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="סוג נעל (רחבה/צרה)"
+            android:background="@drawable/rounded_edittext"
+            android:padding="12dp"
+            android:layout_marginBottom="2dp"/>
+
+        <!-- Size Type Spinner -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="מגדר"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:layout_marginTop="2dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerGenderType"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/rounded_edittext"
+            android:padding="12dp"
+            android:layout_marginBottom="2dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="סוגי מידות"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:layout_marginTop="2dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerSizeType"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/rounded_edittext"
+            android:padding="12dp"
+            android:layout_marginBottom="2dp"/>
+
+
+        <!-- Size Selection Spinner -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="מידות לבחירה"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:layout_marginTop="2dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerSelectSize"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/rounded_edittext"
+            android:padding="12dp"
+            android:layout_marginBottom="2dp"/>
+
+        <!-- Quantity -->
+        <EditText
+            android:id="@+id/etQuantity"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="כמות במלאי"
+            android:background="@drawable/rounded_edittext"
+            android:padding="12dp"
+            android:inputType="number"
+            android:layout_marginBottom="2dp"/>
+
+        <!-- Save Button -->
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="2dp"
+            android:backgroundTint="#000000"
+            android:onClick="save_size"
+            android:text="Save size"
+            android:textColor="#FFFFFF" />
+
+        <!-- Horizontal Save & Back -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/btnSaveShoe"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:backgroundTint="#000000"
+                android:onClick="save_update"
+                android:text="Save"
+                android:textColor="#FFFFFF" />
+
+            <Button
+                android:id="@+id/btnBack"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:backgroundTint="#000000"
+                android:onClick="backScreen"
+                android:text="Back"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

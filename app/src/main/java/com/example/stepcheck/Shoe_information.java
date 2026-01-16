@@ -57,7 +57,7 @@ public class Shoe_information extends MasterClass {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     String shoeName = snapshot.child("shoe_name").getValue(String.class);
-                    String shoeType = snapshot.child("shoe_type").getValue(String.class);
+                    String shoeType = snapshot.child("type").getValue(String.class);
                     Double priceDouble = snapshot.child("price").getValue(Double.class);
                     if (priceDouble != null) {
                         priceText.setText(String.valueOf(priceDouble));

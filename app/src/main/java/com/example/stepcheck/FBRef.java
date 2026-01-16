@@ -22,11 +22,19 @@ public class FBRef
      */
     public static FirebaseDatabase FBDB = FirebaseDatabase.getInstance();
 
+
+
     /**
      * Static reference to the "Worker" node in the Firebase Realtime Database.
      */
     public static DatabaseReference refBase = FBDB.getReference("Worker");
     public static DatabaseReference refBase2 = FBDB.getReference("Shoe");
+
+    public static DatabaseReference refBase4 = FBDB.getReference("stock");
+
+
+    public static DatabaseReference refBase3 = FBDB.getReference("Shoe_count");
+
 
     public static FirebaseStorage Storage = FirebaseStorage.getInstance();
     public static StorageReference refStorage = Storage.getReference();

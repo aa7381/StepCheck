@@ -30,7 +30,7 @@
             android:text="Scan QR Code"
             android:textColor="#FFFFFF"
             android:backgroundTint="#000000"
-            android:layout_marginTop="12dp"/>
+            android:layout_marginTop="120dp"/>
 
         <!-- Upload Image button -->
         <Button
@@ -91,71 +91,7 @@
             android:layout_marginTop="12dp"/>
 
         <!-- Size type spinner -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="סוגי מידות"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:layout_marginTop="16dp"/>
 
-        <Spinner
-            android:id="@+id/spinnerSizeType"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="8dp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Gender"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:layout_marginTop="16dp"/>
-
-        <Spinner
-            android:id="@+id/spinnerSizeGender"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="8dp"/>
-
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="המידות לנעל / Quantity per Size"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:layout_marginTop="16dp"/>
-
-        <Spinner
-            android:id="@+id/spinnerQuantitySize"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="8dp"/>
-
-        <EditText
-            android:id="@+id/etQuantity"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="Quantity"
-            android:inputType="number"
-            android:padding="12dp"
-            android:layout_marginTop="12dp"/>
-
-        <!-- Save button -->
-        <Button
-            android:id="@+id/save_size_btn"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="#000000"
-            android:onClick="save_size"
-            android:text="Save"
-            android:textColor="#FFFFFF" />
 
         <!-- Horizontal layout for Save Shoe and Back -->
         <LinearLayout
