@@ -49,7 +49,7 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
         int i = 0 ;
 
     private static final int REQUEST_PICK_IMAGE = 300;
-    private Uri imageUri; // תמונה נבחרת
+    private Uri imageUri;
 
 
 
@@ -380,7 +380,7 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
                     if (!listResult.getItems().isEmpty()) {
                         StorageReference firstFileRef = listResult.getItems().get(0);
 
-                        final long MAX_SIZE = 5 * 1024 * 1024; // עד 5MB
+                        final long MAX_SIZE = 5 * 1024 * 1024;
                         firstFileRef.getBytes(MAX_SIZE)
                                 .addOnSuccessListener(bytes -> {
                                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
