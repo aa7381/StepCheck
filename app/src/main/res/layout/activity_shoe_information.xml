@@ -5,6 +5,8 @@
     android:layout_height="match_parent"
     android:background="#FAFAFA">
 
+
+
     <LinearLayout
         android:id="@+id/rootLayout"
         android:layout_width="match_parent"
@@ -51,6 +53,23 @@
             android:padding="20dp">
 
             <!-- SIZE TITLE -->
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="select gender"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:layout_marginTop="2dp"/>
+
+            <Spinner
+                android:id="@+id/spinnerGenderType"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/rounded_edittext"
+                android:padding="12dp"
+                android:layout_marginBottom="2dp"/>
+
             <TextView
                 android:id="@+id/sizeTitle"
                 android:layout_width="wrap_content"
@@ -60,69 +79,280 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp"/>
 
+            <Spinner
+                android:id="@+id/SizeType"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/rounded_edittext"
+                android:padding="12dp"
+                android:layout_marginBottom="2dp"/>
+
+
             <!-- SIZE GRID -->
 
             <!-- FIT TYPE -->
             <GridLayout
                 android:id="@+id/sizeGrid"
-                android:layout_width="383dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 android:columnCount="5"
                 android:useDefaultMargins="true">
 
+                <!-- כפתורים 1–18 -->
                 <Button
-                    android:id="@+id/size35"
+                    android:id="@+id/size_1"
                     style="@style/SizeChip"
-                    android:layout_row="0"
-                    android:layout_column="0"
-                    android:text="35" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
 
                 <Button
-                    android:id="@+id/size36"
+                    android:id="@+id/size_2"
                     style="@style/SizeChip"
-                    android:text="36" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
 
                 <Button
-                    android:id="@+id/size37"
+                    android:id="@+id/size_3"
                     style="@style/SizeChip"
-                    android:text="37" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
 
                 <Button
-                    android:id="@+id/size38"
+                    android:id="@+id/size_4"
                     style="@style/SizeChip"
-                    android:text="38" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
 
                 <Button
-                    android:id="@+id/size39"
+                    android:id="@+id/size_5"
                     style="@style/SizeChip"
-                    android:text="39" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
 
                 <Button
-                    android:id="@+id/size40"
+                    android:id="@+id/size_6"
                     style="@style/SizeChip"
-                    android:text="40" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
 
                 <Button
-                    android:id="@+id/size41"
+                    android:id="@+id/size_7"
                     style="@style/SizeChip"
-                    android:text="41" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
 
                 <Button
-                    android:id="@+id/size42"
+                    android:id="@+id/size_8"
                     style="@style/SizeChip"
-                    android:text="42" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
 
                 <Button
-                    android:id="@+id/size43"
+                    android:id="@+id/size_9"
                     style="@style/SizeChip"
-                    android:text="43" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
 
                 <Button
-                    android:id="@+id/size44"
+                    android:id="@+id/size_10"
                     style="@style/SizeChip"
-                    android:text="44" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
+
+                <Button
+                    android:id="@+id/size_11"
+                    style="@style/SizeChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
+
+                <Button
+                    android:id="@+id/size_12"
+                    style="@style/SizeChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
+
+                <Button
+                    android:id="@+id/size_13"
+                    style="@style/SizeChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
+
+                <Button
+                    android:id="@+id/size_14"
+                    style="@style/SizeChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
+
+                <Button
+                    android:id="@+id/size_15"
+                    style="@style/SizeChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
+
+                <Button
+                    android:id="@+id/size_16"
+                    style="@style/SizeChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
+
+                <Button
+                    android:id="@+id/size_17"
+                    style="@style/SizeChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
+
+                <Button
+                    android:id="@+id/size_18"
+                    style="@style/SizeChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:gravity="center"
+                    android:ellipsize="none"
+                    android:singleLine="true"/>
             </GridLayout>
+
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/fitCard"

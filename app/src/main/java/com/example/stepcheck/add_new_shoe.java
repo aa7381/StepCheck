@@ -45,7 +45,6 @@ public class add_new_shoe extends MasterClass  {
     private String qr_code_data = "";
 
     private EditText etShoeName, etShoeType, etPrice, etmanufacturing_company, etColor;
-    private int selectedSizeTypePosition = 0;
 
     private static final int REQUEST_PICK_IMAGE = 300;
 
@@ -211,10 +210,7 @@ public class add_new_shoe extends MasterClass  {
      * Returns to the main screen and specifically to the inventory fragment.
      */
     public void back(View view) {
-        Intent intent = new Intent(this, Qr_Code_main_Screen.class);
-        intent.putExtra("TARGET_FRAGMENT", "INVENTORY");
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
+
         finish();
     }
 }

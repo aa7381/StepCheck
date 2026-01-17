@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
@@ -42,6 +43,7 @@ public class QrCodeMainScreenFragment extends Fragment {
 
         btn_start_scanning= view.findViewById(R.id.btn_start_scanning);
 
+
         barLauncher = registerForActivityResult(new ScanContract(), result -> {
             if (result != null && result.getContents() != null) {
                 qr_code_data = result.getContents();
@@ -56,6 +58,8 @@ public class QrCodeMainScreenFragment extends Fragment {
             });
         }
     }
+
+
     private void scanCode() {
         ScanOptions options = new ScanOptions();
         options.setPrompt("Volume up to flash on");
@@ -77,7 +81,6 @@ public class QrCodeMainScreenFragment extends Fragment {
                         Intent intent = new Intent(requireActivity(), Shoe_information.class);
                         intent.putExtra("qr_code_data", safeKey);
                         startActivity(intent);
-                        requireActivity().finish();
                     } else {
                         Toast.makeText(requireContext(), "נעל לא קיימת במערכת", Toast.LENGTH_SHORT).show();
                     }

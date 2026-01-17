@@ -16,7 +16,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -30,6 +32,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.ArrayList;
 
 public class shoe_data_screen extends MasterClass implements AdapterView.OnItemSelectedListener {
 
@@ -45,6 +49,10 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
 
 
         String qr_code_data;
+
+
+
+
 
         int i = 0 ;
 
@@ -165,6 +173,8 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
 
 
 
+
+
         give_count_shoe();
 
         Intent intent = getIntent();
@@ -240,6 +250,7 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+
                 etQuantity.setText("0");
             }
         });
@@ -664,6 +675,7 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
     public void backScreen(View view)
     {
         finish();
+
     }
 
 
