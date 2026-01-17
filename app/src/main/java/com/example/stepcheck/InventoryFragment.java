@@ -2,119 +2,58 @@ package com.example.stepcheck;
 
 import static com.example.stepcheck.FBRef.refBase2;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
-
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
-
 import java.util.ArrayList;
 import java.util.List;
 
-class Product {
-    private String id;
-    private String name;
-
-    public Product(String id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-}
-
-class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
-    private List<Product> productList;
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView textView;
-        public ViewHolder(View view) {
-            super(view);
-            textView = view.findViewById(android.R.id.text1);
-        }
-    }
-
-    public ProductAdapter(List<Product> productList) {
-        this.productList = productList;
-    }
-
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(android.R.layout.simple_list_item_1, parent, false);
-        return new ViewHolder(itemView);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Product product = productList.get(position);
-        holder.textView.setText(product.getName());
-    }
-
-    @Override
-    public int getItemCount() {
-        return productList.size();
-    }
-
-    public void filterList(List<Product> filteredList) {
-        productList = filteredList;
-        notifyDataSetChanged();
-    }
-}
-
-
+/**
+ * A simple {@link Fragment} subclass that displays the inventory screen.
+ * This fragment allows the user to search for products, scan QR codes, and add new shoes.
+ */
 public class InventoryFragment extends Fragment {
-    private Button AddNewShoe ,btnScanQr;
+    private Button AddNewShoe, btnScanQr;
     private SearchView productSearchView;
     private RecyclerView rvProducts;
     private ProductAdapter adapter;
-    private List<Product> allProducts = new ArrayList<>();
-
-
-    private String qr_code_data = "";
 
     private ActivityResultLauncher<ScanOptions> barLauncher;
 
-    private String safeKey ;
-
-
-
-
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return Return the View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_inventory, container, false);
     }
 
-
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned, but before any saved state has been restored in to the view.
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-
         super.onViewCreated(view, savedInstanceState);
         AddNewShoe = view.findViewById(R.id.AddNewShoe);
         btnScanQr = view.findViewById(R.id.btnScanQr);
@@ -122,11 +61,17 @@ public class InventoryFragment extends Fragment {
         rvProducts = view.findViewById(R.id.rvProducts);
 
         rvProducts.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ProductAdapter(new ArrayList<>());
+        adapter = new ProductAdapter();
         rvProducts.setAdapter(adapter);
+        rvProducts.setVisibility(View.GONE);
+
+        adapter.setOnItemClickListener(product -> {
+            Intent intent = new Intent(requireActivity(), shoe_data_screen.class);
+            intent.putExtra("qr_code_data", product.getId());
+            startActivity(intent);
+        });
 
         fetchProducts();
-
 
         productSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -136,96 +81,77 @@ public class InventoryFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                filter(newText);
+                if (rvProducts.getVisibility() == View.GONE) {
+                    rvProducts.setVisibility(View.VISIBLE);
+                }
+                adapter.filter(newText);
                 return true;
             }
         });
 
+        productSearchView.setOnSearchClickListener(v -> {
+            rvProducts.setVisibility(View.VISIBLE);
+            adapter.filter("");
+        });
+
+        productSearchView.setOnCloseListener(() -> {
+            rvProducts.setVisibility(View.GONE);
+            return false;
+        });
 
         if (AddNewShoe != null) {
             AddNewShoe.setOnClickListener(v -> {
-            addNewShoe();
+                addNewShoe();
             });
         }
 
         barLauncher = registerForActivityResult(new ScanContract(), result -> {
             if (result != null && result.getContents() != null) {
-                qr_code_data = result.getContents();
-                safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
-
-                go_to_shoe_information();
-
+                String qr_code_data = result.getContents();
+                String safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
+                Intent intent = new Intent(requireActivity(), shoe_data_screen.class);
+                intent.putExtra("qr_code_data", safeKey);
+                startActivity(intent);
             }
         });
 
-        if (btnScanQr!= null) {
+        if (btnScanQr != null) {
             btnScanQr.setOnClickListener(v -> {
                 scanCode();
-
             });
         }
-
-
     }
 
+    /**
+     * Fetches the list of products from the Firebase Realtime Database.
+     */
     private void fetchProducts() {
         refBase2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                allProducts.clear();
+                List<Product> productList = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String shoeName = snapshot.child("shoe_name").getValue(String.class);
                     if (shoeName != null) {
-                        allProducts.add(new Product(snapshot.getKey(), shoeName));
+                        productList.add(new Product(snapshot.getKey(), shoeName));
                     }
                 }
-                adapter = new ProductAdapter(allProducts);
-                rvProducts.setAdapter(adapter);
+                adapter.setData(productList);
+
+                if (rvProducts.getVisibility() == View.VISIBLE) {
+                    adapter.filter(productSearchView.getQuery().toString());
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), "Failed to load products.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void filter(String text) {
-        ArrayList<Product> filteredList = new ArrayList<>();
-        for (Product item : allProducts) {
-            if (item.getName().toLowerCase().contains(text.toLowerCase())) {
-                filteredList.add(item);
-            }
-        }
-        adapter.filterList(filteredList);
-    }
-
-    private void  go_to_shoe_information()
-    {
-        try {
-
-            refBase2.child(safeKey).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists())
-                    {
-                        Intent intent = new Intent(requireActivity(), shoe_data_screen.class);
-                        intent.putExtra("qr_code_data", safeKey);
-                        startActivity(intent);
-                        requireActivity().finish();
-                    }
-                    else
-                        Toast.makeText(requireActivity(), "This shoe does not exist", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                }
-            });
-
-        } catch (NumberFormatException e) {
-        }
-    }
+    /**
+     * Initiates the QR code scanning process.
+     */
     private void scanCode() {
         ScanOptions options = new ScanOptions();
         options.setPrompt("Volume up to flash on");
@@ -235,7 +161,9 @@ public class InventoryFragment extends Fragment {
         barLauncher.launch(options);
     }
 
-
+    /**
+     * Navigates to the screen for adding a new shoe.
+     */
     public void addNewShoe() {
         Intent intent = new Intent(requireActivity(), add_new_shoe.class);
         startActivity(intent);

@@ -36,9 +36,9 @@ public class Shoes
     }
 
     /**
-     * Default constructor for Firebase serialization.
+     * Default constructor required for calls to DataSnapshot.getValue(Shoes.class).
      */
-    public Shoes(String qr_code_data, String shoeName, String shoeType, String price, String manufacturing_company) {
+    public Shoes() {
         this.id = "";
         this.shoe_name = "";
         this.color = "";
@@ -144,5 +144,3 @@ public class Shoes
         this.manufacturing_company = manufacturing_company;
     }
 }
-
-

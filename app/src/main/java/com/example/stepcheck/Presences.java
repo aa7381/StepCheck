@@ -19,6 +19,7 @@ public class Presences
      * @param worker_id The ID of the worker.
      * @param start_your_Shift The time the worker started their shift.
      * @param end_your_Shift The time the worker ended their shift.
+     * @param time The time the presence was recorded.
      */
     public Presences(String worker_id, String start_your_Shift, String end_your_Shift, String time)
     {
@@ -41,18 +42,25 @@ public class Presences
     }
 
     /**
-     * Gets the worker's ID.
-     * @return The worker ID.
+     * Gets the time the presence was recorded.
+     * @return The time.
      */
-
     public String getTime() {
         return time;
     }
 
+    /**
+     * Sets the time the presence was recorded.
+     * @param time The new time.
+     */
     public void setTime(String time) {
         this.time = time;
     }
 
+    /**
+     * Gets the worker's ID.
+     * @return The worker ID.
+     */
     public String getWorker_id() {
         return worker_id;
     }

@@ -24,6 +24,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
+/**
+ * A simple {@link Fragment} subclass that displays the main screen for QR code scanning.
+ * This fragment provides a button to start the QR code scanner and handles the result.
+ */
 public class QrCodeMainScreenFragment extends Fragment {
 
     private Button btn_start_scanning;
@@ -31,12 +35,28 @@ public class QrCodeMainScreenFragment extends Fragment {
 
     private ActivityResultLauncher<ScanOptions> barLauncher;
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * This is the place to inflate the layout for the fragment.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return Return the View for the fragment's UI, or null.
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_qr_code_main_screen, container, false);
     }
 
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned, but before any saved state has been restored in to the view.
+     * This is where you should initialize your UI and set up event listeners.
+     *
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -60,6 +80,10 @@ public class QrCodeMainScreenFragment extends Fragment {
     }
 
 
+    /**
+     * Initiates the QR code scanning process using the zxing-android-embedded library.
+     * Configures and launches the barcode scanner.
+     */
     private void scanCode() {
         ScanOptions options = new ScanOptions();
         options.setPrompt("Volume up to flash on");
@@ -69,6 +93,11 @@ public class QrCodeMainScreenFragment extends Fragment {
         barLauncher.launch(options);
     }
 
+    /**
+     * After a QR code is successfully scanned, this method checks if the shoe exists in the database.
+     * If the shoe exists, it opens the {@link Shoe_information} activity to display its details.
+     * Otherwise, it shows a toast message indicating that the shoe was not found.
+     */
     private void open_inform_shoe() {
         if (qr_code_data != null && !qr_code_data.isEmpty()) {
 

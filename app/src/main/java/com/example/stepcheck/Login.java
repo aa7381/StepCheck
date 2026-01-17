@@ -24,6 +24,8 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 
 /**
  * An activity that provides the user with a login interface.
+ * This screen allows users to log in to the application using their email and password.
+ * It also provides a "Remember Me" option to keep the user logged in.
  * Inherits from MasterClass to handle network and phone state changes.
  */
 public class Login extends MasterClass {
@@ -33,6 +35,17 @@ public class Login extends MasterClass {
     CheckBox remember_checkbox;
     Boolean remember_me = false;
 
+    /**
+     * Called when the activity is first created. This is where you should do all
+     * of your normal static set up: create views, bind data to lists, etc.
+     * This method also sets up the user interface from the layout resource.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *                           previously being shut down then this Bundle
+     *                           contains the data it most recently supplied in
+     *                           onSaveInstanceState(Bundle).
+     *                           Note: Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +56,13 @@ public class Login extends MasterClass {
         remember_checkbox = findViewById(R.id.remember_checkbox);
     }
 
+    /**
+     * Handles the click event for the Login button.
+     * It validates user input, attempts to sign in the user with Firebase Authentication,
+     * and navigates to the main screen on success.
+     *
+     * @param view The view that was clicked.
+     */
     public void Login_click(View view)
     {
         String email = email_input.getText().toString();
@@ -99,6 +119,12 @@ public class Login extends MasterClass {
         }
     }
 
+    /**
+     * Handles the click event for the Sign-up button.
+     * Starts the {@link Register} activity.
+     *
+     * @param view The view that was clicked.
+     */
     public void Sign_up(View view)
     {
         Intent intent = new Intent(this, Register.class);

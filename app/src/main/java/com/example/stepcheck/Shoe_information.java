@@ -32,6 +32,12 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.UUID;
 
+/**
+ * An activity that displays detailed information about a specific shoe.
+ * This screen shows the shoe's name, type, price, and image.
+ * It also allows the user to view available sizes and their stock status.
+ * Inherits from MasterClass to handle network and phone state changes.
+ */
 public class Shoe_information extends MasterClass   {
 
     private TextView shoeTitle, fitType, priceText;
@@ -128,6 +134,10 @@ public class Shoe_information extends MasterClass   {
 
 
 
+    /**
+     * Called when the activity is first created.
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -304,6 +314,9 @@ public class Shoe_information extends MasterClass   {
 
 
 
+    /**
+     * Fetches and displays all information about the shoe from the Firebase database.
+     */
     private void give_all_inform() {
         refBase2.child(qr_code_data).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -329,6 +342,13 @@ public class Shoe_information extends MasterClass   {
         });
     }
 
+    /**
+     * Displays the available sizes for the selected shoe category and type.
+     * It enables or disables the size buttons based on stock availability.
+     * @param sizesArray The array of sizes to display.
+     * @param sizeGender The gender category for the sizes (e.g., adult_size, kids_size).
+     * @param sizeType The specific type of sizes (e.g., usMen, euSizes).
+     */
     private void showSizes(String[] sizesArray, String sizeGender, String sizeType) {
 
         for (int i = 0; i < sizeButtons.size(); i++) {
@@ -373,10 +393,18 @@ public class Shoe_information extends MasterClass   {
             }
         }
     }
+
+    /**
+     * Closes the current activity.
+     * @param view The view that was clicked.
+     */
     public void Close_Scan(View view) {
         finish();
     }
 
+    /**
+     * Downloads and displays the shoe image from Firebase Storage.
+     */
     private void down() {
         StorageReference shoeFolderRef = refStorage.child("shoes").child(qr_code_data);
 

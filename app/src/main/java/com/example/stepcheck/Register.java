@@ -28,6 +28,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 /**
  * An activity that provides a user registration interface.
+ * This screen allows a new user to register with their email, full name, and password.
+ * The user can also select their role from a spinner.
  * Inherits from MasterClass to handle network and phone state changes.
  */
 public class Register extends MasterClass implements AdapterView.OnItemSelectedListener{
@@ -40,6 +42,11 @@ public class Register extends MasterClass implements AdapterView.OnItemSelectedL
     String [] roles={"Worker","ShiftManager","charge_of_merchandise"};
     int role;
 
+    /**
+     * Called when the activity is first created.
+     * This is where you should do all of your normal static set up: create views, bind data to lists, etc.
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,20 +62,41 @@ public class Register extends MasterClass implements AdapterView.OnItemSelectedL
         roleSpinner.setAdapter(adp);
     }
 
+    /**
+     * Navigates the user to the Login screen.
+     * @param view The view that was clicked.
+     */
     public void go_Login(View view)
     {
         Intent intent = new Intent(this, Login.class);
         startActivity(intent);
     }
 
+    /**
+     * Callback method to be invoked when an item in this view has been selected.
+     * @param parent The AdapterView where the selection happened.
+     * @param view The view within the AdapterView that was clicked.
+     * @param position The position of the view in the adapter.
+     * @param id The row id of the item that is selected.
+     */
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         role = position;
     }
 
+    /**
+     * Callback method to be invoked when the selection disappears from this view.
+     * @param parent The AdapterView that now contains no selected item.
+     */
     public void onNothingSelected(AdapterView<?> parent)
     {
     }
 
+    /**
+     * Handles the click event for the 'Register' button.
+     * It validates user input, creates a new user with Firebase Authentication,
+     * and saves the user's information to the Firebase Realtime Database.
+     * @param view The view that was clicked.
+     */
     public void Register_click(View view) {
         String Email = email.getText().toString();
         String FullName = fullName.getText().toString();

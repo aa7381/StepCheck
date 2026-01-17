@@ -14,6 +14,9 @@ public class Worker
     private String job_rank;
     private boolean inShift;
     private boolean canEditInventory;
+    /**
+     * A list of the worker's presences.
+     */
     private ArrayList<Presences> presences;
     private boolean can_manage_shift;
 
@@ -35,6 +38,7 @@ public class Worker
         this.inShift = inShift;
         this.canEditInventory = canEditInventory;
         this.can_manage_shift = can_manage_shift;
+        this.presences = new ArrayList<>();
     }
 
     /**
@@ -45,6 +49,7 @@ public class Worker
         this.id = "";
         this.username = "";
         this.job_rank = "";
+        this.presences = new ArrayList<>();
     }
 
     /**
@@ -126,6 +131,23 @@ public class Worker
     public void setCanEditInventory(boolean canEditInventory) {
         this.canEditInventory = canEditInventory;
     }
+
+    /**
+     * Gets the list of worker's presences.
+     * @return The list of presences.
+     */
+    public ArrayList<Presences> getPresences() {
+        return presences;
+    }
+
+    /**
+     * Sets the list of worker's presences.
+     * @param presences The new list of presences.
+     */
+    public void setPresences(ArrayList<Presences> presences) {
+        this.presences = presences;
+    }
+
 
     /**
      * Checks if the worker can manage shifts.

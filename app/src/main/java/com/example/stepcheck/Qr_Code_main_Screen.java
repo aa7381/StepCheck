@@ -22,6 +22,9 @@ import com.journeyapps.barcodescanner.ScanOptions;
 
 /**
  * The main activity of the application after the user logs in.
+ * This activity hosts the main navigation of the app using a BottomNavigationView,
+ * and displays different fragments based on user selection.
+ * It also handles user permissions to show or hide certain navigation items.
  * Inherits from MasterClass to handle network and phone state changes.
  */
 public class Qr_Code_main_Screen extends MasterClass implements BottomNavigationView.OnItemSelectedListener {
@@ -31,6 +34,11 @@ public class Qr_Code_main_Screen extends MasterClass implements BottomNavigation
     private BottomNavigationView bottomNavigationView;
     private ActivityResultLauncher<ScanOptions> barLauncher;
 
+    /**
+     * Called when the activity is first created.
+     * Initializes the UI components, sets up permissions, and handles initial fragment navigation.
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +55,12 @@ public class Qr_Code_main_Screen extends MasterClass implements BottomNavigation
         handleFragmentNavigation(getIntent());
     }
 
+    /**
+     * This is called for activities that set launchMode to "singleTop" in their package,
+     * or if a client used the {@link Intent#FLAG_ACTIVITY_SINGLE_TOP} flag when calling
+     * startActivity().
+     * @param intent The new intent that was started for the activity.
+     */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -55,7 +69,9 @@ public class Qr_Code_main_Screen extends MasterClass implements BottomNavigation
     }
 
     /**
-     * Checks if a target fragment was requested via Intent extras.
+     * Handles navigation to a specific fragment based on the intent extras.
+     * This is used to deep-link into a specific part of the app.
+     * @param intent The intent that may contain a "TARGET_FRAGMENT" extra.
      */
     private void handleFragmentNavigation(Intent intent) {
         if (intent != null && intent.hasExtra("TARGET_FRAGMENT")) {
@@ -70,6 +86,10 @@ public class Qr_Code_main_Screen extends MasterClass implements BottomNavigation
     }
 
 
+    /**
+     * Sets up the visibility of navigation items based on the current user's permissions.
+     * It fetches the user's data from Firebase and adjusts the BottomNavigationView menu items accordingly.
+     */
     private void setupPermissions() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
@@ -96,6 +116,11 @@ public class Qr_Code_main_Screen extends MasterClass implements BottomNavigation
         }
     }
 
+    /**
+     * Loads a given fragment into the fragment container view.
+     * @param fragment The fragment to load.
+     * @return true if the fragment was successfully loaded, false otherwise.
+     */
     private boolean loadFragment(Fragment fragment) {
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction()
@@ -106,6 +131,11 @@ public class Qr_Code_main_Screen extends MasterClass implements BottomNavigation
         return false;
     }
 
+    /**
+     * Called when an item in the bottom navigation menu is selected.
+     * @param item The selected item
+     * @return true to display the item as the selected item and false if the item is not to be selected.
+     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Fragment fragment = null;

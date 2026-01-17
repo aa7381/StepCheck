@@ -38,6 +38,8 @@ import java.util.UUID;
 
 /**
  * Activity for adding a new shoe to the inventory.
+ * This screen allows the user to scan a QR code, enter shoe details, select an image, and save the new shoe to the database.
+ * Inherits from MasterClass to handle network and phone state changes.
  */
 public class add_new_shoe extends MasterClass  {
 
@@ -45,18 +47,13 @@ public class add_new_shoe extends MasterClass  {
     private String qr_code_data = "";
 
     private EditText etShoeName, etShoeType, etPrice, etmanufacturing_company, etColor;
-
     private static final int REQUEST_PICK_IMAGE = 300;
-
-
 
     private String fileName ;
     String safeKey ;
     Uri imageUri ;
 
     int count_shoes =0 ;
-
-
 
 
     private final ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> {
@@ -69,6 +66,11 @@ public class add_new_shoe extends MasterClass  {
         }
     });
 
+    /**
+     * Called when the activity is first created.
+     * This is where you should do all of your normal static set up: create views, bind data to lists, etc.
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +85,10 @@ public class add_new_shoe extends MasterClass  {
 
         ScanQR.setOnClickListener(view -> scanCode());
     }
+    /**
+     * Initiates the QR code scanning process.
+     * Configures and launches the barcode scanner.
+     */
     public void scanCode() {
         ScanOptions options = new ScanOptions();
         options.setPrompt("Volume up to flash on");
@@ -92,6 +98,11 @@ public class add_new_shoe extends MasterClass  {
         barLauncher.launch(options);
     }
 
+    /**
+     * Handles the click event for the 'upload image' button.
+     * It checks if a QR code has been scanned first and then opens the image gallery for the user to pick an image.
+     * @param view The view that was clicked.
+     */
     public void upload_image(View view)
     {
         if(safeKey ==null || safeKey.isEmpty())
@@ -105,6 +116,12 @@ public class add_new_shoe extends MasterClass  {
         }
     }
 
+    /**
+     * Callback for the result from launching the Intent for picking an image.
+     * @param requestCode The integer request code originally supplied to startActivityForResult(), allowing you to identify who this result came from.
+     * @param resultCode The integer result code returned by the child activity through its setResult().
+     * @param data An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode,@Nullable Intent data)
     {
@@ -115,6 +132,10 @@ public class add_new_shoe extends MasterClass  {
         }
     }
 
+    /**
+     * Uploads the selected image to Firebase Storage.
+     * @param imageUri The Uri of the image to be uploaded.
+     */
     private void uploadImage(Uri imageUri) {
         if (imageUri == null)
         {
@@ -152,6 +173,12 @@ public class add_new_shoe extends MasterClass  {
         }
     }
 
+    /**
+     * Saves the new shoe's information to the Firebase Realtime Database.
+     * It validates the input fields, checks if a shoe with the same QR code already exists,
+     * and then uploads the image and saves the shoe data.
+     * @param view The view that was clicked.
+     */
     public void Save_shoe(View view) {
         String shoeName = etShoeName.getText().toString();
         String shoeType = etShoeType.getText().toString();
@@ -207,7 +234,8 @@ public class add_new_shoe extends MasterClass  {
         }
 
     /**
-     * Returns to the main screen and specifically to the inventory fragment.
+     * Finishes the current activity and returns to the previous screen.
+     * @param view The view that was clicked.
      */
     public void back(View view) {
 

@@ -35,6 +35,12 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
+/**
+ * An activity that displays and manages the data for a specific shoe.
+ * This screen allows the user to view shoe details, update inventory for different sizes,
+ * change the shoe image, and save changes to the database.
+ * Inherits from MasterClass to handle network and phone state changes.
+ */
 public class shoe_data_screen extends MasterClass implements AdapterView.OnItemSelectedListener {
 
         Spinner spinnerQuantitySize;
@@ -155,6 +161,10 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
 
 
 
+    /**
+     * Called when the activity is first created.
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -352,6 +362,13 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
 
     }
 
+    /**
+     * Callback method to be invoked when an item in this view has been selected.
+     * @param parent The AdapterView where the selection happened.
+     * @param view The view within the AdapterView that was clicked.
+     * @param position The position of the view in the adapter.
+     * @param id The row id of the item that is selected.
+     */
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
             case 0:
@@ -383,6 +400,9 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
         }
     }
 
+    /**
+     * Downloads the shoe image from Firebase Storage and displays it in an ImageView.
+     */
     private void down() {
         StorageReference shoeFolderRef = refStorage.child("shoes").child(qr_code_data);
 
@@ -410,6 +430,9 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
     }
 
 
+    /**
+     * Fetches all the information about the shoe from the Firebase Realtime Database.
+     */
     private void give_all_inform() {
         refBase2.child(qr_code_data).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -435,6 +458,9 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
             }
         });
     }
+    /**
+     * Fetches the total count of shoes from the database.
+     */
     private void give_count_shoe()
     {
         refBase3.child("count_shoes").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -472,6 +498,9 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
 
 
 
+    /**
+     * Saves all the sizes information to the Firebase Realtime Database.
+     */
     private void saveAllSizesToFirebase() {
         if (sizes == null) {
             Toast.makeText(this, "Sizes array is null", Toast.LENGTH_SHORT).show();
@@ -506,6 +535,10 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
     }
 
 
+    /**
+     * Saves the selected size and quantity to the local sizes array.
+     * @param view The view that was clicked.
+     */
     public void save_size(View view) {
         if (sizes == null) return;
 
@@ -578,6 +611,10 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
 
 
 
+    /**
+     * Loads the sizes and quantities for a specific shoe from the Firebase Realtime Database.
+     * @param qrCode The QR code of the shoe.
+     */
     private void loadSizes(String qrCode) {
         if (sizes == null) return;
 
@@ -657,6 +694,10 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
 
 
 
+    /**
+     * Saves the updated shoe information and all sizes to the database.
+     * @param view The view that was clicked.
+     */
     public void save_update(View view)
     {
         saveAllSizesToFirebase();
@@ -672,6 +713,10 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
         }
     }
 
+    /**
+     * Finishes the current activity and returns to the previous screen.
+     * @param view The view that was clicked.
+     */
     public void backScreen(View view)
     {
         finish();
@@ -683,6 +728,10 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
     public void onNothingSelected(AdapterView<?> parent) {
     }
 
+    /**
+     * Replaces the shoe image in Firebase Storage with a new image.
+     * @param newImageUri The Uri of the new image.
+     */
     private void replaceShoeImage(Uri newImageUri) {
 
         if (newImageUri == null) {
@@ -726,6 +775,12 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
                 .addOnFailureListener(e -> Toast.makeText(this, "Failed to list existing images: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
+    /**
+     * Callback for the result from launching the Intent for picking an image.
+     * @param requestCode The integer request code originally supplied to startActivityForResult(), allowing you to identify who this result came from.
+     * @param resultCode The integer result code returned by the child activity through its setResult().
+     * @param data An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -737,6 +792,11 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
         }
     }
 
+    /**
+     * Handles the click event for the 'change photo' button.
+     * Opens the image gallery for the user to pick a new image.
+     * @param view The view that was clicked.
+     */
     public void change_photo(View view)
     {
 

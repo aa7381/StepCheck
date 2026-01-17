@@ -17,51 +17,40 @@
         android:textSize="26sp"
         android:textStyle="bold"
         android:gravity="center"
-        android:layout_marginBottom="48dp"/>
+        android:layout_marginBottom="24dp"/>
 
     <!-- SEARCH BAR -->
     <androidx.appcompat.widget.SearchView
         android:id="@+id/product_search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="16dp"
         app:iconifiedByDefault="false"
         app:queryHint="Enter product name or barcode" />
 
-
-    <!-- CHECK BUTTON -->
-    <Button
-        android:id="@+id/btnCheck"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvProducts"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Check Stock"
-        android:textStyle="bold"
-        android:backgroundTint="#6C6FF5"
-        android:textColor="@android:color/white"
-        android:layout_marginBottom="20dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <!-- SCAN QR -->
     <Button
         android:id="@+id/btnScanQr"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginTop="16dp"
         android:text="Scan QR"
         android:textStyle="bold"
         android:backgroundTint="#6C6FF5"
         android:textColor="@android:color/white" />
-
-    <!-- SPACE PUSHER -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
 
     <!-- ADD NEW SHOE -->
     <Button
         android:id="@+id/AddNewShoe"
         android:layout_width="match_parent"
         android:layout_height="56dp"
+        android:layout_marginTop="8dp"
         android:text="Add New Shoe"
         android:textStyle="bold"
         android:backgroundTint="#4CAF50"

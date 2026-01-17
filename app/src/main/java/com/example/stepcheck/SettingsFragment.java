@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment;
 
 /**
  * A simple {@link Fragment} subclass that displays the settings screen.
- * This fragment provides the user interface for application settings.
+ * This fragment provides the user with an option to sign out of the application.
  */
 public class SettingsFragment extends Fragment {
 
@@ -37,6 +37,11 @@ public class SettingsFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_settings, container, false);
     }
 
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned, but before any saved state has been restored in to the view.
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     */
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -50,6 +55,11 @@ public class SettingsFragment extends Fragment {
 
     }
 
+    /**
+     * Logs the user out of the application.
+     * This method signs the user out of Firebase Authentication, clears the "Remember Me" preference,
+     * and navigates the user back to the Welcome screen.
+     */
     private void logout() {
         refAuth.signOut();
         SharedPreferences settings = requireActivity().getSharedPreferences("RemeberMe", MODE_PRIVATE);
@@ -63,5 +73,3 @@ public class SettingsFragment extends Fragment {
     }
     
 }
-
-
