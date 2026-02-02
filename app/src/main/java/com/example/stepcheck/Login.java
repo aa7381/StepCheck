@@ -28,7 +28,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException;
  * It also provides a "Remember Me" option to keep the user logged in.
  * Inherits from MasterClass to handle network and phone state changes.
  */
-public class Login extends MasterClass {
+public class Login extends MasterClass   {
 
     Button login_button;
     EditText email_input,password_input;

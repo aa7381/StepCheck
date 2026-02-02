@@ -34,6 +34,7 @@ public class QrCodeMainScreenFragment extends Fragment {
     private String qr_code_data = "";
 
     private ActivityResultLauncher<ScanOptions> barLauncher;
+    String safeKey ;
 
     /**
      * Called to have the fragment instantiate its user interface view.
@@ -67,14 +68,20 @@ public class QrCodeMainScreenFragment extends Fragment {
         barLauncher = registerForActivityResult(new ScanContract(), result -> {
             if (result != null && result.getContents() != null) {
                 qr_code_data = result.getContents();
+                safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
                 open_inform_shoe();
 
             }
         });
 
         if (btn_start_scanning != null) {
-            btn_start_scanning.setOnClickListener(v -> {
-                scanCode();
+            btn_start_scanning.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v) {
+
+                    scanCode();
+                }
             });
         }
     }
@@ -99,9 +106,8 @@ public class QrCodeMainScreenFragment extends Fragment {
      * Otherwise, it shows a toast message indicating that the shoe was not found.
      */
     private void open_inform_shoe() {
-        if (qr_code_data != null && !qr_code_data.isEmpty()) {
+        if (safeKey != null && !safeKey.isEmpty()) {
 
-            String safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
 
             refBase2.child(safeKey).get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {

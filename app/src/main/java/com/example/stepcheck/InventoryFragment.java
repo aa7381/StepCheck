@@ -1,6 +1,7 @@
 package com.example.stepcheck;
 
 import static com.example.stepcheck.FBRef.refBase2;
+import static com.example.stepcheck.FBRef.refBase3;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
@@ -32,6 +35,9 @@ public class InventoryFragment extends Fragment {
     private SearchView productSearchView;
     private RecyclerView rvProducts;
     private ProductAdapter adapter;
+
+    String safeKey;
+
 
     private ActivityResultLauncher<ScanOptions> barLauncher;
 
@@ -65,11 +71,15 @@ public class InventoryFragment extends Fragment {
         rvProducts.setAdapter(adapter);
         rvProducts.setVisibility(View.GONE);
 
-        adapter.setOnItemClickListener(product -> {
-            Intent intent = new Intent(requireActivity(), shoe_data_screen.class);
-            intent.putExtra("qr_code_data", product.getId());
-            startActivity(intent);
+        adapter.setOnItemClickListener(new ProductAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Product product) {
+                Intent intent = new Intent(requireActivity(), shoe_data_screen.class);
+                intent.putExtra("qr_code_data", product.getId());
+                startActivity(intent);
+            }
         });
+
 
         fetchProducts();
 
@@ -89,29 +99,38 @@ public class InventoryFragment extends Fragment {
             }
         });
 
-        productSearchView.setOnSearchClickListener(v -> {
-            rvProducts.setVisibility(View.VISIBLE);
-            adapter.filter("");
+        productSearchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rvProducts.setVisibility(View.VISIBLE);
+                adapter.filter("");
+            }
         });
 
-        productSearchView.setOnCloseListener(() -> {
-            rvProducts.setVisibility(View.GONE);
-            return false;
+        productSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                rvProducts.setVisibility(View.GONE);
+                return false;
+            }
         });
 
         if (AddNewShoe != null) {
-            AddNewShoe.setOnClickListener(v -> {
-                addNewShoe();
+            AddNewShoe.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v) {
+
+                    addNewShoe();
+                }
             });
         }
 
         barLauncher = registerForActivityResult(new ScanContract(), result -> {
             if (result != null && result.getContents() != null) {
                 String qr_code_data = result.getContents();
-                String safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
-                Intent intent = new Intent(requireActivity(), shoe_data_screen.class);
-                intent.putExtra("qr_code_data", safeKey);
-                startActivity(intent);
+                safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
+                check();
             }
         });
 
@@ -121,6 +140,7 @@ public class InventoryFragment extends Fragment {
             });
         }
     }
+
 
     /**
      * Fetches the list of products from the Firebase Realtime Database.
@@ -168,4 +188,40 @@ public class InventoryFragment extends Fragment {
         Intent intent = new Intent(requireActivity(), add_new_shoe.class);
         startActivity(intent);
     }
-}
+
+
+    private void check() {
+            try {
+
+                refBase2.child(safeKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (!snapshot.exists()) {
+
+
+
+                            Toast.makeText(getContext(), "Shoe is not exists", Toast.LENGTH_SHORT).show();
+                        } else
+                        {
+
+
+                                Intent intent = new Intent(requireActivity(), shoe_data_screen.class);
+                                intent.putExtra("qr_code_data", safeKey);
+                                startActivity(intent);
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(getContext(), "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } catch (NumberFormatException e) {
+                Toast.makeText(getContext(), "Invalid price format", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+

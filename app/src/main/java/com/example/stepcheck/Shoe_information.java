@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -125,6 +126,7 @@ public class Shoe_information extends MasterClass   {
     };
 
 
+    String safeKey;
 
 
 
@@ -165,6 +167,7 @@ public class Shoe_information extends MasterClass   {
 
 
 
+        give_all_inform();
 
 
 
@@ -174,8 +177,10 @@ public class Shoe_information extends MasterClass   {
 
         Intent intent = getIntent();
         qr_code_data = intent.getStringExtra("qr_code_data");
+        safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
 
-        if (qr_code_data != null && !qr_code_data.isEmpty()) {
+
+        if (safeKey != null && !safeKey.isEmpty()) {
             give_all_inform();
         }
 
@@ -318,7 +323,7 @@ public class Shoe_information extends MasterClass   {
      * Fetches and displays all information about the shoe from the Firebase database.
      */
     private void give_all_inform() {
-        refBase2.child(qr_code_data).addListenerForSingleValueEvent(new ValueEventListener() {
+        refBase2.child(safeKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -329,6 +334,7 @@ public class Shoe_information extends MasterClass   {
                         priceText.setText(String.valueOf(priceDouble));
                     }
                     down();
+                    Toast.makeText(Shoe_information.this, "Shoe name: " + shoeName, Toast.LENGTH_SHORT).show();
                     shoeTitle.setText(shoeName);
                     fitType.setText(shoeType);
 

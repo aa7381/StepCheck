@@ -83,8 +83,14 @@ public class add_new_shoe extends MasterClass  {
         etColor = findViewById(R.id.etColor);
         etmanufacturing_company = findViewById(R.id.etmanufacturing_company);
 
-        ScanQR.setOnClickListener(view -> scanCode());
-    }
+        ScanQR.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+
+                scanCode();
+            }
+        });    }
     /**
      * Initiates the QR code scanning process.
      * Configures and launches the barcode scanner.
