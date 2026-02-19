@@ -41,7 +41,7 @@
             android:name=".Register"
             android:exported="false" />
         <activity
-            android:name=".Qr_Code_main_Screen"
+            android:name=".Main_connect_fragment_activity"
             android:exported="false" />
         <activity
             android:name=".Login"

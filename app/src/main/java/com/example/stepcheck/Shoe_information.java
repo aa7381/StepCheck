@@ -28,6 +28,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
@@ -166,8 +167,6 @@ public class Shoe_information extends MasterClass   {
 
 
 
-
-        give_all_inform();
 
 
 
@@ -415,25 +414,44 @@ public class Shoe_information extends MasterClass   {
         StorageReference shoeFolderRef = refStorage.child("shoes").child(qr_code_data);
 
         shoeFolderRef.listAll()
-                .addOnSuccessListener(listResult -> {
-                    if (!listResult.getItems().isEmpty()) {
-                        StorageReference firstFileRef = listResult.getItems().get(0);
+                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                    @Override
+                    public void onSuccess(ListResult listResult) {
+                        if (!listResult.getItems().isEmpty()) {
+                            StorageReference firstFileRef = listResult.getItems().get(0);
 
-                        final long MAX_SIZE = 5 * 1024 * 1024; // עד 5MB
-                        firstFileRef.getBytes(MAX_SIZE)
-                                .addOnSuccessListener(bytes -> {
-                                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                    shoeImage.setImageBitmap(bitmap);
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(Shoe_information.this, "Failed to load image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                });
-                    } else {
-                        Toast.makeText(Shoe_information.this, "No images found for this shoe", Toast.LENGTH_SHORT).show();
+                            final long MAX_SIZE = 5 * 1024 * 1024; // עד 5MB
+                            firstFileRef.getBytes(MAX_SIZE)
+                                    .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                        @Override
+                                        public void onSuccess(byte[] bytes) {
+                                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                            shoeImage.setImageBitmap(bitmap);
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(Shoe_information.this,
+                                                    "Failed to load image: " + e.getMessage(),
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        } else {
+                            Toast.makeText(Shoe_information.this,
+                                    "No images found for this shoe",
+                                    Toast.LENGTH_SHORT).show();
+                        }
                     }
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(Shoe_information.this, "Failed to list images: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(Shoe_information.this,
+                                "Failed to list images: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
+
 }

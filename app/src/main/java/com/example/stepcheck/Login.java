@@ -84,7 +84,7 @@ public class Login extends MasterClass   {
 
                                 remember_me = remember_checkbox.isChecked();
                                 if (remember_me) {
-                                    Intent intent = new Intent(Login.this, Qr_Code_main_Screen.class);
+                                    Intent intent = new Intent(Login.this, Main_connect_fragment_activity.class);
                                     startActivity(intent);
                                     SharedPreferences settings = getSharedPreferences("RemeberMe", MODE_PRIVATE);
                                     SharedPreferences.Editor editor = settings.edit();
@@ -93,7 +93,7 @@ public class Login extends MasterClass   {
                                 }
                                 else
                                 {
-                                    Intent intent = new Intent(Login.this, Qr_Code_main_Screen.class);
+                                    Intent intent = new Intent(Login.this, Main_connect_fragment_activity.class);
                                     startActivity(intent);
                                     SharedPreferences settings = getSharedPreferences("RemeberMe", MODE_PRIVATE);
                                     SharedPreferences.Editor editor = settings.edit();

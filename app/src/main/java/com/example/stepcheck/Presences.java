@@ -8,10 +8,21 @@ public class Presences
 {
 
     private String worker_id ; //id of worker who presences  == id of worker
+
+
     private String start_your_Shift;//start time of worker Shift
+    private Boolean is_startShift;
+    private Boolean buttonPauseEnabled;
+    private Boolean buttonPauseEndEnabled;
+    private Boolean buttonEndEnabled;
+
+    private String pause_time ;//pause time of worker Shift
+    private String pause_end_time ;//pause time of worker Shift
+
+
     private String end_your_Shift ;//end time of worker Shift
 
-    private String time ;
+    private String date ;
 
     /**
      * Constructs a new Presences object with specified details.
@@ -19,14 +30,19 @@ public class Presences
      * @param worker_id The ID of the worker.
      * @param start_your_Shift The time the worker started their shift.
      * @param end_your_Shift The time the worker ended their shift.
-     * @param time The time the presence was recorded.
      */
-    public Presences(String worker_id, String start_your_Shift, String end_your_Shift, String time)
+    public Presences(String worker_id, String start_your_Shift, String end_your_Shift,String pause_time,String pause_end_time,Boolean is_startShift,Boolean buttonPauseEnabled,Boolean buttonPauseEndEnabled,Boolean buttonEndEnabled, String date)
     {
         this.worker_id = worker_id;
         this.start_your_Shift = start_your_Shift;
         this.end_your_Shift = end_your_Shift;
-        this.time = time;
+        this.pause_time = pause_time;
+        this.is_startShift = is_startShift;
+        this.pause_end_time = pause_end_time;
+        this.buttonPauseEnabled = buttonPauseEnabled;
+        this.buttonPauseEndEnabled = buttonPauseEndEnabled;
+        this.buttonEndEnabled = buttonEndEnabled;
+        this.date = date;
     }
 
     /**
@@ -34,27 +50,76 @@ public class Presences
      */
     public Presences()
     {
+        this.buttonEndEnabled = false;
+        this.buttonPauseEnabled = false;
+        this.buttonPauseEndEnabled = false;
         this.worker_id = "";
         this.start_your_Shift = "";
+        this.pause_time = "";
+        this.pause_end_time = "";
+        this.is_startShift = false;
         this.end_your_Shift = "";
-        this.time = "";
+        this.date = "";
 
     }
+
+    public Boolean getButtonEndEnabled() {
+        return buttonEndEnabled;
+    }
+    public void setButtonEndEnabled(Boolean buttonEndEnabled) {
+        this.buttonEndEnabled = buttonEndEnabled;
+    }
+
+    public Boolean getButtonPauseEnabled() {
+        return buttonPauseEnabled;
+    }
+    public void setButtonPauseEnabled(Boolean buttonPauseEnabled) {
+        this.buttonPauseEnabled = buttonPauseEnabled;
+    }
+
+    public Boolean getButtonPauseEndEnabled() {
+        return buttonPauseEndEnabled;
+    }
+    public void setButtonPauseEndEnabled(Boolean buttonPauseEndEnabled) {
+        this.buttonPauseEndEnabled = buttonPauseEndEnabled;
+    }
+
+    public Boolean getIs_startShift() {
+        return is_startShift;
+    }
+    public void setIs_startShift(Boolean is_startShift) {
+        this.is_startShift = is_startShift;
+    }
+
+    public String getPause_end_time() {
+        return pause_end_time;
+    }
+    public void setPause_end_time(String pause_end_time) {
+        this.pause_end_time = pause_end_time;
+    }
+
+    public String getPause_time() {
+        return pause_time;
+    }
+
+    public void setPause_time(String pause_time) {
+        this.pause_time = pause_time;
+    }
+
 
     /**
      * Gets the time the presence was recorded.
      * @return The time.
      */
     public String getTime() {
-        return time;
+        return date;
     }
 
     /**
      * Sets the time the presence was recorded.
-     * @param time The new time.
      */
-    public void setTime(String time) {
-        this.time = time;
+    public void setTime(String date) {
+        this.date = date;
     }
 
     /**

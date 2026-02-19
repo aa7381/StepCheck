@@ -17,7 +17,6 @@ public class Worker
     /**
      * A list of the worker's presences.
      */
-    private ArrayList<Presences> presences;
     private boolean can_manage_shift;
 
     /**
@@ -38,7 +37,6 @@ public class Worker
         this.inShift = inShift;
         this.canEditInventory = canEditInventory;
         this.can_manage_shift = can_manage_shift;
-        this.presences = new ArrayList<>();
     }
 
     /**
@@ -49,7 +47,6 @@ public class Worker
         this.id = "";
         this.username = "";
         this.job_rank = "";
-        this.presences = new ArrayList<>();
     }
 
     /**
@@ -136,17 +133,7 @@ public class Worker
      * Gets the list of worker's presences.
      * @return The list of presences.
      */
-    public ArrayList<Presences> getPresences() {
-        return presences;
-    }
 
-    /**
-     * Sets the list of worker's presences.
-     * @param presences The new list of presences.
-     */
-    public void setPresences(ArrayList<Presences> presences) {
-        this.presences = presences;
-    }
 
 
     /**

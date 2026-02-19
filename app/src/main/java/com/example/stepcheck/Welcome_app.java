@@ -51,7 +51,7 @@ public class Welcome_app extends MasterClass {
         Boolean isChecked = getSharedPreferences("RemeberMe", MODE_PRIVATE).getBoolean("stayConnect", false);
         if (refAuth.getCurrentUser() != null && isChecked) {
             FirebaseUser user = refAuth.getCurrentUser();
-            Intent si = new Intent(this, Qr_Code_main_Screen.class);
+            Intent si = new Intent(this, Main_connect_fragment_activity.class);
             startActivity(si);
             finish();
         }

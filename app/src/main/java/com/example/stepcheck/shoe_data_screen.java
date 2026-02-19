@@ -27,11 +27,16 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 
 import java.util.ArrayList;
 
@@ -407,27 +412,49 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
         StorageReference shoeFolderRef = refStorage.child("shoes").child(qr_code_data);
 
         shoeFolderRef.listAll()
-                .addOnSuccessListener(listResult -> {
-                    if (!listResult.getItems().isEmpty()) {
-                        StorageReference firstFileRef = listResult.getItems().get(0);
+                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                    @Override
+                    public void onSuccess(ListResult listResult) {
 
-                        final long MAX_SIZE = 5 * 1024 * 1024;
-                        firstFileRef.getBytes(MAX_SIZE)
-                                .addOnSuccessListener(bytes -> {
-                                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                    imgShoe.setImageBitmap(bitmap);
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(shoe_data_screen.this, "Failed to load image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                });
-                    } else {
-                        Toast.makeText(shoe_data_screen.this, "No images found for this shoe", Toast.LENGTH_SHORT).show();
+                        if (!listResult.getItems().isEmpty()) {
+                            StorageReference firstFileRef = listResult.getItems().get(0);
+
+                            final long MAX_SIZE = 5 * 1024 * 1024;
+
+                            firstFileRef.getBytes(MAX_SIZE)
+                                    .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                        @Override
+                                        public void onSuccess(byte[] bytes) {
+                                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                            imgShoe.setImageBitmap(bitmap);
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(shoe_data_screen.this,
+                                                    "Failed to load image: " + e.getMessage(),
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                        } else {
+                            Toast.makeText(shoe_data_screen.this,
+                                    "No images found for this shoe",
+                                    Toast.LENGTH_SHORT).show();
+                        }
                     }
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(shoe_data_screen.this, "Failed to list images: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(shoe_data_screen.this,
+                                "Failed to list images: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
+
 
 
     /**
@@ -440,9 +467,10 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
                 if (snapshot.exists()) {
                     String shoeType = snapshot.child("type").getValue(String.class);
                     String shoe_Name = snapshot.child("shoe_name").getValue(String.class);
-                    Double priceDouble = snapshot.child("price").getValue(Double.class);
-                    if (priceDouble != null) {
-                        shoePrice.setText(String.valueOf(priceDouble));
+                    Object priceObj = snapshot.child("price").getValue();
+
+                    if (priceObj != null) {
+                        shoePrice.setText(priceObj.toString());
                     }
 
                     shoeName.setText(shoe_Name);
@@ -708,7 +736,9 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
         else {
             refBase2.child(qr_code_data).child("shoe_name").setValue(shoeName.getText().toString());
             refBase2.child(qr_code_data).child("type").setValue(ShoeType.getText().toString());
-            refBase2.child(qr_code_data).child("price").setValue(shoePrice.getText().toString());
+            double price = Double.parseDouble(shoePrice.getText().toString());
+
+            refBase2.child(qr_code_data).child("price").setValue(price);
             finish();
         }
     }
@@ -732,48 +762,74 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
      * Replaces the shoe image in Firebase Storage with a new image.
      * @param newImageUri The Uri of the new image.
      */
-    private void replaceShoeImage(Uri newImageUri) {
+    private void replaceShoeImage(final Uri newImageUri) {
 
         if (newImageUri == null) {
             Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        StorageReference shoeFolderRef = refStorage.child("shoes").child(qr_code_data);
+        final StorageReference shoeFolderRef = refStorage.child("shoes").child(qr_code_data);
 
-        shoeFolderRef.listAll().addOnSuccessListener(listResult -> {
-                    for (StorageReference fileRef : listResult.getItems()) {
-                        fileRef.delete()
-                                .addOnFailureListener(e -> Log.e("Firebase", "Failed to delete: " + fileRef.getName(), e));
-                    }
+        shoeFolderRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+            @Override
+            public void onSuccess(ListResult listResult) {
 
-                    String fileName = "main.jpg"; // שם קבוע
-                    StorageReference newImageRef = shoeFolderRef.child(fileName);
+                for (final StorageReference fileRef : listResult.getItems()) {
+                    fileRef.delete()
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.e("Firebase", "Failed to delete: " + fileRef.getName(), e);
+                                }
+                            });
+                }
 
-                    ProgressDialog pd = new ProgressDialog(this);
-                    pd.setTitle("Uploading new image...");
-                    pd.show();
+                String fileName = "main.jpg";
+                StorageReference newImageRef = shoeFolderRef.child(fileName);
 
-                    newImageRef.putFile(newImageUri)
-                            .addOnSuccessListener(taskSnapshot -> {
+                final ProgressDialog pd = new ProgressDialog(shoe_data_screen.this);
+                pd.setTitle("Uploading new image...");
+                pd.show();
+
+                newImageRef.putFile(newImageUri)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 pd.dismiss();
-                                Toast.makeText(shoe_data_screen.this, "Image replaced successfully", Toast.LENGTH_SHORT).show();
-                                Bitmap bitmap = null;
+                                Toast.makeText(shoe_data_screen.this,
+                                        "Image replaced successfully",
+                                        Toast.LENGTH_SHORT).show();
+
                                 try {
-                                    bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(newImageUri));
+                                    Bitmap bitmap = BitmapFactory.decodeStream(
+                                            getContentResolver().openInputStream(newImageUri));
                                     imgShoe.setImageBitmap(bitmap);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                            })
-                            .addOnFailureListener(e -> {
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
                                 pd.dismiss();
-                                Toast.makeText(shoe_data_screen.this, "Failed to upload new image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            });
-
-                })
-                .addOnFailureListener(e -> Toast.makeText(this, "Failed to list existing images: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                                Toast.makeText(shoe_data_screen.this,
+                                        "Failed to upload new image: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(shoe_data_screen.this,
+                        "Failed to list existing images: " + e.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
 
     /**
      * Callback for the result from launching the Intent for picking an image.

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ShiftEntryFragment">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="900dp"
+        android:layout_gravity="center"
+        android:background="#FFFFFF"
+        android:clipToOutline="true"
+        android:elevation="4dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:outlineProvider="background"
+        android:padding="32dp">
+
+        <!-- כותרת -->
+        <TextView
+            android:id="@+id/shift_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:letterSpacing="0.05"
+            android:text="Employee Shift"
+            android:textColor="#212121"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <!-- Start Shift Button -->
+        <Button
+            android:id="@+id/button_start_shift"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:backgroundTint="#43A047"
+            android:backgroundTintMode="src_in"
+            android:clipToOutline="true"
+            android:elevation="4dp"
+            android:paddingVertical="12dp"
+            android:shape="rectangle"
+            android:stateListAnimator="@null"
+            android:text="Start Shift"
+            android:textColor="#FFFFFF" />
+
+        <!-- Pause Shift Button -->
+        <Button
+            android:id="@+id/button_pause_shift"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:backgroundTint="#FB8C00"
+            android:backgroundTintMode="src_in"
+            android:clipToOutline="true"
+            android:elevation="4dp"
+            android:paddingVertical="12dp"
+            android:shape="rectangle"
+            android:stateListAnimator="@null"
+            android:text="Start break"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/button_pause_shift_end"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:backgroundTint="#FB8C00"
+            android:backgroundTintMode="src_in"
+            android:clipToOutline="true"
+            android:elevation="4dp"
+            android:paddingVertical="12dp"
+            android:shape="rectangle"
+            android:stateListAnimator="@null"
+            android:text="break end "
+            android:textColor="#FFFFFF" />
+
+
+        <!-- End Shift Button -->
+        <Button
+            android:id="@+id/button_end_shift"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#E53935"
+            android:backgroundTintMode="src_in"
+            android:clipToOutline="true"
+            android:elevation="4dp"
+            android:paddingVertical="10dp"
+            android:shape="rectangle"
+            android:stateListAnimator="@null"
+            android:text="End Shift"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+
+
+
+</FrameLayout>
