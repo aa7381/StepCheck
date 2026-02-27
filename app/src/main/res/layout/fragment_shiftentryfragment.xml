@@ -82,6 +82,7 @@
         <Button
             android:id="@+id/button_end_shift"
             android:layout_width="match_parent"
+
             android:layout_height="wrap_content"
             android:backgroundTint="#E53935"
             android:backgroundTintMode="src_in"

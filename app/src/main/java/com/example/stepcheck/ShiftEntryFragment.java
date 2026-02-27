@@ -1,14 +1,19 @@
 package com.example.stepcheck;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
+import android.view. View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
@@ -29,6 +34,7 @@ import java.util.Locale;
 
 public class ShiftEntryFragment extends Fragment {
 
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     Button button_start_shift,button_pause_shift ,button_end_shift,button_pause_shift_end;
 
 
@@ -59,6 +65,8 @@ public class ShiftEntryFragment extends Fragment {
 
 
         infrom();
+
+        checkLocationPermissions();
 
 
         if (button_start_shift != null) {
@@ -96,6 +104,24 @@ public class ShiftEntryFragment extends Fragment {
                 }
 
             });
+        }
+    }
+
+    private void checkLocationPermissions() {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission was granted
+            } else {
+                Toast.makeText(getActivity(), "Location permission is required to track your shift", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -138,7 +164,6 @@ public class ShiftEntryFragment extends Fragment {
 
     private void startShift() {
 
-
         FirebaseUser user = FBRef.refAuth.getCurrentUser();
         if (user != null) {
             final String workerId = user.getUid();
@@ -154,6 +179,9 @@ public class ShiftEntryFragment extends Fragment {
                         Toast.makeText(getActivity(), "You have already started a shift", Toast.LENGTH_SHORT).show();
                         return;
                     } else {
+
+                        Intent serviceIntent = new Intent(getActivity(), ShiftService.class);
+                        getActivity().startService(serviceIntent);
 
                         DatabaseReference inShiftRef = FBRef.refBase.child(workerId).child("inShift");
                         inShiftRef.setValue(true).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -210,70 +238,70 @@ public class ShiftEntryFragment extends Fragment {
         }
     }
 
-        private void pauseShift() {
-            FirebaseUser user = FBRef.refAuth.getCurrentUser();
-            if (user != null) {
-                final String workerId = user.getUid();
+    private void pauseShift() {
+        FirebaseUser user = FBRef.refAuth.getCurrentUser();
+        if (user != null) {
+            final String workerId = user.getUid();
 
-                final DatabaseReference isStartShiftRef2 = FBRef.refBase5.child(workerId).child(currentDate).child("buttonPauseEnabled");
+            final DatabaseReference isStartShiftRef2 = FBRef.refBase5.child(workerId).child(currentDate).child("buttonPauseEnabled");
 
-                isStartShiftRef2.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Boolean isStartShift = snapshot.getValue(Boolean.class);
+            isStartShiftRef2.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Boolean isStartShift = snapshot.getValue(Boolean.class);
 
-                        if (isStartShift != null && isStartShift) {
-                            Toast.makeText(getActivity(), "You have already started a shift", Toast.LENGTH_SHORT).show();
-                            button_pause_shift.setEnabled(false);
-                            return;
-                        } else {
+                    if (isStartShift != null && isStartShift) {
+                        Toast.makeText(getActivity(), "You have already started a shift", Toast.LENGTH_SHORT).show();
+                        button_pause_shift.setEnabled(false);
+                        return;
+                    } else {
 
-                            DatabaseReference inShiftRef = FBRef.refBase.child(workerId).child("inShift");
-                            inShiftRef.setValue(true).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Log.d("Firebase", "inShift updated successfully!");
-                                    } else {
-                                        Log.e("Firebase", "Failed to update inShift", task.getException());
-                                    }
-                                }
-                            });
-
-
-                            Calendar calendar = Calendar.getInstance();
-                            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-                            String currentTime = sdf.format(calendar.getTime());
-
-                            presences.setPause_time(currentTime);
-                            button_pause_shift_end.setEnabled(true);
-
-                            presences.setPause_end_time("");
-                            presences.setEnd_your_Shift("");
-                            presences.setButtonPauseEnabled(true);
-
-                            FBRef.refBase5.child(workerId).child(currentDate).setValue(presences)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Log.d("Firebase", "Presences updated successfully!");
-                                            } else {
-                                                Log.e("Firebase", "Failed to update Presences", task.getException());
-                                            }
-                                        }
-                                    });
-                        }
-
-
-                        }
-
+                        DatabaseReference inShiftRef = FBRef.refBase.child(workerId).child("inShift");
+                        inShiftRef.setValue(true).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
-                            public void onCancelled (@NonNull DatabaseError error){
-                                Log.e("Firebase", "Error reading is_start_shift: " + error.getMessage());
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d("Firebase", "inShift updated successfully!");
+                                } else {
+                                    Log.e("Firebase", "Failed to update inShift", task.getException());
+                                }
                             }
-                });
-            }
+                        });
+
+
+                        Calendar calendar = Calendar.getInstance();
+                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+                        String currentTime = sdf.format(calendar.getTime());
+
+                        presences.setPause_time(currentTime);
+                        button_pause_shift_end.setEnabled(true);
+
+                        presences.setPause_end_time("");
+                        presences.setEnd_your_Shift("");
+                        presences.setButtonPauseEnabled(true);
+
+                        FBRef.refBase5.child(workerId).child(currentDate).setValue(presences)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d("Firebase", "Presences updated successfully!");
+                                        } else {
+                                            Log.e("Firebase", "Failed to update Presences", task.getException());
+                                        }
+                                    }
+                                });
+                    }
+
+
+                }
+
+                @Override
+                public void onCancelled (@NonNull DatabaseError error){
+                    Log.e("Firebase", "Error reading is_start_shift: " + error.getMessage());
+                }
+            });
+        }
     }
     private void pauseShiftEnd() {
         FirebaseUser user = FBRef.refAuth.getCurrentUser();
@@ -356,6 +384,9 @@ public class ShiftEntryFragment extends Fragment {
                         return;
                     } else {
 
+                        Intent serviceIntent = new Intent(getActivity(), ShiftService.class);
+                        getActivity().stopService(serviceIntent);
+
                         DatabaseReference inShiftRef = FBRef.refBase.child(workerId).child("inShift");
                         inShiftRef.setValue(false).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
@@ -371,7 +402,7 @@ public class ShiftEntryFragment extends Fragment {
 
                         Calendar calendar = Calendar.getInstance();
                         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-                        String currentTime = sdf.format(calendar.getTime());
+                        final String currentTime = sdf.format(calendar.getTime());
 
                         presences.setEnd_your_Shift(currentTime);
                         button_end_shift.setEnabled(false);
@@ -384,6 +415,8 @@ public class ShiftEntryFragment extends Fragment {
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             Log.d("Firebase", "Presences updated successfully!");
+
+
                                         } else {
                                             Log.e("Firebase", "Failed to update Presences", task.getException());
                                         }

@@ -119,6 +119,8 @@ public abstract class MasterClass extends AppCompatActivity implements BottomNav
         else if(id == R.id.navigation_shift_entry)
         {
             fragment = new ShiftEntryFragment();
+        } else if (id == R.id.navigation_manage_shift) {
+            fragment = new employee_management_acticity();
         }
 
         return loadFragment(fragment);
