@@ -3,10 +3,10 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
 }
 
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
-if (localPropertiesFile.exists()) {
-    localProperties.load(new FileInputStream(localPropertiesFile))
+def secretsProperties = new Properties()
+def secretsPropertiesFile = rootProject.file('secrets.properties')
+if (secretsPropertiesFile.exists()) {
+    secretsProperties.load(new FileInputStream(secretsPropertiesFile))
 }
 
 android {
@@ -22,7 +22,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         
-        manifestPlaceholders = [MAPS_API_KEY: localProperties.getProperty('MAPS_API_KEY') ?: ""]
+        manifestPlaceholders = [MAPS_API_KEY: secretsProperties.getProperty('MAPS_API_KEY') ?: ""]
     }
 
     buildTypes {
