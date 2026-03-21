@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
@@ -40,10 +41,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
+/**
+ * A foreground service that manages active shifts.
+ * It tracks the worker's location to verify presence at the workplace,
+ * handles automatic shift ending if the worker leaves the area,
+ * and synchronizes shift data with Firebase.
+ */
 public class ShiftService extends Service {
     private static final String CHANNEL_ID = "ShiftServiceChannel";
-    
-    // שעות קבועות למשמרת בדו"ח המרוכז
+
     private static final String FIXED_START_TIME = "08:00:00";
     private static final String FIXED_END_TIME = "17:00:00";
 
@@ -51,13 +57,22 @@ public class ShiftService extends Service {
     private LocationCallback locationCallback;
     private ValueEventListener shiftListener;
     private DatabaseReference shiftRef;
-    
-    private double workLat = 32.0853; 
+
+    private double workLat = 32.0853;
     private double workLon = 34.7818;
-    private static final float MAX_DISTANCE_METERS = 200; 
-    
+    private static final float MAX_DISTANCE_METERS = 200;
+
     private boolean isOnBreak = false;
 
+    // משתנים לטיימר של 5 דקות
+    private Runnable autoEndRunnable;
+    private boolean autoEndScheduled = false;
+    private Handler handler = new Handler(Looper.getMainLooper());
+
+    /**
+     * Called when the service is first created.
+     * Initializes location services, sets up shift observation, and schedules end-of-day sync.
+     */
     @Override
     public void onCreate() {
         super.onCreate();
@@ -65,15 +80,15 @@ public class ShiftService extends Service {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         setupLocationUpdates();
         observeShiftStatus();
-        
-        // מתזמן רק אם זה יום עבודה (א-ה)
+
         if (isWorkDay()) {
             scheduleEndOfDaySync();
         }
     }
 
     /**
-     * בודק אם היום הוא יום עבודה (ראשון עד חמישי)
+     * Checks if the current day is a working day (Sunday through Thursday).
+     * @return true if it's a work day, false otherwise.
      */
     private static boolean isWorkDay() {
         Calendar calendar = Calendar.getInstance();
@@ -81,6 +96,10 @@ public class ShiftService extends Service {
         return dayOfWeek != Calendar.FRIDAY && dayOfWeek != Calendar.SATURDAY;
     }
 
+    /**
+     * Schedules a daily synchronization task to run at the end of the day (23:59).
+     * Uses {@link AlarmManager} to trigger {@link ShiftSyncReceiver}.
+     */
     private void scheduleEndOfDaySync() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 23);
@@ -96,15 +115,19 @@ public class ShiftService extends Service {
         }
     }
 
+    /**
+     * Sets up a listener on the worker's shift data in Firebase.
+     * Monitors whether the worker is currently on break to adjust location tracking behavior.
+     */
     private void observeShiftStatus() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
-        
+
         String workerId = user.getUid();
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         String currentDate = sdfDate.format(calendar.getTime());
-        
+
         shiftRef = FBRef.refBase5.child(workerId).child(currentDate);
         shiftListener = new ValueEventListener() {
             @Override
@@ -114,6 +137,9 @@ public class ShiftService extends Service {
                     Boolean pauseEndEnabled = snapshot.child("buttonPauseEndEnabled").getValue(Boolean.class);
                     isOnBreak = (pauseEnabled != null && pauseEnabled) && (pauseEndEnabled == null || !pauseEndEnabled);
                     updateNotification(isOnBreak ? "אתה בהפסקה" : "משמרת פעילה - המערכת מוודאת נוכחות");
+
+                    // ביטול טיימר אם בהפסקה
+                    if (isOnBreak) cancelAutoEnd();
                 }
             }
 
@@ -125,6 +151,10 @@ public class ShiftService extends Service {
         shiftRef.addValueEventListener(shiftListener);
     }
 
+    /**
+     * Updates the persistent notification with the current shift status.
+     * @param message The message to display in the notification.
+     */
     private void updateNotification(String message) {
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("סטטוס משמרת")
@@ -132,13 +162,17 @@ public class ShiftService extends Service {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setOngoing(true)
                 .build();
-        
+
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (manager != null) {
             manager.notify(1, notification);
         }
     }
 
+    /**
+     * Synchronizes all active shifts for a specific date to the 'FinishedShifts' node in Firebase.
+     * @param date The date for which to perform the synchronization (formatted as dd/MM/yyyy).
+     */
     public static void checkEndOfDayAndSync(final String date) {
         if (!isWorkDay()) return;
 
@@ -178,6 +212,10 @@ public class ShiftService extends Service {
         });
     }
 
+    /**
+     * Called when the service is started via {@link Context#startService}.
+     * Sets the service as a foreground service and begins location updates.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && intent.hasExtra("workLat")) {
@@ -204,26 +242,84 @@ public class ShiftService extends Service {
         return START_NOT_STICKY;
     }
 
+    /**
+     * Initializes the location callback for receiving location updates.
+     */
     private void setupLocationUpdates() {
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 for (Location location : locationResult.getLocations()) {
                     checkDistance(location);
+                    updateWorkerLocationInFirebase(location);
                 }
             }
         };
     }
 
-    private void checkDistance(Location currentLocation) {
-        if (isOnBreak) return;
-        float[] results = new float[1];
-        Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), workLat, workLon, results);
-        if (results[0] > MAX_DISTANCE_METERS) {
-            autoEndShift();
+    /**
+     * Updates the worker's current coordinates in the Firebase Realtime Database.
+     * @param location The current location of the device.
+     */
+    private void updateWorkerLocationInFirebase(Location location) {
+        if (shiftRef != null) {
+            shiftRef.child("latitude").setValue(location.getLatitude());
+            shiftRef.child("longitude").setValue(location.getLongitude());
         }
     }
 
+    /**
+     * Calculates the distance between the current location and the workplace.
+     * Triggers an automatic shift end timer if the worker leaves the allowed radius.
+     * @param currentLocation The current location of the device.
+     */
+    private void checkDistance(Location currentLocation) {
+        if (isOnBreak) {
+            cancelAutoEnd(); // ביטול הטיימר אם בהפסקה
+            return;
+        }
+
+        float[] results = new float[1];
+        Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), workLat, workLon, results);
+
+        if (results[0] > MAX_DISTANCE_METERS) {
+            scheduleAutoEnd(); // מתחיל טיימר של 5 דקות
+        } else {
+            cancelAutoEnd(); // חזר למקום העבודה
+        }
+    }
+
+    /**
+     * Schedules a task to automatically end the shift after 5 minutes of being outside the workplace area.
+     */
+    private void scheduleAutoEnd() {
+        if (autoEndScheduled) return; // כבר מתוזמן
+
+        autoEndScheduled = true;
+        autoEndRunnable = new Runnable() {
+            @Override
+            public void run() {
+                autoEndShift();
+                autoEndScheduled = false;
+            }
+        };
+
+        handler.postDelayed(autoEndRunnable, 5 * 60 * 1000); // 5 דקות
+    }
+
+    /**
+     * Cancels the scheduled automatic shift end task.
+     */
+    private void cancelAutoEnd() {
+        if (autoEndScheduled && autoEndRunnable != null) {
+            handler.removeCallbacks(autoEndRunnable);
+            autoEndScheduled = false;
+        }
+    }
+
+    /**
+     * Automatically records the end time of the current shift in Firebase and stops the service.
+     */
     private void autoEndShift() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
@@ -238,13 +334,16 @@ public class ShiftService extends Service {
         DatabaseReference ref = FBRef.refBase5.child(workerId).child(currentDate);
         ref.child("end_your_Shift").setValue(currentTime);
         ref.child("buttonEndEnabled").setValue(true);
-        
+
         if (isWorkDay()) checkEndOfDayAndSync(currentDate);
 
         stopForeground(true);
         stopSelf();
     }
 
+    /**
+     * Requests location updates from the FusedLocationProviderClient.
+     */
     private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
         LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
@@ -253,17 +352,25 @@ public class ShiftService extends Service {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
 
+    /**
+     * Called when the service is destroyed.
+     * Stops location updates and removes Firebase listeners.
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
         if (fusedLocationClient != null && locationCallback != null) fusedLocationClient.removeLocationUpdates(locationCallback);
         if (shiftRef != null && shiftListener != null) shiftRef.removeEventListener(shiftListener);
+        cancelAutoEnd();
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) { return null; }
 
+    /**
+     * Creates a notification channel for the foreground service (required for Android O and above).
+     */
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel serviceChannel = new NotificationChannel(CHANNEL_ID, "Shift Service", NotificationManager.IMPORTANCE_DEFAULT);

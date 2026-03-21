@@ -15,6 +15,7 @@ coreVersion = "3.4.1"
 journeyappsZxingAndroidEmbedded = "4.3.0"
 firebaseStorage = "22.0.1"
 playServicesLocation = "21.3.0"
+playServicesMaps = "20.0.0"
 
 
 
@@ -34,6 +35,7 @@ core = { module = "com.google.zxing:core", version.ref = "core" }
 core-v341 = { module = "com.google.zxing:core", version.ref = "coreVersion" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 
 
 [plugins]

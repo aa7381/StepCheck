@@ -24,6 +24,9 @@ public class Presences
 
     private String date ;
 
+    private double latitude;
+    private double longitude;
+
     /**
      * Constructs a new Presences object with specified details.
      *
@@ -60,6 +63,8 @@ public class Presences
         this.is_startShift = false;
         this.end_your_Shift = "";
         this.date = "";
+        this.latitude = 0;
+        this.longitude = 0;
 
     }
 
@@ -170,4 +175,19 @@ public class Presences
         this.end_your_Shift = end_your_Shift;
     }
 
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
 }

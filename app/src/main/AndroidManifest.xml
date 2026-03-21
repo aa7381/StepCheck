@@ -28,12 +28,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StepCheck">
 
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+        <!-- Google Maps API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDjR6F2mGFRWjlHQnJoQZKqNH24-_Joa-0" />
+
+        <activity
+            android:name=".Worker_information"
+            android:exported="false" />
+
         <service
             android:name=".ShiftService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location|specialUse">
-            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Worker shift tracking for attendance management" />
         </service>
 
@@ -41,12 +55,11 @@
             android:name=".ShiftSyncReceiver"
             android:enabled="true"
             android:exported="false" />
-
         <receiver
             android:name=".NetworkChangeReceiver"
             android:enabled="true"
             android:exported="true"
-            tools:ignore="Instantiatable"></receiver>
+            tools:ignore="Instantiatable" />
 
         <activity
             android:name=".shoe_data_screen"

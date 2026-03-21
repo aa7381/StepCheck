@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view. View;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
@@ -31,11 +31,15 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-
+/**
+ * A fragment that allows workers to manage their shift attendance.
+ * It provides buttons to start a shift, take a break, end a break, and end the shift.
+ * The fragment also tracks the user's location during the shift via a background service.
+ */
 public class ShiftEntryFragment extends Fragment {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    Button button_start_shift,button_pause_shift ,button_end_shift,button_pause_shift_end;
+    Button button_start_shift, button_pause_shift, button_end_shift, button_pause_shift_end;
 
 
     Boolean inShift = false;
@@ -43,17 +47,28 @@ public class ShiftEntryFragment extends Fragment {
     String currentDate = "";
 
 
-    Presences presences ;
+    Presences presences = new Presences();
 
 
-
-
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     * @return Return the View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_shiftentryfragment, container, false);
     }
 
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned.
+     * Initializes UI components, sets up click listeners, and fetches initial shift status.
+     * @param view The View returned by onCreateView.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -63,6 +78,11 @@ public class ShiftEntryFragment extends Fragment {
         button_pause_shift = view.findViewById(R.id.button_pause_shift);
         button_pause_shift_end = view.findViewById(R.id.button_pause_shift_end);
 
+        // Initially disable buttons until data is loaded
+        if (button_start_shift != null) button_start_shift.setEnabled(false);
+        if (button_pause_shift != null) button_pause_shift.setEnabled(false);
+        if (button_pause_shift_end != null) button_pause_shift_end.setEnabled(false);
+        if (button_end_shift != null) button_end_shift.setEnabled(false);
 
         infrom();
 
@@ -107,12 +127,22 @@ public class ShiftEntryFragment extends Fragment {
         }
     }
 
+    /**
+     * Checks if the application has the necessary location permissions.
+     * If not, it requests them from the user.
+     */
     private void checkLocationPermissions() {
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (getActivity() != null && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
 
+    /**
+     * Callback for the result from requesting permissions.
+     * @param requestCode The request code passed in requestPermissions.
+     * @param permissions The requested permissions.
+     * @param grantResults The grant results for the corresponding permissions.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -120,13 +150,21 @@ public class ShiftEntryFragment extends Fragment {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission was granted
             } else {
-                Toast.makeText(getActivity(), "Location permission is required to track your shift", Toast.LENGTH_SHORT).show();
+                if (getActivity() != null) {
+                    Toast.makeText(getActivity(), "Location permission is required to track your shift", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
 
+    /**
+     * Fetches current day's shift data for the logged-in worker from Firebase.
+     * Updates the UI buttons' enabled state based on the retrieved shift progress.
+     */
     private void infrom() {
-        String workerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) return;
+        String workerId = currentUser.getUid();
 
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -145,11 +183,21 @@ public class ShiftEntryFragment extends Fragment {
                     presences = new Presences();
                 }
 
+                if (presences == null) presences = new Presences();
+
                 // עדכון הכפתורים לפי השדות הקיימים
-                button_start_shift.setEnabled(presences.getStart_your_Shift() == null || presences.getStart_your_Shift().isEmpty());
-                button_pause_shift.setEnabled(presences.getStart_your_Shift() != null && (presences.getPause_time() == null || presences.getPause_time().isEmpty()));
-                button_pause_shift_end.setEnabled(presences.getPause_time() != null && (presences.getPause_end_time() == null || presences.getPause_end_time().isEmpty()));
-                button_end_shift.setEnabled(presences.getStart_your_Shift() != null && (presences.getEnd_your_Shift() == null || presences.getEnd_your_Shift().isEmpty()));
+                if (button_start_shift != null) {
+                    button_start_shift.setEnabled(presences.getStart_your_Shift() == null || presences.getStart_your_Shift().isEmpty());
+                }
+                if (button_pause_shift != null) {
+                    button_pause_shift.setEnabled(presences.getStart_your_Shift() != null && !presences.getStart_your_Shift().isEmpty() && (presences.getPause_time() == null || presences.getPause_time().isEmpty()));
+                }
+                if (button_pause_shift_end != null) {
+                    button_pause_shift_end.setEnabled(presences.getPause_time() != null && !presences.getPause_time().isEmpty() && (presences.getPause_end_time() == null || presences.getPause_end_time().isEmpty()));
+                }
+                if (button_end_shift != null) {
+                    button_end_shift.setEnabled(presences.getStart_your_Shift() != null && !presences.getStart_your_Shift().isEmpty() && (presences.getEnd_your_Shift() == null || presences.getEnd_your_Shift().isEmpty()));
+                }
             }
 
             @Override
@@ -160,28 +208,37 @@ public class ShiftEntryFragment extends Fragment {
     }
 
 
-
-
+    /**
+     * Starts the worker's shift.
+     * Records the start time in Firebase, updates the worker's status to 'in shift',
+     * and starts the {@link ShiftService} for background location tracking.
+     */
     private void startShift() {
 
         FirebaseUser user = FBRef.refAuth.getCurrentUser();
         if (user != null) {
             final String workerId = user.getUid();
+            final DatabaseReference shiftRef = FBRef.refBase5.child(workerId).child(currentDate);
 
-            final DatabaseReference isStartShiftRef = FBRef.refBase5.child(workerId).child(currentDate).child("is_startShift");
-
-            isStartShiftRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            shiftRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Boolean isStartShift = snapshot.getValue(Boolean.class);
+                    if (snapshot.exists()) {
+                        presences = snapshot.getValue(Presences.class);
+                    }
+                    if (presences == null) presences = new Presences();
 
-                    if (isStartShift != null && isStartShift) {
-                        Toast.makeText(getActivity(), "You have already started a shift", Toast.LENGTH_SHORT).show();
+                    if (presences.getIs_startShift() != null && presences.getIs_startShift()) {
+                        if (getActivity() != null) {
+                            Toast.makeText(getActivity(), "You have already started a shift", Toast.LENGTH_SHORT).show();
+                        }
                         return;
                     } else {
 
-                        Intent serviceIntent = new Intent(getActivity(), ShiftService.class);
-                        getActivity().startService(serviceIntent);
+                        if (getActivity() != null) {
+                            Intent serviceIntent = new Intent(getActivity(), ShiftService.class);
+                            getActivity().startService(serviceIntent);
+                        }
 
                         DatabaseReference inShiftRef = FBRef.refBase.child(workerId).child("inShift");
                         inShiftRef.setValue(true).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -203,11 +260,13 @@ public class ShiftEntryFragment extends Fragment {
                         presences.setStart_your_Shift(currentTime);
 
                         Log.d("Presences", "Shift started at: " + presences.getStart_your_Shift());
-                        Toast.makeText(getActivity(), "Shift started at: " + presences.getStart_your_Shift(), Toast.LENGTH_SHORT).show();
+                        if (getActivity() != null) {
+                            Toast.makeText(getActivity(), "Shift started at: " + presences.getStart_your_Shift(), Toast.LENGTH_SHORT).show();
+                        }
 
-                        button_start_shift.setEnabled(false);
-                        button_pause_shift.setEnabled(true);
-                        button_end_shift.setEnabled(true);
+                        if (button_start_shift != null) button_start_shift.setEnabled(false);
+                        if (button_pause_shift != null) button_pause_shift.setEnabled(true);
+                        if (button_end_shift != null) button_end_shift.setEnabled(true);
 
                         presences.setPause_time("");
                         presences.setPause_end_time("");
@@ -216,7 +275,7 @@ public class ShiftEntryFragment extends Fragment {
                         presences.setIs_startShift(true);
                         presences.setTime(currentDate);
 
-                        FBRef.refBase5.child(workerId).child(currentDate).setValue(presences)
+                        shiftRef.setValue(presences)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
@@ -232,27 +291,35 @@ public class ShiftEntryFragment extends Fragment {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("Firebase", "Error reading is_start_shift: " + error.getMessage());
+                    Log.e("Firebase", "Error reading shift data: " + error.getMessage());
                 }
             });
         }
     }
 
+    /**
+     * Records the start of a break for the current shift.
+     * Updates the pause time in Firebase and toggles button states.
+     */
     private void pauseShift() {
         FirebaseUser user = FBRef.refAuth.getCurrentUser();
         if (user != null) {
             final String workerId = user.getUid();
+            final DatabaseReference shiftRef = FBRef.refBase5.child(workerId).child(currentDate);
 
-            final DatabaseReference isStartShiftRef2 = FBRef.refBase5.child(workerId).child(currentDate).child("buttonPauseEnabled");
-
-            isStartShiftRef2.addListenerForSingleValueEvent(new ValueEventListener() {
+            shiftRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Boolean isStartShift = snapshot.getValue(Boolean.class);
+                    if (snapshot.exists()) {
+                        presences = snapshot.getValue(Presences.class);
+                    }
+                    if (presences == null) presences = new Presences();
 
-                    if (isStartShift != null && isStartShift) {
-                        Toast.makeText(getActivity(), "You have already started a shift", Toast.LENGTH_SHORT).show();
-                        button_pause_shift.setEnabled(false);
+                    if (presences.getButtonPauseEnabled() != null && presences.getButtonPauseEnabled()) {
+                        if (getActivity() != null) {
+                            Toast.makeText(getActivity(), "You have already started a break", Toast.LENGTH_SHORT).show();
+                        }
+                        if (button_pause_shift != null) button_pause_shift.setEnabled(false);
                         return;
                     } else {
 
@@ -274,13 +341,14 @@ public class ShiftEntryFragment extends Fragment {
                         String currentTime = sdf.format(calendar.getTime());
 
                         presences.setPause_time(currentTime);
-                        button_pause_shift_end.setEnabled(true);
+                        if (button_pause_shift != null) button_pause_shift.setEnabled(false);
+                        if (button_pause_shift_end != null) button_pause_shift_end.setEnabled(true);
 
                         presences.setPause_end_time("");
                         presences.setEnd_your_Shift("");
                         presences.setButtonPauseEnabled(true);
 
-                        FBRef.refBase5.child(workerId).child(currentDate).setValue(presences)
+                        shiftRef.setValue(presences)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
@@ -298,25 +366,35 @@ public class ShiftEntryFragment extends Fragment {
 
                 @Override
                 public void onCancelled (@NonNull DatabaseError error){
-                    Log.e("Firebase", "Error reading is_start_shift: " + error.getMessage());
+                    Log.e("Firebase", "Error reading shift data: " + error.getMessage());
                 }
             });
         }
     }
+
+    /**
+     * Records the end of a break for the current shift.
+     * Updates the pause end time in Firebase and toggles button states.
+     */
     private void pauseShiftEnd() {
         FirebaseUser user = FBRef.refAuth.getCurrentUser();
         if (user != null) {
             final String workerId = user.getUid();
+            final DatabaseReference shiftRef = FBRef.refBase5.child(workerId).child(currentDate);
 
-            final DatabaseReference isStartShiftRef2 = FBRef.refBase5.child(workerId).child(currentDate).child("buttonPauseEndEnabled");
-
-            isStartShiftRef2.addListenerForSingleValueEvent(new ValueEventListener() {
+            shiftRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Boolean isStartShift = snapshot.getValue(Boolean.class);
+                    if (snapshot.exists()) {
+                        presences = snapshot.getValue(Presences.class);
+                    }
+                    if (presences == null) presences = new Presences();
 
-                    if (isStartShift != null && isStartShift) {
-                        Toast.makeText(getActivity(), "You have already started a shift", Toast.LENGTH_SHORT).show();
+                    if (presences.getButtonPauseEndEnabled() != null && presences.getButtonPauseEndEnabled()) {
+                        if (getActivity() != null) {
+                            Toast.makeText(getActivity(), "You have already ended the break", Toast.LENGTH_SHORT).show();
+                        }
+                        if (button_pause_shift_end != null) button_pause_shift_end.setEnabled(false);
                         return;
                     } else {
 
@@ -338,13 +416,13 @@ public class ShiftEntryFragment extends Fragment {
                         String currentTime = sdf.format(calendar.getTime());
 
                         presences.setPause_end_time(currentTime);
-                        button_pause_shift_end.setEnabled(false);
-                        button_end_shift.setEnabled(true);
+                        if (button_pause_shift_end != null) button_pause_shift_end.setEnabled(false);
+                        if (button_end_shift != null) button_end_shift.setEnabled(true);
 
                         presences.setEnd_your_Shift("");
                         presences.setButtonPauseEndEnabled(true);
 
-                        FBRef.refBase5.child(workerId).child(currentDate).setValue(presences)
+                        shiftRef.setValue(presences)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
@@ -360,32 +438,44 @@ public class ShiftEntryFragment extends Fragment {
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("Firebase", "Error reading is_start_shift: " + error.getMessage());
+                    Log.e("Firebase", "Error reading shift data: " + error.getMessage());
                 }
             });
         }
     }
 
 
+    /**
+     * Ends the worker's shift.
+     * Records the end time in Firebase, updates the worker's status to 'not in shift',
+     * and stops the {@link ShiftService}.
+     */
     private void endShift() {
         FirebaseUser user = FBRef.refAuth.getCurrentUser();
         if (user != null) {
             final String workerId = user.getUid();
+            final DatabaseReference shiftRef = FBRef.refBase5.child(workerId).child(currentDate);
 
-            final DatabaseReference isStartShiftRef2 = FBRef.refBase5.child(workerId).child(currentDate).child("buttonendEnabled");
-
-            isStartShiftRef2.addListenerForSingleValueEvent(new ValueEventListener() {
+            shiftRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Boolean isStartShift = snapshot.getValue(Boolean.class);
+                    if (snapshot.exists()) {
+                        presences = snapshot.getValue(Presences.class);
+                    }
+                    if (presences == null) presences = new Presences();
 
-                    if (isStartShift != null && isStartShift) {
-                        Toast.makeText(getActivity(), "You have already started a shift", Toast.LENGTH_SHORT).show();
+                    if (presences.getButtonEndEnabled() != null && presences.getButtonEndEnabled()) {
+                        if (getActivity() != null) {
+                            Toast.makeText(getActivity(), "You have already ended the shift", Toast.LENGTH_SHORT).show();
+                        }
+                        if (button_end_shift != null) button_end_shift.setEnabled(false);
                         return;
                     } else {
 
-                        Intent serviceIntent = new Intent(getActivity(), ShiftService.class);
-                        getActivity().stopService(serviceIntent);
+                        if (getActivity() != null) {
+                            Intent serviceIntent = new Intent(getActivity(), ShiftService.class);
+                            getActivity().stopService(serviceIntent);
+                        }
 
                         DatabaseReference inShiftRef = FBRef.refBase.child(workerId).child("inShift");
                         inShiftRef.setValue(false).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -405,18 +495,16 @@ public class ShiftEntryFragment extends Fragment {
                         final String currentTime = sdf.format(calendar.getTime());
 
                         presences.setEnd_your_Shift(currentTime);
-                        button_end_shift.setEnabled(false);
+                        if (button_end_shift != null) button_end_shift.setEnabled(false);
 
                         presences.setButtonEndEnabled(true);
 
-                        FBRef.refBase5.child(workerId).child(currentDate).setValue(presences)
+                        shiftRef.setValue(presences)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             Log.d("Firebase", "Presences updated successfully!");
-
-
                                         } else {
                                             Log.e("Firebase", "Failed to update Presences", task.getException());
                                         }
@@ -427,7 +515,7 @@ public class ShiftEntryFragment extends Fragment {
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("Firebase", "Error reading is_start_shift: " + error.getMessage());
+                    Log.e("Firebase", "Error reading shift data: " + error.getMessage());
                 }
             });
         }
