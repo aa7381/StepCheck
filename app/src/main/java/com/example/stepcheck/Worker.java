@@ -18,7 +18,6 @@ public class Worker
      * A list of the worker's presences.
      */
     private boolean can_manage_shift;
-
     /**
      * Constructs a new Worker object with specified details.
      *

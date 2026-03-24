@@ -173,16 +173,27 @@ public class ShiftService extends Service {
      * Synchronizes all active shifts for a specific date to the 'FinishedShifts' node in Firebase.
      * @param date The date for which to perform the synchronization (formatted as dd/MM/yyyy).
      */
-    public static void checkEndOfDayAndSync(final String date) {
+    public static void checkEndOfDayAndSync(String date) {
         if (!isWorkDay()) return;
+
+        // נשתמש בתאריך המקורי (עם סלשים) כדי לגשת לנתיב ב-Firebase
+        final String firebasePath = date; 
+        
+        // עבור ה-ID של הסיכום הסופי, נשתמש במקפים: "24-03-2026"
+        final String summaryDate = date.replace("/", "-");
 
         FBRef.refBase5.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot presenceSnapshot) {
                 final ArrayList<String> activeWorkerIds = new ArrayList<>();
+
                 for (DataSnapshot workerNode : presenceSnapshot.getChildren()) {
-                    if (workerNode.hasChild(date)) {
-                        Boolean isStarted = workerNode.child(date).child("is_startShift").getValue(Boolean.class);
+                    // גישה ישירה לנתוני התאריך של העובד (למשל "24/03/2026")
+                    DataSnapshot dateNode = workerNode.child(firebasePath);
+
+                    if (dateNode.exists()) {
+                        Boolean isStarted = dateNode.child("is_startShift").getValue(Boolean.class);
+
                         if (isStarted != null && isStarted) {
                             activeWorkerIds.add(workerNode.getKey());
                         }
@@ -194,19 +205,31 @@ public class ShiftService extends Service {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot workersSnapshot) {
                             ArrayList<Worker> dailyWorkers = new ArrayList<>();
+
                             for (String id : activeWorkerIds) {
                                 Worker w = workersSnapshot.child(id).getValue(Worker.class);
                                 if (w != null) dailyWorkers.add(w);
                             }
-                            Shift dailySummary = new Shift(date.replace("/", "-"), dailyWorkers, FIXED_START_TIME, FIXED_END_TIME);
-                            FirebaseDatabase.getInstance().getReference("FinishedShifts")
-                                    .child(dailySummary.getShift_Id()).setValue(dailySummary);
+
+                            Shift dailySummary = new Shift(
+                                    summaryDate,
+                                    dailyWorkers,
+                                    FIXED_START_TIME,
+                                    FIXED_END_TIME
+                            );
+
+                            FirebaseDatabase.getInstance()
+                                    .getReference("FinishedShifts")
+                                    .child(dailySummary.getShift_Id())
+                                    .setValue(dailySummary);
                         }
+
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {}
                     });
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
         });

@@ -21,12 +21,16 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A fragment that allows managers to see which employees are currently in a shift.
  * It displays a list of active workers and allows viewing detailed information for each worker.
+ * Includes logic to automatically clear 'inShift' status for workers whose shift date is not today.
  */
 public class employee_management_acticity extends Fragment implements AdapterView.OnItemLongClickListener {
 
@@ -35,8 +39,6 @@ public class employee_management_acticity extends Fragment implements AdapterVie
     private ArrayAdapter<String> adapter;
     private List<String> employeeNames;
     private List<String> employeeIds;
-    private int position = 0;
-
 
     /**
      * Called to have the fragment instantiate its user interface view.
@@ -48,12 +50,9 @@ public class employee_management_acticity extends Fragment implements AdapterVie
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_employee_management_acticity, container, false);
-
         lvEmployees = view.findViewById(R.id.lvEmployees);
         btnRefresh = view.findViewById(R.id.btnRefresh);
         lvEmployees.setOnItemLongClickListener(this);
-
-
         employeeNames = new ArrayList<>();
         employeeIds = new ArrayList<>();
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, employeeNames);
@@ -66,43 +65,53 @@ public class employee_management_acticity extends Fragment implements AdapterVie
                 loadEmployeesInShift();
             }
         });
-
         loadEmployeesInShift();
-
         return view;
     }
 
     /**
      * Fetches the list of employees who are currently marked as being 'in shift' from Firebase.
-     * Updates the UI list with the retrieved names.
+     * It also checks the date of their last presence. If the presence date is not today,
+     * it automatically sets their 'inShift' status to false in the database.
+     * Updates the UI list with the retrieved names of workers currently in shift today.
      */
     private void loadEmployeesInShift() {
         employeeNames.clear();
         employeeIds.clear();
         adapter.notifyDataSetChanged();
+
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String todayDate = sdf.format(calendar.getTime());
         
         refBase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot workerSnapshot : snapshot.getChildren()) {
                     Worker worker = workerSnapshot.getValue(Worker.class);
+                    String workerId = workerSnapshot.getKey();
                     
                     if (worker != null && Boolean.TRUE.equals(worker.getInShift())) {
-                        if (worker.getUsername() != null) {
-                            employeeNames.add(worker.getUsername());
-                            employeeIds.add(workerSnapshot.getKey());
-                        }
-                    }
-                }
-                adapter.notifyDataSetChanged();
-                
-                if (employeeNames.isEmpty()) {
-                    if (getContext() != null) {
-                        Toast.makeText(getContext(), "אין עובדים במשמרת כרגע", Toast.LENGTH_SHORT).show();
+                        FBRef.refBase5.child(workerId).child(todayDate).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot presenceSnapshot) {
+                                if (presenceSnapshot.exists()) {
+                                    if (worker.getUsername() != null) {
+                                        employeeNames.add(worker.getUsername());
+                                        employeeIds.add(workerId);
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                } else {
+
+                                    refBase.child(workerId).child("inShift").setValue(false);
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {}
+                        });
                     }
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 if (getContext() != null) {
@@ -111,14 +120,12 @@ public class employee_management_acticity extends Fragment implements AdapterVie
             }
         });
     }
-
     /**
      * Opens the detailed information screen for a specific worker.
      * @param workerId The unique ID of the worker to display information for.
      */
     private void open_inform_worker(String workerId) {
         if (workerId == null) return;
-
         refBase.child(workerId).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DataSnapshot snapshot = task.getResult();
@@ -134,7 +141,6 @@ public class employee_management_acticity extends Fragment implements AdapterVie
             }
         });
     }
-
     /**
      * Callback method to be invoked when an item in this AdapterView has been clicked and held.
      * @param adapterView The AdapterView where the click happened.

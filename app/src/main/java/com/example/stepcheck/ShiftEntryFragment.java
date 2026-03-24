@@ -42,12 +42,8 @@ public class ShiftEntryFragment extends Fragment {
     Button button_start_shift, button_pause_shift, button_end_shift, button_pause_shift_end;
 
 
-    Boolean inShift = false;
-
-    String currentDate = "";
-
-
-    Presences presences = new Presences();
+    private String currentDate = "";
+    private Presences presences = new Presences();
 
 
     /**
@@ -87,8 +83,6 @@ public class ShiftEntryFragment extends Fragment {
         infrom();
 
         checkLocationPermissions();
-
-
         if (button_start_shift != null) {
             button_start_shift.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -105,7 +99,6 @@ public class ShiftEntryFragment extends Fragment {
                     pauseShift();
                 }
             });
-
         }
         if (button_pause_shift_end != null) {
             button_pause_shift_end.setOnClickListener(new View.OnClickListener() {
@@ -126,7 +119,6 @@ public class ShiftEntryFragment extends Fragment {
             });
         }
     }
-
     /**
      * Checks if the application has the necessary location permissions.
      * If not, it requests them from the user.
@@ -136,7 +128,6 @@ public class ShiftEntryFragment extends Fragment {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
-
     /**
      * Callback for the result from requesting permissions.
      * @param requestCode The request code passed in requestPermissions.
@@ -156,7 +147,6 @@ public class ShiftEntryFragment extends Fragment {
             }
         }
     }
-
     /**
      * Fetches current day's shift data for the logged-in worker from Firebase.
      * Updates the UI buttons' enabled state based on the retrieved shift progress.
@@ -176,16 +166,13 @@ public class ShiftEntryFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    // טען את הנתונים הקיימים
                     presences = snapshot.getValue(Presences.class);
                 } else {
-                    // יצירת אובייקט חדש אם אין נתונים
                     presences = new Presences();
                 }
 
                 if (presences == null) presences = new Presences();
 
-                // עדכון הכפתורים לפי השדות הקיימים
                 if (button_start_shift != null) {
                     button_start_shift.setEnabled(presences.getStart_your_Shift() == null || presences.getStart_your_Shift().isEmpty());
                 }
@@ -199,27 +186,22 @@ public class ShiftEntryFragment extends Fragment {
                     button_end_shift.setEnabled(presences.getStart_your_Shift() != null && !presences.getStart_your_Shift().isEmpty() && (presences.getEnd_your_Shift() == null || presences.getEnd_your_Shift().isEmpty()));
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("Firebase", "Error reading shift data: " + error.getMessage());
             }
         });
     }
-
-
     /**
      * Starts the worker's shift.
      * Records the start time in Firebase, updates the worker's status to 'in shift',
      * and starts the {@link ShiftService} for background location tracking.
      */
     private void startShift() {
-
         FirebaseUser user = FBRef.refAuth.getCurrentUser();
         if (user != null) {
             final String workerId = user.getUid();
             final DatabaseReference shiftRef = FBRef.refBase5.child(workerId).child(currentDate);
-
             shiftRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -296,7 +278,6 @@ public class ShiftEntryFragment extends Fragment {
             });
         }
     }
-
     /**
      * Records the start of a break for the current shift.
      * Updates the pause time in Firebase and toggles button states.
@@ -360,10 +341,7 @@ public class ShiftEntryFragment extends Fragment {
                                     }
                                 });
                     }
-
-
                 }
-
                 @Override
                 public void onCancelled (@NonNull DatabaseError error){
                     Log.e("Firebase", "Error reading shift data: " + error.getMessage());
@@ -371,7 +349,6 @@ public class ShiftEntryFragment extends Fragment {
             });
         }
     }
-
     /**
      * Records the end of a break for the current shift.
      * Updates the pause end time in Firebase and toggles button states.
@@ -510,7 +487,6 @@ public class ShiftEntryFragment extends Fragment {
                                         }
                                     }
                                 });
-
                     }
                 }
                 @Override

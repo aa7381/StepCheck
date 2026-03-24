@@ -109,29 +109,23 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemLong
         startActivity(intent);
         requireActivity().finish();
     }
-
-
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int pos, long rowid) {
-
         position = pos;
-
         final FirebaseUser user = FBRef.refAuth.getCurrentUser();
 
-        if (user == null) {
+        if (user == null)
+        {
             Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
             return true;
         }
 
         final String workerId = user.getUid();
-
         AlertDialog.Builder adb = new AlertDialog.Builder(requireContext());
-
         final EditText et = new EditText(requireContext());
         adb.setView(et);
 
-        if (position == 0) { // change name
-
+        if (position == 0) {
             adb.setTitle("Change Name");
             et.setHint("Enter new name");
 
@@ -158,7 +152,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemLong
             });
         }
 
-        else if (position == 1) { // change email
+        else if (position == 1) {
 
             adb.setTitle("Change Email");
             et.setHint("Enter new email");

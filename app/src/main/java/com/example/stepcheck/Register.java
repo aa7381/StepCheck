@@ -39,7 +39,7 @@ public class Register extends MasterClass implements AdapterView.OnItemSelectedL
     EditText password;
     Spinner roleSpinner;
 
-    String [] roles={"Worker","ShiftManager","charge_of_merchandise"};
+    String [] roles={"Worker","ShiftManager","SupplyManager"};
     int role;
 
     /**

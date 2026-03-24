@@ -17,9 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
  * Inherits from MasterClass to handle network and phone state changes.
  */
 public class Welcome_app extends MasterClass {
-
-    Button register_button;
-    Button login_button;
+    Button register_button,login_button;
 
     /**
      * Called when the activity is first created. This is where you should do all

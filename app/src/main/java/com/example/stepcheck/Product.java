@@ -7,7 +7,6 @@ package com.example.stepcheck;
 public class Product {
     private String id;
     private String name;
-
     /**
      * Constructs a new Product object with the given ID and name.
      * @param id The ID of the product.
@@ -17,7 +16,6 @@ public class Product {
         this.id = id;
         this.name = name;
     }
-
     /**
      * Returns the ID of the product.
      * @return The product ID.
@@ -25,7 +23,6 @@ public class Product {
     public String getId() {
         return id;
     }
-
     /**
      * Returns the name of the product.
      * @return The product name.

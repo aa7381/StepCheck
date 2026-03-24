@@ -13,7 +13,6 @@ public class Shift
     private ArrayList<Worker> workers;
     private String Start_shift; // time of the Shift start
     private String end_shift; // time of the Shift ended
-
     /**
      * Constructs a new Shift object with specified details.
      *

@@ -17,8 +17,6 @@ import com.google.firebase.database.ValueEventListener;
 public class Size {
 
     private String[][] sizes;
-
-
     /**
      * Constructs a new Size object with the given sizes.
      * @param sizes A two-dimensional array of strings representing the sizes.

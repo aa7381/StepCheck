@@ -14,11 +14,9 @@ import java.util.List;
  * This adapter manages the data and creates the views for each item in the list.
  */
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
-
     private final List<Product> masterList = new ArrayList<>();
     private final List<Product> filteredList = new ArrayList<>();
     private OnItemClickListener listener;
-
     /**
      * Interface for handling click events on items in the RecyclerView.
      */
@@ -29,7 +27,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
          */
         void onItemClick(Product product);
     }
-
     /**
      * Sets the listener for item click events.
      * @param listener The listener to set.
@@ -47,7 +44,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         masterList.addAll(products);
         filter("");
     }
-
     /**
      * Filters the list of products based on a query string.
      * @param query The query to filter the list by.
@@ -65,7 +61,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         }
         notifyDataSetChanged();
     }
-
     /**
      * Called when RecyclerView needs a new {@link ViewHolder} of the given type to represent
      * an item.
@@ -93,13 +88,15 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         Product product = filteredList.get(position);
         holder.productName.setText(product.getName());
 
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onItemClick(product);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    listener.onItemClick(product);
+                }
             }
         });
     }
-
     /**
      * Returns the total number of items in the data set held by the adapter.
      * @return The total number of items in this adapter.

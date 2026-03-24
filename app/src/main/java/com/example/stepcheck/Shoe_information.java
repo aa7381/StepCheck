@@ -49,8 +49,8 @@ public class Shoe_information extends MasterClass   {
 
     private Spinner spinnerSizeType, spinnerSizeGender;
 
-    GridLayout sizeGrid;
-    ArrayList<Button> sizeButtons = new ArrayList<>();
+    private GridLayout sizeGrid;
+    private ArrayList<Button> sizeButtons = new ArrayList<>();
 
 
     private String[] sizeType = {"adult", "adult_kids", "youngerkids","babies"};
@@ -61,81 +61,78 @@ public class Shoe_information extends MasterClass   {
     private String[] babies_sizes = {"usBabies","ukBabies","euBabies"};
 
 
-    String[] euSizes = {
+    private String[] euSizes = {
             "35.5", "36", "36.5", "37.5", "38", "38.5", "39", "40", "40.5", "41",
             "42", "42.5", "43", "44", "44.5", "45", "45.5", "46"
     };
 
-    String[] ukSizes = {
+    private String[] ukSizes = {
             "3", "3.5", "4", "4.5", "5", "5.5", "6", "6", "6.5", "7",
             "7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11"
     };
 
-    String[] usMenSizes = {
+    private String[] usMenSizes = {
             "3.5", "4", "4.5", "5", "5.5", "6", "6.5", "7", "7.5", "8",
             "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"
     };
 
-    String[] usWomenSizes = {
+    private String[] usWomenSizes = {
             "5", "5.5", "6", "6.5", "7", "7.5", "8", "8.5", "9", "9.5",
             "10", "10.5", "11", "11.5", "12", "12.5", "13", "13.5"
     };
 
     // 🧒 Youth / Big Kids (US Y)
-    String[] usKidsY = {
+    private String[] usKidsY = {
             "1Y","1.5Y","2Y","2.5Y","3Y","3.5Y","4Y","4.5Y","5Y","5.5Y","6Y","6.5Y","7Y"
     };
 
-    String[] ukKidsY = {
+    private String[] ukKidsY = {
             "1","1.5","2","2.5","3","3.5","4","4.5","5","5.5","6"
     };
 
-    String[] euKidsY = {
+    private String[] euKidsY = {
             "32","33","33.5","34","35","35.5","36","36.5","37.5","38","38.5","39","40"
     };
 
     // 👦 Younger Kids –
-    String[] usYoungerKids = {
+    private String[] usYoungerKids = {
             "8C","8.5C","9C","9.5C","10C","10.5C","11C","11.5C","12C","12.5C","13C","13.5C",
             "1Y","1.5Y","2Y","2.5Y","3Y"
     };
 
-    String[] ukYoungerKids = {
+    private String[] ukYoungerKids = {
             "1","1.5","2","2.5","7.5","8","8.5","9","9.5","10","10.5","11","11.5","12","12.5","13",
             "13.5"
     };
 
-    String[] euYoungerKids = {
+    private String[] euYoungerKids = {
             "25","25.5","26","26.5","27","27.5","28","28.5","29.5","30","31","31.5",
             "32","33","33.5","34","35"
     };
 
     // 👶 Babies & Toddlers (C)
-    String[] usBabies = {
+    private String[] usBabies = {
             "1C","1.5C","2C","2.5C","3C","3.5C","4C","4.5C","5C","5.5C",
             "6C","6.5C","7C","7.5C","8C","8.5C","9C","9.5C"
     };
 
-    String[] ukBabies = {
+    private String[] ukBabies = {
             "0.5","1","1.5","2","2.5","3","3.5","4","4.5","5",
             "5.5","6","6.5","7","7.5","8","8.5","9"
     };
 
-    String[] euBabies = {
+    private String[] euBabies = {
             "16","16.5","17","18","18.5","19","19.5","20","21","21.5",
             "22","22.5","23.5","24","25","25.5","26","26.5"
     };
 
 
-    String safeKey;
+    private String safeKey;
 
 
 
 
-    int selectedSizeTypePosition = 0;
-
-
-
+    private int selectedSizeTypePosition = 0;
 
     /**
      * Called when the activity is first created.
@@ -164,22 +161,15 @@ public class Shoe_information extends MasterClass   {
                 b.setAlpha(0.4f);
             }
         }
-
-
-
-
-
-
         ArrayAdapter<String> adp = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, sizeType);
         spinnerSizeGender.setAdapter(adp);
 
-
         Intent intent = getIntent();
         qr_code_data = intent.getStringExtra("qr_code_data");
-        safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
 
+        Toast.makeText(Shoe_information.this, safeKey, Toast.LENGTH_SHORT).show();
 
-        if (safeKey != null && !safeKey.isEmpty()) {
+        if (qr_code_data != null && !qr_code_data.isEmpty()) {
             give_all_inform();
         }
 
@@ -304,25 +294,17 @@ public class Shoe_information extends MasterClass   {
                         }
                         break;
                 }
-
                 showSizes(sizesArray, sizeGender, sizeType);
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
-
-
-
     }
-
-
-
     /**
      * Fetches and displays all information about the shoe from the Firebase database.
      */
     private void give_all_inform() {
-        refBase2.child(safeKey).addListenerForSingleValueEvent(new ValueEventListener() {
+        refBase2.child(qr_code_data).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -336,8 +318,7 @@ public class Shoe_information extends MasterClass   {
                     Toast.makeText(Shoe_information.this, "Shoe name: " + shoeName, Toast.LENGTH_SHORT).show();
                     shoeTitle.setText(shoeName);
                     fitType.setText(shoeType);
-
-
+                    Toast.makeText(Shoe_information.this, safeKey, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -412,7 +393,6 @@ public class Shoe_information extends MasterClass   {
      */
     private void down() {
         StorageReference shoeFolderRef = refStorage.child("shoes").child(qr_code_data);
-
         shoeFolderRef.listAll()
                 .addOnSuccessListener(new OnSuccessListener<ListResult>() {
                     @Override

@@ -23,18 +23,14 @@ import com.google.firebase.database.ValueEventListener;
  * כולל ניהול BottomNavigationView, טעינת Fragments וניטור רשת.
  */
 public abstract class MasterClass extends AppCompatActivity implements BottomNavigationView.OnItemSelectedListener {
-
     protected BottomNavigationView bottomNavigationView;
     private NetworkChangeReceiver networkReceiver;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // NetworkReceiver נוצר כאן
         networkReceiver = new NetworkChangeReceiver(this);
     }
-
     /**
      * כל מסך שמורש צריך לקרוא את הפונקציה הזו אחרי setContentView
      * כדי לאתחל את BottomNavigationView

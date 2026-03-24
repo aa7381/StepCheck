@@ -36,8 +36,7 @@ public class InventoryFragment extends Fragment {
     private RecyclerView rvProducts;
     private ProductAdapter adapter;
 
-    String safeKey;
-
+    private String safeKey;
 
     private ActivityResultLauncher<ScanOptions> barLauncher;
 
@@ -65,7 +64,6 @@ public class InventoryFragment extends Fragment {
         btnScanQr = view.findViewById(R.id.btnScanQr);
         productSearchView = view.findViewById(R.id.product_search_view);
         rvProducts = view.findViewById(R.id.rvProducts);
-
         rvProducts.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ProductAdapter();
         rvProducts.setAdapter(adapter);
@@ -184,7 +182,7 @@ public class InventoryFragment extends Fragment {
     /**
      * Navigates to the screen for adding a new shoe.
      */
-    public void addNewShoe() {
+    private void addNewShoe() {
         Intent intent = new Intent(requireActivity(), add_new_shoe.class);
         startActivity(intent);
     }

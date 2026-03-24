@@ -45,15 +45,12 @@ public class add_new_shoe extends MasterClass  {
 
     private Button ScanQR ;
     private String qr_code_data = "";
-
     private EditText etShoeName, etShoeType, etPrice, etmanufacturing_company, etColor;
     private static final int REQUEST_PICK_IMAGE = 300;
-
     private String fileName ;
-    String safeKey ;
-    Uri imageUri ;
-
-    int count_shoes =0 ;
+    private String safeKey ;
+    private Uri imageUri ;
+    private int count_shoes =0 ;
 
 
     private final ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> {
@@ -95,7 +92,7 @@ public class add_new_shoe extends MasterClass  {
      * Initiates the QR code scanning process.
      * Configures and launches the barcode scanner.
      */
-    public void scanCode() {
+    private void scanCode() {
         ScanOptions options = new ScanOptions();
         options.setPrompt("Volume up to flash on");
         options.setBeepEnabled(true);
@@ -137,7 +134,6 @@ public class add_new_shoe extends MasterClass  {
             imageUri = data.getData();
         }
     }
-
     /**
      * Uploads the selected image to Firebase Storage.
      * @param imageUri The Uri of the image to be uploaded.
@@ -148,7 +144,6 @@ public class add_new_shoe extends MasterClass  {
             Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
             return;
         }
-
         try {
             fileName = UUID.randomUUID().toString() + ".jpg";
 
@@ -197,25 +192,14 @@ public class add_new_shoe extends MasterClass  {
         } else {
             try {
                 double price = Double.parseDouble(priceStr);
-
-
-
-
-
                 refBase2.child(safeKey).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
-
-
-
                             Toast.makeText(getApplicationContext(), "Shoe with this QR already exists", Toast.LENGTH_SHORT).show();
                         } else {
 
-
                             count_shoes = count_shoes + 13 ;
-
-
                             refBase3.child("count_shoes").setValue(count_shoes);
 
                             uploadImage(imageUri);
@@ -238,13 +222,12 @@ public class add_new_shoe extends MasterClass  {
             }
         }
         }
-
     /**
      * Finishes the current activity and returns to the previous screen.
      * @param view The view that was clicked.
      */
-    public void back(View view) {
-
+    public void back(View view)
+    {
         finish();
     }
 }

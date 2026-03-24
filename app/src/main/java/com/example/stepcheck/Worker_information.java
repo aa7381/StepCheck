@@ -32,11 +32,9 @@ import java.util.Locale;
  * It shows the worker's name, job rank, shift start time, and current real-time location on a map.
  */
 public class Worker_information extends AppCompatActivity implements OnMapReadyCallback {
-    String user;
-
+    private String user;
     TextView etName, etRank,etWorkTime;
     Button btnBack;
-
     private GoogleMap mMap;
     private Marker workerMarker;
     private ValueEventListener locationListener;
@@ -60,12 +58,9 @@ public class Worker_information extends AppCompatActivity implements OnMapReadyC
         btnBack = findViewById(R.id.btnBack);
         etWorkTime = findViewById(R.id.etWorkTime);
 
-
-
         Intent intent = getIntent();
         user = intent.getStringExtra("USER_ID");
 
-        // Initialize Map
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         if (mapFragment != null) {

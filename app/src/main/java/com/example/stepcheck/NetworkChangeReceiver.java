@@ -13,14 +13,12 @@ import android.net.NetworkInfo;
  * It displays a dialog to the user when the internet connection is lost and dismisses it when the connection is restored.
  */
 public class NetworkChangeReceiver extends BroadcastReceiver {
-
     /**
      * A flag indicating whether the device is currently connected to the internet.
      */
     public static boolean isConnected = false;
     private static AlertDialog networkDialog;
     private Activity activity;
-
     /**
      * Constructs a new NetworkChangeReceiver.
      * @param activity The activity context used to display the dialog. This is important to tie the dialog's lifecycle to the activity.
@@ -41,9 +39,11 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         isConnected = (activeNetwork != null && activeNetwork.isConnected());
 
-        if (!isConnected) {
+        if (!isConnected)
+        {
             showDialog();
-        } else {
+        } else
+        {
             dismissDialog();
         }
     }
@@ -53,12 +53,13 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
      * The dialog provides a button to open the device's Wi-Fi settings.
      * It only shows the dialog if it's not already showing and the associated activity is not finishing.
      */
-    private void showDialog() {
-        // Ensure we don't create multiple dialogs and the activity is still valid
-        if ((networkDialog == null || !networkDialog.isShowing()) && !activity.isFinishing()) {
+    private void showDialog()
+    {
+        if ((networkDialog == null || !networkDialog.isShowing()) && !activity.isFinishing())
+        {
             networkDialog = new AlertDialog.Builder(activity)
                     .setTitle("Connection Lost")
-                    .setMessage("SpeakUp requires internet connection. Please reconnect.")
+                    .setMessage("StepCheck requires internet connection. Please reconnect.")
                     .setCancelable(false)
                     .setPositiveButton("Settings", (dialog, which) -> {
                         activity.startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
@@ -67,7 +68,6 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             networkDialog.show();
         }
     }
-
     /**
      * Dismisses the network connection dialog if it is currently showing.
      * This is called when network connectivity is restored.

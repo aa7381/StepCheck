@@ -34,7 +34,7 @@ public class QrCodeMainScreenFragment extends Fragment {
     private String qr_code_data = "";
 
     private ActivityResultLauncher<ScanOptions> barLauncher;
-    String safeKey ;
+    private String safeKey ;
 
     /**
      * Called to have the fragment instantiate its user interface view.
@@ -108,7 +108,6 @@ public class QrCodeMainScreenFragment extends Fragment {
     private void open_inform_shoe() {
         if (safeKey != null && !safeKey.isEmpty()) {
 
-
             refBase2.child(safeKey).get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     DataSnapshot snapshot = task.getResult();
@@ -123,11 +122,8 @@ public class QrCodeMainScreenFragment extends Fragment {
                     Toast.makeText(requireContext(), "שגיאה בגישה לשרת", Toast.LENGTH_SHORT).show();
                 }
             });
-
         } else {
             Toast.makeText(requireContext(), "לא נמצא QR Code תקין", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 }

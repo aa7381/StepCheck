@@ -10,17 +10,11 @@ import android.os.Bundle;
  * Inherits from MasterClass to handle network and phone state changes.
  */
 public class Main_connect_fragment_activity extends MasterClass {
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_connect_fragment_activity);
-
-
         initBottomNavigationView(R.id.bottom_navigation);
-
     }
 
 }
