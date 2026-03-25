@@ -40,7 +40,7 @@
         </provider>
 
         <activity
-            android:name=".add_shoe_ai"
+            android:name=".activities.add_shoe_ai"
             android:exported="false" />
 
         <uses-library
@@ -51,11 +51,11 @@
             android:value="${MAPS_API_KEY}" />
 
         <activity
-            android:name=".Worker_information"
+            android:name=".activities.Worker_information"
             android:exported="false" />
 
         <service
-            android:name=".ShiftService"
+            android:name=".utils.ShiftService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location|specialUse">
@@ -65,40 +65,40 @@
         </service>
 
         <receiver
-            android:name=".ShiftSyncReceiver"
+            android:name=".Receiver.ShiftSyncReceiver"
             android:enabled="true"
             android:exported="false" />
         <receiver
-            android:name=".NetworkChangeReceiver"
+            android:name=".Receiver.NetworkChangeReceiver"
             android:enabled="true"
             android:exported="true"
             tools:ignore="Instantiatable" />
 
         <activity
-            android:name=".shoe_data_screen"
+            android:name=".activities.shoe_data_screen"
             android:exported="false" />
         <activity
-            android:name=".add_new_shoe"
+            android:name=".activities.add_new_shoe"
             android:exported="false" />
         <activity
-            android:name=".Shoe_information"
+            android:name=".activities.Shoe_information"
             android:exported="false" />
         <activity
-            android:name=".Register"
+            android:name=".activities.Register"
             android:exported="false" />
         <activity
-            android:name=".Main_connect_fragment_activity"
+            android:name=".activities.Main_connect_fragment_activity"
             android:exported="false" />
         <activity
-            android:name=".Login"
+            android:name=".activities.Login"
             android:exported="false" />
         <activity
-            android:name=".CaptureAct"
+            android:name=".utils.CaptureAct"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
-            android:name=".Welcome_app"
+            android:name=".activities.Welcome_app"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
