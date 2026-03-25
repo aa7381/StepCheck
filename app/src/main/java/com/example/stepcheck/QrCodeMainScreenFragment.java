@@ -110,6 +110,7 @@ public class QrCodeMainScreenFragment extends Fragment {
 
             refBase2.child(safeKey).get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
+
                     DataSnapshot snapshot = task.getResult();
                     if (snapshot.exists()) {
                         Intent intent = new Intent(requireActivity(), Shoe_information.class);

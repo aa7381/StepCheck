@@ -56,4 +56,14 @@
         android:backgroundTint="#4CAF50"
         android:textColor="@android:color/white"/>
 
+    <Button
+        android:id="@+id/add_shoe_ai"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#03A9F4"
+        android:text="Add New Shoe With Ai"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
+
 </LinearLayout>

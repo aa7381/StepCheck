@@ -31,7 +31,7 @@ import java.util.List;
  * This fragment allows the user to search for products, scan QR codes, and add new shoes.
  */
 public class InventoryFragment extends Fragment {
-    private Button AddNewShoe, btnScanQr;
+    private Button AddNewShoe, btnScanQr, add_shoe_ai;
     private SearchView productSearchView;
     private RecyclerView rvProducts;
     private ProductAdapter adapter;
@@ -64,6 +64,8 @@ public class InventoryFragment extends Fragment {
         btnScanQr = view.findViewById(R.id.btnScanQr);
         productSearchView = view.findViewById(R.id.product_search_view);
         rvProducts = view.findViewById(R.id.rvProducts);
+        add_shoe_ai = view.findViewById(R.id.add_shoe_ai);
+
         rvProducts.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ProductAdapter();
         rvProducts.setAdapter(adapter);
@@ -113,6 +115,15 @@ public class InventoryFragment extends Fragment {
             }
         });
 
+        add_shoe_ai.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                add_shoe_ai();
+            }
+
+        });
+
         if (AddNewShoe != null) {
             AddNewShoe.setOnClickListener(new View.OnClickListener()
             {
@@ -133,8 +144,11 @@ public class InventoryFragment extends Fragment {
         });
 
         if (btnScanQr != null) {
-            btnScanQr.setOnClickListener(v -> {
-                scanCode();
+            btnScanQr.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    scanCode();
+                }
             });
         }
     }
@@ -186,6 +200,11 @@ public class InventoryFragment extends Fragment {
         Intent intent = new Intent(requireActivity(), add_new_shoe.class);
         startActivity(intent);
     }
+    private void add_shoe_ai() {
+        Intent intent = new Intent(requireActivity(), add_shoe_ai.class);
+        startActivity(intent);
+    }
+
 
 
     private void check() {
