@@ -49,16 +49,14 @@ public class add_new_shoe extends MasterClass {
     private Button ScanQR ;
     private String qr_code_data = "";
 
-    private Spinner etShoeType;
-    private EditText etShoeName, etPrice, etmanufacturing_company, etColor;
+    private EditText etShoeName, etPrice, etmanufacturing_company, etColor, etShoeType;
     private static final int REQUEST_PICK_IMAGE = 300;
     private String fileName ;
     private String safeKey ;
     private Uri imageUri ;
     private int count_shoes =0 ;
 
-    private String[] shoeType = {"wide", "narrow", "casual, etc."};
-    private String shoeType2;
+
 
 
 
@@ -100,17 +98,7 @@ public class add_new_shoe extends MasterClass {
                 scanCode();
             }
         });
-        ArrayAdapter<String> adp = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, shoeType);
-        etShoeType.setAdapter(adp);
-        etShoeType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                shoeType2 = shoeType[position];
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
     }
     /**
      * Initiates the QR code scanning process.
@@ -209,10 +197,11 @@ public class add_new_shoe extends MasterClass {
     public void Save_shoe(View view) {
         String shoeName = etShoeName.getText().toString();
         String color = etColor.getText().toString();
+        String shoeType2 = etShoeType.getText().toString();
         String manufacturing_company = etmanufacturing_company.getText().toString();
         String priceStr = etPrice.getText().toString();
 
-        if (shoeName.isEmpty() ||  priceStr.isEmpty() || safeKey.isEmpty() || manufacturing_company.isEmpty() || color.isEmpty()) {
+        if (shoeName.isEmpty() || shoeType2.isEmpty() || priceStr.isEmpty() || safeKey.isEmpty() || manufacturing_company.isEmpty() || color.isEmpty()) {
             Toast.makeText(this, "Information is missing", Toast.LENGTH_SHORT).show();
         } else {
             try {

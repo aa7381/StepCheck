@@ -83,8 +83,8 @@ public class Worker_information extends AppCompatActivity implements OnMapReadyC
                     String Name = snapshot.child("username").getValue(String.class);
                     String rank = snapshot.child("job_rank").getValue(String.class);
 
-                    etName.setText("Worker name: " + Name);
-                    etRank.setText("Worker_rank: " + rank);
+                    etName.setText(  Name);
+                    etRank.setText( rank);
                 }
             }
 
@@ -107,7 +107,7 @@ public class Worker_information extends AppCompatActivity implements OnMapReadyC
                             String startShift = snapshot.child("start_your_Shift").getValue(String.class);
 
                             if (startShift != null) {
-                                etWorkTime.setText( "\nStart shift: " + startShift);
+                                etWorkTime.setText( startShift);
                             }
                         }
                     }

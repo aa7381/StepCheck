@@ -86,7 +86,7 @@ public class employee_management_acticity extends Fragment implements AdapterVie
         adapter.notifyDataSetChanged();
 
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         final String todayDate = sdf.format(calendar.getTime());
         
         refBase.addListenerForSingleValueEvent(new ValueEventListener() {

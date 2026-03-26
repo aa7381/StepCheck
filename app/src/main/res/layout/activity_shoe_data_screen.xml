@@ -1,199 +1,206 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="#FBFBFB"
     android:fillViewport="true">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp"
-        android:gravity="center_horizontal">
-
-        <!-- Shoe Image Placeholder -->
-        <ImageView
-            android:id="@+id/imgShoe"
-            android:layout_width="200dp"
-            android:layout_height="184dp"
-            android:layout_marginBottom="2dp"
-            android:background="#DDDDDD"
-            android:contentDescription="Shoe Image"
-            android:scaleType="centerCrop" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <Button
-                android:id="@+id/btn_change_photo"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:backgroundTint="#000000"
-                android:onClick="change_photo"
-                android:text="Change Photo"
-                android:textColor="#FFFFFF" />
-        </LinearLayout>
-
+        android:orientation="vertical"
+        android:padding="24dp">
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit Shoe"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#1A1A1A"
+            android:layout_marginBottom="20dp"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp"
+            android:layout_marginBottom="24dp">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/imgShoe"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_change_photo"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="12dp"
+                    android:onClick="change_photo"
+
+                    android:text="Edit"
+                    android:textAllCaps="false"
+                    android:textSize="12sp"
+                    app:icon="@android:drawable/ic_menu_camera"/>
+            </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:text="Shoe Name"
-            android:textColor="#333333"
-            android:textSize="16sp" />
-        <!-- Shoe Type -->
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="#FFFFFF"
+            app:strokeColor="#F0F0F0"
+            app:strokeWidth="1dp">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-        <EditText
-            android:id="@+id/ShoeName"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginBottom="2dp"
-            android:background="@drawable/rounded_edittext"
-            android:hint="Shoe Name"
-            android:padding="12dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Name"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Shoe Price"
-            android:textColor="#333333"
-            android:textSize="16sp"
-            android:layout_marginTop="2dp"/>
-        <!-- Shoe Type -->
-        <EditText
-            android:id="@+id/ShoePrice"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="Shoe Price"
-            android:inputType="number"
-            android:background="@drawable/rounded_edittext"
-            android:padding="12dp"
-            android:layout_marginBottom="2dp"/>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/ShoeName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
+                        android:inputType="textCapWords" />
+                </com.google.android.material.textfield.TextInputLayout>
 
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Price"
+                    app:prefixText="$ ">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Shoe Type"
-            android:textColor="#333333"
-            android:textSize="16sp"
-            android:layout_marginTop="2dp"/>
-        <!-- Shoe Type -->
-        <EditText
-            android:id="@+id/ShoeType"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="Shoe type(wide, narrow, etc.)"
-            android:background="@drawable/rounded_edittext"
-            android:padding="12dp"
-            android:layout_marginBottom="2dp"/>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/ShoePrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Size Type Spinner -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Gender"
-            android:textColor="#333333"
-            android:textSize="16sp"
-            android:layout_marginTop="2dp"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Type">
 
-        <Spinner
-            android:id="@+id/spinnerGenderType"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/rounded_edittext"
-            android:padding="12dp"
-            android:layout_marginBottom="2dp"/>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/ShoeType"
+                        android:layout_width="match_parent"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
+                        android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Size types"
-            android:textColor="#333333"
-            android:textSize="16sp"
-            android:layout_marginTop="2dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Classification"
+                    android:layout_marginTop="16dp"
+                    android:textSize="12sp"
+                    android:textColor="#888"
+                    android:textStyle="bold"/>
 
-        <Spinner
-            android:id="@+id/spinnerSizeType"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/rounded_edittext"
-            android:padding="12dp"
-            android:layout_marginBottom="2dp"/>
+                <Spinner
+                    android:id="@+id/spinnerGenderType"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@android:drawable/btn_dropdown" />
 
+                <Spinner
+                    android:id="@+id/spinnerSizeType"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@android:drawable/btn_dropdown" />
 
-        <!-- Size Selection Spinner -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Sizes to choose from"
-            android:textColor="#333333"
-            android:textSize="16sp"
-            android:layout_marginTop="2dp"/>
+                <Spinner
+                    android:id="@+id/spinnerSelectSize"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@android:drawable/btn_dropdown" />
 
-        <Spinner
-            android:id="@+id/spinnerSelectSize"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/rounded_edittext"
-            android:padding="12dp"
-            android:layout_marginBottom="2dp"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Quantity">
 
-        <!-- Quantity -->
-        <EditText
-            android:id="@+id/etQuantity"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="Quantity in stock"
-            android:background="@drawable/rounded_edittext"
-            android:padding="12dp"
-            android:inputType="number"
-            android:layout_marginBottom="2dp"/>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etQuantity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Save Button -->
-        <Button
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginBottom="2dp"
-            android:backgroundTint="#000000"
-            android:onClick="save_size"
+            android:layout_height="55dp"
+            android:layout_marginTop="24dp"
             android:text="Save Size"
-            android:textColor="#FFFFFF" />
+            android:onClick="save_size"
+            app:cornerRadius="12dp"
+            android:backgroundTint="#424242"/>
 
-        <!-- Horizontal Save & Back -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_marginTop="12dp"
             android:weightSum="2">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSaveShoe"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_marginEnd="4dp"
+                android:layout_height="55dp"
                 android:layout_weight="1"
-                android:backgroundTint="#000000"
-                android:onClick="save_update"
+                android:layout_marginEnd="6dp"
                 android:text="Save"
-                android:textColor="#FFFFFF" />
+                android:onClick="save_update"
+                app:cornerRadius="12dp"
+                android:backgroundTint="#000000"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnBack"
+                style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
+                android:layout_height="55dp"
                 android:layout_weight="1"
-                android:backgroundTint="#000000"
                 android:onClick="backScreen"
+                android:layout_marginStart="6dp"
                 android:text="Back"
-                android:textColor="#FFFFFF" />
+                app:cornerRadius="12dp"/>
         </LinearLayout>
 
     </LinearLayout>

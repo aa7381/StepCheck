@@ -1,46 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@color/background_primary">
+    android:padding="24dp"
+    android:background="#F8F9FA">
 
-    <!-- כותרת -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Current Shift Employee"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/text_primary"
-        android:layout_gravity="center_horizontal"
-        android:paddingBottom="16dp"/>
+        android:text="Current Shift"
+        android:textSize="32sp"
+        android:fontFamily="sans-serif-black"
+        android:textColor="#1A1A1A"
+        android:layout_marginBottom="4dp"/>
 
-    <!-- רשימת עובדים -->
-    <ListView
-        android:id="@+id/lvEmployees"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Active employees currently on duty"
+        android:textSize="14sp"
+        android:textColor="#757575"
+        android:layout_marginBottom="24dp"/>
+
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:divider="@color/divider_color"
-        android:dividerHeight="1dp"
-        android:background="@color/surface_primary"
-        android:padding="4dp"/>
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:strokeColor="#EEEEEE"
+        app:strokeWidth="1dp">
 
-    <!-- כפתור ריענון -->
-    <Button
+        <ListView
+            android:id="@+id/lvEmployees"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="#F0F0F0"
+            android:dividerHeight="1dp"
+            android:padding="12dp"
+            android:scrollbars="none"
+            android:clipToPadding="false"/>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnRefresh"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/blue_primary"
-        android:paddingLeft="24dp"
-        android:paddingTop="12dp"
-        android:paddingRight="24dp"
-        android:paddingBottom="12dp"
-        android:text="Refresh"
-        android:textColor="#FFFFFF" />
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="20dp"
+        android:text="Refresh List"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:strokeColor="#000000"
+        app:strokeWidth="1.5dp"
+        app:cornerRadius="16dp"
+        app:icon="@android:drawable/stat_notify_sync"
+        app:iconGravity="textStart"
+        app:iconTint="#000000" />
+
 </LinearLayout>

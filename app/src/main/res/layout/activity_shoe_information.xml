@@ -57,9 +57,9 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="select gender"
+                android:text="Select Gender"
                 android:textColor="#333333"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:layout_marginTop="2dp"/>
 
             <Spinner
@@ -375,7 +375,7 @@
                         android:layout_height="wrap_content"
                         android:text="Fit Type"
                         android:textStyle="bold"
-                        android:textSize="14sp"/>
+                        android:textSize="18sp"/>
 
                     <TextView
                         android:id="@+id/fitType"

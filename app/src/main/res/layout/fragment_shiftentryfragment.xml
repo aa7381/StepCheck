@@ -1,101 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F5F5F5"
     tools:context=".fragments.ShiftEntryFragment">
 
-
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="900dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="#FFFFFF"
-        android:clipToOutline="true"
-        android:elevation="4dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:outlineProvider="background"
-        android:padding="32dp">
+        android:layout_margin="24dp"
+        app:cardCornerRadius="28dp"
+        app:cardElevation="0dp"
+        app:strokeColor="#EEEEEE"
+        app:strokeWidth="1dp">
 
-        <!-- כותרת -->
-        <TextView
-            android:id="@+id/shift_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:letterSpacing="0.05"
-            android:text="Employee Shift"
-            android:textColor="#212121"
-            android:textSize="26sp"
-            android:textStyle="bold" />
-
-        <!-- Start Shift Button -->
-        <Button
-            android:id="@+id/button_start_shift"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
-            android:backgroundTint="#43A047"
-            android:backgroundTintMode="src_in"
-            android:clipToOutline="true"
-            android:elevation="4dp"
-            android:paddingVertical="12dp"
-            android:shape="rectangle"
-            android:stateListAnimator="@null"
-            android:text="Start Shift"
-            android:textColor="#FFFFFF" />
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="32dp">
 
-        <!-- Pause Shift Button -->
-        <Button
-            android:id="@+id/button_pause_shift"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
-            android:backgroundTint="#FB8C00"
-            android:backgroundTintMode="src_in"
-            android:clipToOutline="true"
-            android:elevation="4dp"
-            android:paddingVertical="12dp"
-            android:shape="rectangle"
-            android:stateListAnimator="@null"
-            android:text="Start Break"
-            android:textColor="#FFFFFF" />
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@android:drawable/ic_menu_recent_history"
+                app:tint="#1A1A1A"
+                android:layout_marginBottom="16dp"/>
 
-        <Button
-            android:id="@+id/button_pause_shift_end"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
-            android:backgroundTint="#FB8C00"
-            android:backgroundTintMode="src_in"
-            android:clipToOutline="true"
-            android:elevation="4dp"
-            android:paddingVertical="12dp"
-            android:shape="rectangle"
-            android:stateListAnimator="@null"
-            android:text="Break End "
-            android:textColor="#FFFFFF" />
+            <TextView
+                android:id="@+id/shift_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Employee Shift"
+                android:textColor="#1A1A1A"
+                android:textSize="28sp"
+                android:fontFamily="sans-serif-black"
+                android:layout_marginBottom="8dp" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Manage your working hours"
+                android:textColor="#757575"
+                android:textSize="14sp"
+                android:layout_marginBottom="40dp" />
 
-        <!-- End Shift Button -->
-        <Button
-            android:id="@+id/button_end_shift"
-            android:layout_width="match_parent"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_start_shift"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginBottom="16dp"
+                android:text="Start Shift"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:backgroundTint="#000000"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="16dp"
+                app:icon="@android:drawable/ic_media_play"
+                app:iconGravity="textStart"
+                app:iconTint="#FFFFFF" />
 
-            android:layout_height="wrap_content"
-            android:backgroundTint="#E53935"
-            android:backgroundTintMode="src_in"
-            android:clipToOutline="true"
-            android:elevation="4dp"
-            android:paddingVertical="10dp"
-            android:shape="rectangle"
-            android:stateListAnimator="@null"
-            android:text="End Shift"
-            android:textColor="#FFFFFF" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_pause_shift"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginBottom="16dp"
+                android:text="Start/End Break"
+                android:textSize="16sp"
+                android:textColor="#1A1A1A"
+                app:backgroundTint="#EEEEEE"
+                app:cornerRadius="16dp"
+                app:icon="@android:drawable/ic_media_pause"
+                app:iconGravity="textStart"
+                app:iconTint="#1A1A1A" />
 
-    </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_end_shift"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="End Shift"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                app:strokeColor="#000000"
+                app:strokeWidth="1.5dp"
+                app:cornerRadius="16dp"
+                app:icon="@android:drawable/ic_delete"
+                app:iconGravity="textStart"
+                app:iconTint="#000000" />
 
-
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </FrameLayout>

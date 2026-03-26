@@ -129,7 +129,7 @@ public class ShiftService extends Service {
 
         String workerId = user.getUid();
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String currentDate = sdfDate.format(calendar.getTime());
 
         shiftRef = FBRef.refBase5.child(workerId).child(currentDate);
@@ -175,13 +175,13 @@ public class ShiftService extends Service {
 
     /**
      * Synchronizes all active shifts for a specific date to the 'FinishedShifts' node in Firebase.
-     * @param date The date for which to perform the synchronization (formatted as dd/MM/yyyy).
+     * @param date The date for which to perform the synchronization (formatted as yyyy-MM-dd).
      */
     public static void checkEndOfDayAndSync(String date) {
         if (!isWorkDay()) return;
 
         final String firebasePath = date; 
-        final String summaryDate = date.replace("/", "-");
+        final String summaryDate = date;
 
         FBRef.refBase5.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -357,7 +357,7 @@ public class ShiftService extends Service {
 
         String workerId = user.getUid();
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         String currentDate = sdfDate.format(calendar.getTime());
         String currentTime = sdfTime.format(calendar.getTime());

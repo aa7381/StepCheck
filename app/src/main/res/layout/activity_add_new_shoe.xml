@@ -1,127 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="#FBFBFB"
     android:fillViewport="true">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp"
-        android:gravity="center_horizontal">
+        android:orientation="vertical"
+        android:padding="24dp">
 
-        <!-- Header -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Add New Shoe"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:layout_marginBottom="24dp"/>
+            android:textSize="28sp"
+            android:fontFamily="sans-serif-black"
+            android:textColor="#1A1A1A"
+            android:layout_marginBottom="8dp"/>
 
-        <!-- Scan QR Code button -->
-        <Button
-            android:id="@+id/ScanQR"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="Scan QR Code"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#000000"
-            android:layout_marginTop="120dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fill in the details or scan a QR code"
+            android:textSize="14sp"
+            android:textColor="#757575"
+            android:layout_marginBottom="32dp"/>
 
-        <!-- Upload Image button -->
-        <Button
-            android:id="@+id/UploadImage"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="12dp"
-            android:backgroundTint="#000000"
-            android:onClick="upload_image"
-            android:text="Upload Image"
-            android:textColor="#FFFFFF" />
-
-        <!-- Shoe Name input -->
-        <EditText
-            android:id="@+id/etShoeName"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/rounded_edittext"
-            android:hint="Shoe Name"
-            android:padding="12dp" />
-
-        <EditText
-            android:id="@+id/etmanufacturing_company"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/rounded_edittext"
-            android:hint="Manufacturing Company"
-            android:padding="12dp" />
-
-        <EditText
-            android:id="@+id/etColor"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/rounded_edittext"
-            android:hint="Color"
-            android:padding="12dp" />
-
-        <Spinner
-            android:id="@+id/etShoeType"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="Shoe type(wide, narrow, etc.)"
-            android:background="@drawable/rounded_edittext"
-            android:padding="12dp"
-            android:layout_marginTop="12dp"/>
-
-        <EditText
-            android:id="@+id/etPrice"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="Price"
-            android:inputType="numberDecimal"
-            android:background="@drawable/rounded_edittext"
-            android:padding="12dp"
-            android:layout_marginTop="12dp"/>
-
-        <!-- Size type spinner -->
-
-
-        <!-- Horizontal layout for Save Shoe and Back -->
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:weightSum="2">
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:layout_marginBottom="24dp">
 
-            <Button
-                android:id="@+id/btnSaveShoe"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/ScanQR"
+                style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_marginEnd="8dp"
+                android:layout_height="60dp"
                 android:layout_weight="1"
-                android:backgroundTint="#000000"
-                android:onClick="Save_shoe"
-                android:text="Save Shoe"
-                android:textColor="#FFFFFF" />
+                android:layout_marginEnd="6dp"
+                android:text="Scan QR"
+                app:icon="@android:drawable/ic_menu_camera"
+                app:cornerRadius="12dp" />
 
-            <Button
-                android:id="@+id/btnBack"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/UploadImage"
+                style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
+                android:layout_height="60dp"
                 android:layout_weight="1"
-                android:backgroundTint="#000000"
-                android:onClick="back"
-                android:text="Back"
-                android:textColor="#FFFFFF" />
+                android:layout_marginStart="6dp"
+                android:onClick="upload_image"
+                android:text="Upload"
+                app:icon="@android:drawable/ic_menu_gallery"
+                app:cornerRadius="12dp" />
         </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:strokeColor="#EEEEEE"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Shoe Name"
+                    app:startIconDrawable="@android:drawable/ic_menu_edit">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etShoeName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapWords" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Manufacturing Company">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etmanufacturing_company"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
+                        android:inputType="textPersonName" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Color">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etColor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
+                        android:inputType="textPersonName" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Shoe Type (Wide, Narrow...)">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etShoeType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
+                        android:inputType="textPersonName" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Price"
+                    app:prefixText="$ ">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSaveShoe"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="32dp"
+            android:onClick="Save_shoe"
+            android:text="SAVE SHOE"
+            android:textSize="16sp"
+            android:backgroundTint="#000000"
+            app:cornerRadius="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBack"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:onClick="back"
+            android:text="Cancel and Go Back"
+            android:textColor="#757575" />
 
     </LinearLayout>
 </ScrollView>

@@ -1,115 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:padding="16dp">
+    android:background="#FBFBFB"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="24dp">
 
-        <!-- כותרת -->
-        <TextView
-            android:id="@+id/tvTitle"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="AI Shoe Scanner"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="#000000"
+            android:orientation="vertical"
             android:gravity="center"
-            android:padding="10dp" />
+            android:layout_marginBottom="24dp">
 
-        <!-- מונה תמונות -->
-        <TextView
-            android:id="@+id/tvCounter"
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AI Shoe Scanner"
+                android:textSize="26sp"
+                android:fontFamily="sans-serif-black"
+                android:textColor="#1A1A1A" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Powered by Gemini Vision"
+                android:textSize="12sp"
+                android:textColor="#6200EE"
+                android:textStyle="bold"
+                android:letterSpacing="0.1" />
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Photos: 0"
-            android:textSize="16sp"
-            android:textColor="#666666"
-            android:gravity="center"
-            android:layout_marginTop="10dp"/>
+            android:layout_height="280dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="4dp"
+            app:strokeColor="#E0E0E0"
+            app:strokeWidth="1dp"
+            android:layout_marginBottom="20dp">
 
-        <!-- תצוגת תמונה -->
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:background="#EEEEEE"
-            android:scaleType="centerCrop"
-            android:layout_marginTop="12dp" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        <!-- כפתור הוספת תמונה -->
-        <Button
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#F0F0F0"
+                    android:scaleType="centerCrop"
+                    android:src="@android:drawable/ic_menu_camera"
+                    android:alpha="0.6" />
+
+                <TextView
+                    android:id="@+id/tvCounter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="16dp"
+                    android:backgroundTint="#000000"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:text="Photos: 0"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAddPhoto"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:backgroundTint="#212121"
+            android:layout_height="56dp"
             android:onClick="add_photo"
             android:text="Add Photo"
-            android:textColor="#FFFFFF" />
+            app:icon="@android:drawable/ic_menu_add"
+            app:cornerRadius="12dp"
+            android:backgroundTint="#212121"
+            android:layout_marginBottom="12dp"/>
 
-        <!-- כפתור שליחה ל-AI -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAnalyze"
+            style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Analyze"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="#424242"
-            android:textColor="#FFFFFF" />
+            android:layout_height="56dp"
+            android:text="Analyze with AI"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#6200EE"
+            app:icon="@android:drawable/ic_menu_view"
+            app:cornerRadius="12dp"
+            android:layout_marginBottom="24dp"/>
 
-        <!-- תוצאה -->
         <TextView
-            android:id="@+id/tvResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AI Insights"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#757575"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="4dp"/>
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Result will appear here..."
-            android:background="#F5F5F5"
-            android:padding="12dp"
-            android:layout_marginTop="16dp"
-            android:textSize="16sp"
-            android:textColor="#000000" />
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeColor="#F0F0F0"
+            app:strokeWidth="2dp">
 
-        <!-- כפתורים תחתונים -->
+            <TextView
+                android:id="@+id/tvResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minLines="3"
+                android:padding="16dp"
+                android:text="Analysis results will appear here..."
+                android:textColor="#333333"
+                android:textSize="15sp"
+                android:lineSpacingExtra="4dp"
+                android:background="#FFFFFF"/>
+        </com.google.android.material.card.MaterialCardView>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="32dp"
+            android:weightSum="2">
 
-            <!-- שמירה -->
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAddShoe"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:layout_weight="1"
-                android:backgroundTint="#212121"
+                android:layout_marginEnd="6dp"
                 android:onClick="save_shoe"
                 android:text="Save"
-                android:textColor="#FFFFFF" />
+                android:backgroundTint="#000000"
+                app:cornerRadius="12dp" />
 
-            <Space
-                android:layout_width="10dp"
-                android:layout_height="wrap_content" />
-
-            <!-- חזרה -->
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnExit"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:layout_weight="1"
-                android:text="Back"
+                android:layout_marginStart="6dp"
                 android:onClick="back"
-                android:backgroundTint="#757575"
-                android:textColor="#FFFFFF" />
-
+                android:text="Back"
+                android:textColor="#757575" />
         </LinearLayout>
 
     </LinearLayout>
-
 </ScrollView>
