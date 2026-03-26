@@ -20,6 +20,8 @@ import android.widget.Toast;
 import com.example.stepcheck.utils.FBRef;
 import com.example.stepcheck.R;
 import com.example.stepcheck.models.Worker;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -85,14 +87,14 @@ public class employee_management_acticity extends Fragment implements AdapterVie
 
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        String todayDate = sdf.format(calendar.getTime());
+        final String todayDate = sdf.format(calendar.getTime());
         
         refBase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot workerSnapshot : snapshot.getChildren()) {
-                    Worker worker = workerSnapshot.getValue(Worker.class);
-                    String workerId = workerSnapshot.getKey();
+                    final Worker worker = workerSnapshot.getValue(Worker.class);
+                    final String workerId = workerSnapshot.getKey();
                     
                     if (worker != null && Boolean.TRUE.equals(worker.getInShift())) {
                         FBRef.refBase5.child(workerId).child(todayDate).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -127,20 +129,23 @@ public class employee_management_acticity extends Fragment implements AdapterVie
      * Opens the detailed information screen for a specific worker.
      * @param workerId The unique ID of the worker to display information for.
      */
-    private void open_inform_worker(String workerId) {
+    private void open_inform_worker(final String workerId) {
         if (workerId == null) return;
-        refBase.child(workerId).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DataSnapshot snapshot = task.getResult();
-                if (snapshot.exists()) {
-                    Intent intent = new Intent(requireActivity(), Worker_information.class);
-                    intent.putExtra("USER_ID", workerId);
-                    startActivity(intent);
+        refBase.child(workerId).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DataSnapshot snapshot = task.getResult();
+                    if (snapshot.exists()) {
+                        Intent intent = new Intent(requireActivity(), Worker_information.class);
+                        intent.putExtra("USER_ID", workerId);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(requireContext(), "עובד לא קיים במערכת", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(requireContext(), "עובד לא קיים במערכת", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "שגיאה בגישה לשרת", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                Toast.makeText(requireContext(), "שגיאה בגישה לשרת", Toast.LENGTH_SHORT).show();
             }
         });
     }

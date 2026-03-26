@@ -161,7 +161,7 @@ public class ShiftEntryFragment extends Fragment {
         String workerId = currentUser.getUid();
 
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         currentDate = sdf.format(calendar.getTime());
 
         DatabaseReference shiftRef = FBRef.refBase5.child(workerId).child(currentDate);
@@ -202,6 +202,15 @@ public class ShiftEntryFragment extends Fragment {
      * and starts the {@link ShiftService} for background location tracking.
      */
     private void startShift() {
+        Calendar checkCalendar = Calendar.getInstance();
+        int hour = checkCalendar.get(Calendar.HOUR_OF_DAY);
+        if (hour >= 0 && hour < 7) {
+            if (getActivity() != null) {
+                Toast.makeText(getActivity(), "אי אפשר להיכנס למשמרת בין 12 בלילה ל-7 בבוקר", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
         FirebaseUser user = FBRef.refAuth.getCurrentUser();
         if (user != null) {
             final String workerId = user.getUid();

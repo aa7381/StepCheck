@@ -42,9 +42,9 @@ import com.google.firebase.storage.UploadTask;
  */
 public class shoe_data_screen extends MasterClass implements AdapterView.OnItemSelectedListener {
 
-        Spinner spinnerQuantitySize, spinnerSizeType ,spinnerSizeGender;
-        EditText ShoeType, shoeName , shoePrice,etQuantity ;
-        ImageView imgShoe;
+        private Spinner spinnerQuantitySize, spinnerSizeType ,spinnerSizeGender;
+        private EditText ShoeType, shoeName , shoePrice,etQuantity ;
+        private ImageView imgShoe;
         private  String qr_code_data;
     private static final int REQUEST_PICK_IMAGE = 300;
     private Uri imageUri;

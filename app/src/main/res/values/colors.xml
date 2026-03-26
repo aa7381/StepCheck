@@ -3,10 +3,17 @@
     <color name="blue_primary">#007bff</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="background_light">#F5F5F5</color>
-    <color name="text_primary">#212121</color>
+
+    <!-- Light Mode Colors -->
+    <color name="background_primary">#F4F6F9</color>
+    <color name="surface_primary">#FFFFFF</color>
+    <color name="text_primary">#111827</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="divider_color">#E0E0E0</color>
+    <color name="input_background">#FFFFFF</color>
+
     <color name="green_600">#43A047</color>
     <color name="orange_500">#FB8C00</color>
     <color name="red_600">#E53935</color>
-
+    <color name="indigo_600">#5146F0</color>
 </resources>

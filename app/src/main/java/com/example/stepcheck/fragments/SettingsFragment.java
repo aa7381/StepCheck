@@ -7,6 +7,8 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,24 +29,28 @@ import com.example.stepcheck.activities.Welcome_app;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass that displays the settings screen.
  * This fragment provides the user with an option to sign out of the application.
  */
-public class SettingsFragment extends Fragment implements AdapterView.OnItemLongClickListener,View.OnCreateContextMenuListener {
+public class SettingsFragment extends Fragment implements AdapterView.OnItemClickListener,View.OnCreateContextMenuListener {
 
     AlertDialog.Builder adb;
-
     private Button Sign_out;
     private ListView lvSettings;
-
     int position = 0;
-
-
-    private String[] list_information = {"change name", "change email", "change password","change rank"};
-
+    private String[] list_information = {"Change Name", "Change Email", "Change Password","Change Rank"};
+    
+    private Handler timeoutHandler = new Handler(Looper.getMainLooper());
+    private Runnable timeoutRunnable;
 
     /**
      * Called to have the fragment instantiate its user interface view.
@@ -81,8 +87,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemLong
                 }
             });
         }
-        lvSettings.setOnItemLongClickListener(this);
-
+        lvSettings.setOnItemClickListener(this);
         lvSettings.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, list_information);
@@ -107,22 +112,22 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemLong
         requireActivity().finish();
     }
     @Override
-    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int pos, long rowid) {
+    public void onItemClick(AdapterView<?> adapterView, View view, int pos, long rowid) {
         position = pos;
         final FirebaseUser user = FBRef.refAuth.getCurrentUser();
 
         if (user == null)
         {
             Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
-            return true;
+            return;
         }
 
         final String workerId = user.getUid();
         AlertDialog.Builder adb = new AlertDialog.Builder(requireContext());
-        final EditText et = new EditText(requireContext());
-        adb.setView(et);
 
         if (position == 0) {
+            final EditText et = new EditText(requireContext());
+            adb.setView(et);
             adb.setTitle("Change Name");
             et.setHint("Enter new name");
 
@@ -150,7 +155,8 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemLong
         }
 
         else if (position == 1) {
-
+            final EditText et = new EditText(requireContext());
+            adb.setView(et);
             adb.setTitle("Change Email");
             et.setHint("Enter new email");
 
@@ -176,7 +182,8 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemLong
         }
 
         else if (position == 2) { // change password
-
+            final EditText et = new EditText(requireContext());
+            adb.setView(et);
             adb.setTitle("Change Password");
             et.setHint("Enter new password");
 
@@ -200,6 +207,137 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemLong
                 }
             });
         }
+        else if(position == 3)
+        {
+            adb.setTitle("Change Rank");
+            final String[] roles = {"Worker", "ShiftManager", "SupplyManager"};
+            final android.widget.Spinner spinner = new android.widget.Spinner(requireContext());
+            spinner.setPadding(64, 32, 64, 32);
+            ArrayAdapter<String> adapterRank = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, roles);
+            spinner.setAdapter(adapterRank);
+            adb.setView(spinner);
+
+            adb.setPositiveButton("Request", new android.content.DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(android.content.DialogInterface dialog, int which) {
+                    final String selectedRank = roles[spinner.getSelectedItemPosition()];
+                    final int roleIndex = spinner.getSelectedItemPosition();
+                    // Generate a random code each time
+                    final String verificationCode = String.valueOf((int)(Math.random() * 9000) + 1000);
+
+                    // Search for a Shift Manager who is CURRENTLY IN SHIFT
+                    FBRef.refBase.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String tempManagerName = "";
+                            String tempManagerId = "";
+                            String requesterName = snapshot.child(workerId).child("username").getValue(String.class);
+                            if (requesterName == null) requesterName = "Worker";
+
+                            for (DataSnapshot ds : snapshot.getChildren()) {
+                                String rank = ds.child("job_rank").getValue(String.class);
+                                Boolean inShift = ds.child("inShift").getValue(Boolean.class);
+                                
+                                if ("ShiftManager".equals(rank) && Boolean.TRUE.equals(inShift)) {
+                                    tempManagerName = ds.child("username").getValue(String.class);
+                                    tempManagerId = ds.getKey();
+                                    break;
+                                }
+                            }
+
+                            final String managerId = tempManagerId;
+                            final String managerName = tempManagerName;
+                            final String finalRequesterName = requesterName;
+
+                            if (!managerName.isEmpty()) {
+                                // SEND the code to the manager via Firebase
+                                final DatabaseReference requestRef = FBRef.FBDB.getReference("RankRequests").child(managerId);
+                                Map<String, Object> requestData = new HashMap<>();
+                                requestData.put("workerId", workerId);
+                                requestData.put("workerName", finalRequesterName);
+                                requestData.put("requestedRank", selectedRank);
+                                requestData.put("code", verificationCode);
+                                requestData.put("timestamp", System.currentTimeMillis());
+                                requestData.put("seenByManager", false); // Flag to show dialog only once
+                                
+                                requestRef.setValue(requestData);
+
+                                Toast.makeText(getContext(), "Code sent to Manager " + managerName, Toast.LENGTH_LONG).show();
+
+                                AlertDialog.Builder codeAdb = new AlertDialog.Builder(requireContext());
+                                codeAdb.setTitle("Verification");
+                                codeAdb.setMessage("Ask " + managerName + " for the code (Valid for 3 minutes):");
+                                final EditText codeEt = new EditText(requireContext());
+                                codeAdb.setView(codeEt);
+                                codeAdb.setCancelable(false);
+                                
+                                final AlertDialog codeDialog = codeAdb.create();
+
+                                codeDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Verify", new android.content.DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(android.content.DialogInterface dialogInterface, int i) {
+                                        if (codeEt.getText().toString().trim().equals(verificationCode)) {
+                                            if (timeoutRunnable != null) timeoutHandler.removeCallbacks(timeoutRunnable);
+                                            
+                                            Map<String, Object> updates = new HashMap<>();
+                                            updates.put("job_rank", selectedRank);
+                                            updates.put("canEditInventory", roleIndex == 2);
+                                            updates.put("can_manage_shift", roleIndex == 1);
+
+                                            FBRef.refBase.child(workerId).updateChildren(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                        Toast.makeText(getContext(), "Rank updated successfully", Toast.LENGTH_SHORT).show();
+                                                        requestRef.removeValue();
+                                                    } else {
+                                                        Toast.makeText(getContext(), "Error updating rank", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            Toast.makeText(getContext(), "Wrong code", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+
+                                codeDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new android.content.DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(android.content.DialogInterface dialogInterface, int i) {
+                                        if (timeoutRunnable != null) timeoutHandler.removeCallbacks(timeoutRunnable);
+                                        requestRef.removeValue();
+                                        dialogInterface.dismiss();
+                                    }
+                                });
+
+                                timeoutRunnable = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (codeDialog.isShowing()) {
+                                            codeDialog.dismiss();
+                                            requestRef.removeValue();
+                                            if (getContext() != null) {
+                                                Toast.makeText(getContext(), "Request timed out", Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    }
+                                };
+                                timeoutHandler.postDelayed(timeoutRunnable, 180000);
+
+                                codeDialog.show();
+                            } else {
+                                Toast.makeText(getContext(), "No Shift Manager currently in shift to approve change", Toast.LENGTH_LONG).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(getContext(), "Database error", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
+        }
 
         adb.setNegativeButton("Cancel", new android.content.DialogInterface.OnClickListener() {
             @Override
@@ -209,12 +347,13 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemLong
         });
 
         adb.show();
+    }
 
-        return true;
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (timeoutHandler != null && timeoutRunnable != null) {
+            timeoutHandler.removeCallbacks(timeoutRunnable);
+        }
     }
 }
-
-
-
-
-

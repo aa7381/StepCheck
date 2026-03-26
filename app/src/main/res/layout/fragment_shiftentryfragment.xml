@@ -59,7 +59,7 @@
             android:paddingVertical="12dp"
             android:shape="rectangle"
             android:stateListAnimator="@null"
-            android:text="Start break"
+            android:text="Start Break"
             android:textColor="#FFFFFF" />
 
         <Button
@@ -74,7 +74,7 @@
             android:paddingVertical="12dp"
             android:shape="rectangle"
             android:stateListAnimator="@null"
-            android:text="break end "
+            android:text="Break End "
             android:textColor="#FFFFFF" />
 
 

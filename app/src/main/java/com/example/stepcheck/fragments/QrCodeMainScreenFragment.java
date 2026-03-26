@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,8 +20,11 @@ import androidx.fragment.app.Fragment;
 import com.example.stepcheck.utils.CaptureAct;
 import com.example.stepcheck.R;
 import com.example.stepcheck.activities.Shoe_information;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanIntentResult;
 import com.journeyapps.barcodescanner.ScanOptions;
 
 /**
@@ -64,12 +68,14 @@ public class QrCodeMainScreenFragment extends Fragment {
         btn_start_scanning= view.findViewById(R.id.btn_start_scanning);
 
 
-        barLauncher = registerForActivityResult(new ScanContract(), result -> {
-            if (result != null && result.getContents() != null) {
-                qr_code_data = result.getContents();
-                safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
-                open_inform_shoe();
-
+        barLauncher = registerForActivityResult(new ScanContract(), new ActivityResultCallback<ScanIntentResult>() {
+            @Override
+            public void onActivityResult(ScanIntentResult result) {
+                if (result != null && result.getContents() != null) {
+                    qr_code_data = result.getContents();
+                    safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
+                    open_inform_shoe();
+                }
             }
         });
 
@@ -107,19 +113,21 @@ public class QrCodeMainScreenFragment extends Fragment {
     private void open_inform_shoe() {
         if (safeKey != null && !safeKey.isEmpty()) {
 
-            refBase2.child(safeKey).get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-
-                    DataSnapshot snapshot = task.getResult();
-                    if (snapshot.exists()) {
-                        Intent intent = new Intent(requireActivity(), Shoe_information.class);
-                        intent.putExtra("qr_code_data", safeKey);
-                        startActivity(intent);
+            refBase2.child(safeKey).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DataSnapshot snapshot = task.getResult();
+                        if (snapshot.exists()) {
+                            Intent intent = new Intent(requireActivity(), Shoe_information.class);
+                            intent.putExtra("qr_code_data", safeKey);
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(requireContext(), "נעל לא קיימת במערכת", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
-                        Toast.makeText(requireContext(), "נעל לא קיימת במערכת", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "שגיאה בגישה לשרת", Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(requireContext(), "שגיאה בגישה לשרת", Toast.LENGTH_SHORT).show();
                 }
             });
         } else {

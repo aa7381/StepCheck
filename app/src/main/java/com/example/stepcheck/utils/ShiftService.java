@@ -180,10 +180,7 @@ public class ShiftService extends Service {
     public static void checkEndOfDayAndSync(String date) {
         if (!isWorkDay()) return;
 
-        // נשתמש בתאריך המקורי (עם סלשים) כדי לגשת לנתיב ב-Firebase
         final String firebasePath = date; 
-        
-        // עבור ה-ID של הסיכום הסופי, נשתמש במקפים: "24-03-2026"
         final String summaryDate = date.replace("/", "-");
 
         FBRef.refBase5.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -192,14 +189,25 @@ public class ShiftService extends Service {
                 final ArrayList<String> activeWorkerIds = new ArrayList<>();
 
                 for (DataSnapshot workerNode : presenceSnapshot.getChildren()) {
-                    // גישה ישירה לנתוני התאריך של העובד (למשל "24/03/2026")
+                    String workerId = workerNode.getKey();
                     DataSnapshot dateNode = workerNode.child(firebasePath);
 
                     if (dateNode.exists()) {
                         Boolean isStarted = dateNode.child("is_startShift").getValue(Boolean.class);
+                        Boolean isEnded = dateNode.child("buttonEndEnabled").getValue(Boolean.class);
 
                         if (isStarted != null && isStarted) {
-                            activeWorkerIds.add(workerNode.getKey());
+                            activeWorkerIds.add(workerId);
+                            
+                            // סגירה אוטומטית רק אם עברה שעת הסיום של היום (23:59)
+                            if (isEnded == null || !isEnded) {
+                                DatabaseReference ref = FBRef.refBase5.child(workerId).child(firebasePath);
+                                ref.child("end_your_Shift").setValue("23:59:59");
+                                ref.child("buttonEndEnabled").setValue(true);
+                                ref.child("is_startShift").setValue(false);
+                                
+                                FBRef.refBase.child(workerId).child("inShift").setValue(false);
+                            }
                         }
                     }
                 }
@@ -260,11 +268,7 @@ public class ShiftService extends Service {
         startForeground(1, notification);
         startLocationUpdates();
 
-        if (isWorkDay()) {
-            Calendar cal = Calendar.getInstance();
-            String today = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(cal.getTime());
-            checkEndOfDayAndSync(today);
-        }
+        // הסרנו את הקריאה ל-checkEndOfDayAndSync מפה כדי שלא יסיים משמרות בטעות באמצע היום
 
         return START_NOT_STICKY;
     }
@@ -302,7 +306,7 @@ public class ShiftService extends Service {
      */
     private void checkDistance(Location currentLocation) {
         if (isOnBreak) {
-            cancelAutoEnd(); // ביטול הטיימר אם בהפסקה
+            cancelAutoEnd(); 
             return;
         }
 
@@ -310,9 +314,9 @@ public class ShiftService extends Service {
         Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), workLat, workLon, results);
 
         if (results[0] > MAX_DISTANCE_METERS) {
-            scheduleAutoEnd(); // מתחיל טיימר של 5 דקות
+            scheduleAutoEnd(); 
         } else {
-            cancelAutoEnd(); // חזר למקום העבודה
+            cancelAutoEnd(); 
         }
     }
 
@@ -320,7 +324,7 @@ public class ShiftService extends Service {
      * Schedules a task to automatically end the shift after 5 minutes of being outside the workplace area.
      */
     private void scheduleAutoEnd() {
-        if (autoEndScheduled) return; // כבר מתוזמן
+        if (autoEndScheduled) return; 
 
         autoEndScheduled = true;
         autoEndRunnable = new Runnable() {
@@ -331,7 +335,7 @@ public class ShiftService extends Service {
             }
         };
 
-        handler.postDelayed(autoEndRunnable, 5 * 60 * 1000); // 5 דקות
+        handler.postDelayed(autoEndRunnable, 5 * 60 * 1000); 
     }
 
     /**
@@ -361,8 +365,8 @@ public class ShiftService extends Service {
         DatabaseReference ref = FBRef.refBase5.child(workerId).child(currentDate);
         ref.child("end_your_Shift").setValue(currentTime);
         ref.child("buttonEndEnabled").setValue(true);
-
-        if (isWorkDay()) checkEndOfDayAndSync(currentDate);
+        ref.child("is_startShift").setValue(false);
+        FBRef.refBase.child(workerId).child("inShift").setValue(false);
 
         stopForeground(true);
         stopSelf();

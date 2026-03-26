@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Mode Colors -->
+    <color name="background_primary">#121212</color>
+    <color name="surface_primary">#1E1E1E</color>
+    <color name="text_primary">#E0E0E0</color>
+    <color name="text_secondary">#B0B0B0</color>
+    <color name="divider_color">#333333</color>
+    <color name="input_background">#2C2C2C</color>
+    <color name="indigo_600">#7986CB</color> <!-- Lighter indigo for dark mode -->
+</resources>

@@ -71,11 +71,11 @@
             android:hint="Color"
             android:padding="12dp" />
 
-        <EditText
+        <Spinner
             android:id="@+id/etShoeType"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="סוג נעל (רחבה, צרה)"
+            android:hint="Shoe type(wide, narrow, etc.)"
             android:background="@drawable/rounded_edittext"
             android:padding="12dp"
             android:layout_marginTop="12dp"/>

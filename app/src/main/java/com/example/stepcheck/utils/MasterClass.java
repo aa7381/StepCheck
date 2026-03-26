@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -32,6 +33,9 @@ import com.google.firebase.database.ValueEventListener;
 public abstract class MasterClass extends AppCompatActivity implements BottomNavigationView.OnItemSelectedListener {
     protected BottomNavigationView bottomNavigationView;
     private NetworkChangeReceiver networkReceiver;
+    private ValueEventListener rankRequestListener;
+    private AlertDialog currentRankDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +84,8 @@ public abstract class MasterClass extends AppCompatActivity implements BottomNav
                         }
                         if (worker.getCan_manage_shift()) {
                             navMenu.findItem(R.id.navigation_manage_shift).setVisible(true);
+                            // If user is a manager, listen for rank requests
+                            listenForRankRequests(uid);
                         }
                     }
                 }
@@ -88,6 +94,59 @@ public abstract class MasterClass extends AppCompatActivity implements BottomNav
                 public void onCancelled(@NonNull DatabaseError error) { }
             });
         }
+    }
+
+    /**
+     * Listens for rank change requests sent to this manager.
+     */
+    private void listenForRankRequests(String managerId) {
+        if (rankRequestListener != null) {
+            FBRef.FBDB.getReference("RankRequests").child(managerId).removeEventListener(rankRequestListener);
+        }
+
+        rankRequestListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Boolean seen = snapshot.child("seenByManager").getValue(Boolean.class);
+                    if (Boolean.TRUE.equals(seen)) return; // Don't show again if already seen
+
+                    Long timestamp = snapshot.child("timestamp").getValue(Long.class);
+                    if (timestamp != null && System.currentTimeMillis() - timestamp > 180000) {
+                        FBRef.FBDB.getReference("RankRequests").child(managerId).removeValue();
+                        return;
+                    }
+
+                    String workerName = snapshot.child("workerName").getValue(String.class);
+                    String requestedRank = snapshot.child("requestedRank").getValue(String.class);
+                    String code = snapshot.child("code").getValue(String.class);
+
+                    if (!isFinishing()) {
+                        if (currentRankDialog != null && currentRankDialog.isShowing()) {
+                            currentRankDialog.dismiss();
+                        }
+                        
+                        // Mark as seen immediately so it won't pop up again
+                        FBRef.FBDB.getReference("RankRequests").child(managerId).child("seenByManager").setValue(true);
+
+                        currentRankDialog = new AlertDialog.Builder(MasterClass.this)
+                                .setTitle("Rank Change Request")
+                                .setMessage(workerName + " wants to change rank to " + requestedRank + ".\n\nVerification Code: " + code + "\n\n(Valid for 3 minutes)")
+                                .setPositiveButton("OK", null)
+                                .show();
+                    }
+                } else {
+                    if (currentRankDialog != null && currentRankDialog.isShowing()) {
+                        currentRankDialog.dismiss();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        };
+
+        FBRef.FBDB.getReference("RankRequests").child(managerId).addValueEventListener(rankRequestListener);
     }
 
     /**
@@ -146,6 +205,14 @@ public abstract class MasterClass extends AppCompatActivity implements BottomNav
         super.onStop();
         if (networkReceiver != null) {
             unregisterReceiver(networkReceiver);
+        }
+        // Remove rank request listener when activity is not visible to prevent multiple dialogs
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null && rankRequestListener != null) {
+            FBRef.FBDB.getReference("RankRequests").child(currentUser.getUid()).removeEventListener(rankRequestListener);
+        }
+        if (currentRankDialog != null && currentRankDialog.isShowing()) {
+            currentRankDialog.dismiss();
         }
     }
 }

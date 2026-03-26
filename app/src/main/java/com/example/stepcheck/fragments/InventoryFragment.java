@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
@@ -29,6 +30,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanIntentResult;
 import com.journeyapps.barcodescanner.ScanOptions;
 import java.util.ArrayList;
 import java.util.List;
@@ -142,11 +144,14 @@ public class InventoryFragment extends Fragment {
             });
         }
 
-        barLauncher = registerForActivityResult(new ScanContract(), result -> {
-            if (result != null && result.getContents() != null) {
-                String qr_code_data = result.getContents();
-                safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
-                check();
+        barLauncher = registerForActivityResult(new ScanContract(), new ActivityResultCallback<ScanIntentResult>() {
+            @Override
+            public void onActivityResult(ScanIntentResult result) {
+                if (result != null && result.getContents() != null) {
+                    String qr_code_data = result.getContents();
+                    safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
+                    check();
+                }
             }
         });
 
@@ -171,8 +176,9 @@ public class InventoryFragment extends Fragment {
                 List<Product> productList = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String shoeName = snapshot.child("shoe_name").getValue(String.class);
+                    Double price = snapshot.child("price").getValue(Double.class);
                     if (shoeName != null) {
-                        productList.add(new Product(snapshot.getKey(), shoeName));
+                        productList.add(new Product(snapshot.getKey(), shoeName, price != null ? price : 0.0));
                     }
                 }
                 adapter.setData(productList);
@@ -247,5 +253,3 @@ public class InventoryFragment extends Fragment {
             }
         }
     }
-
-

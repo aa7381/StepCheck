@@ -29,7 +29,7 @@ public class ShiftSyncReceiver extends BroadcastReceiver {
         Log.d("ShiftSyncReceiver", "End of day sync triggered automatically");
         
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String currentDate = sdfDate.format(calendar.getTime());
         
         // מפעיל את הסנכרון האוטומטי עבור היום שהסתיים - כעת מקבל רק את התאריך

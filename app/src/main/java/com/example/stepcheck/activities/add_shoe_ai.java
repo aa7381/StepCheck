@@ -6,6 +6,7 @@ import static com.example.stepcheck.utils.FBRef.refStorage;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -34,6 +35,8 @@ import com.example.stepcheck.utils.GeminiManager;
 import com.example.stepcheck.utils.Prompts;
 import com.example.stepcheck.R;
 import com.example.stepcheck.models.Shoes;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -45,6 +48,7 @@ import com.google.zxing.NotFoundException;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.RGBLuminanceSource;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -117,9 +121,9 @@ public class add_shoe_ai extends AppCompatActivity {
         String[] options = {"Camera", "Gallery"};
         new AlertDialog.Builder(this)
                 .setTitle("Select Image Source")
-                .setItems(options, new android.content.DialogInterface.OnClickListener() {
+                .setItems(options, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(android.content.DialogInterface dialog, int which) {
+                    public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
                             checkPermissionsAndCapture();
                         } else {
@@ -130,7 +134,7 @@ public class add_shoe_ai extends AppCompatActivity {
     }
 
     private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_PICK_IMAGE);
     }
 
@@ -177,7 +181,6 @@ public class add_shoe_ai extends AppCompatActivity {
         }
     }
 
-    // פונקציה לקריאת QR מכל התמונות
     private String decodeQRCodeFromAllImages() {
         for (Bitmap bitmap : selectedBitmaps) {
             String qr = decodeQRCode(bitmap);
@@ -225,7 +228,7 @@ public class add_shoe_ai extends AppCompatActivity {
 
         GeminiManager.getInstance().sendTextWithPhotosPrompt(Prompts.SHOE_PROMPT, selectedBitmaps, new GeminiCallback() {
             @Override
-            public void onSuccess(String result) {
+            public void onSuccess(final String result) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -236,7 +239,7 @@ public class add_shoe_ai extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(final Throwable t) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -299,7 +302,7 @@ public class add_shoe_ai extends AppCompatActivity {
         } catch (JSONException e) { e.printStackTrace(); }
     }
 
-    private void uploadAndSave(String id, String name, String color, String type, double price, String company) {
+    private void uploadAndSave(final String id, final String name, final String color, final String type, final double price, final String company) {
         final ProgressDialog pd = new ProgressDialog(this);
         pd.setTitle("Saving...");
         pd.show();
@@ -311,16 +314,27 @@ public class add_shoe_ai extends AppCompatActivity {
 
         String fileName = UUID.randomUUID().toString() + ".jpg";
         refStorage.child("shoes").child(safeKey).child(fileName).putBytes(data)
-                .addOnSuccessListener(ts -> {
-                    count_shoes += 13;
-                    refBase3.child("count_shoes").setValue(count_shoes);
-                    Shoes shoe = new Shoes(id, name, color, type, price, company);
-                    refBase2.child(safeKey).setValue(shoe).addOnSuccessListener(aVoid -> {
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot ts) {
+                        count_shoes += 13;
+                        refBase3.child("count_shoes").setValue(count_shoes);
+                        final Shoes shoe = new Shoes(id, name, color, type, price, company);
+                        refBase2.child(safeKey).setValue(shoe).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                pd.dismiss();
+                                Toast.makeText(add_shoe_ai.this, "Saved!", Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+                        });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
                         pd.dismiss();
-                        Toast.makeText(add_shoe_ai.this, "Saved!", Toast.LENGTH_SHORT).show();
-                        finish();
-                    });
-                }).addOnFailureListener(e -> pd.dismiss());
+                    }
+                });
     }
 
     public void back(View view) { finish(); }
@@ -334,4 +348,3 @@ public class add_shoe_ai extends AppCompatActivity {
         return selectedBitmaps.get(0);
     }
 }
-

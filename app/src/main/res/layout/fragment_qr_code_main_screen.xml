@@ -36,7 +36,7 @@
             android:layout_height="56dp"
             android:text="Start Scanning"
             android:onClick="Start_Scanning"
-            android:backgroundTint="#6C6FF5"
+            android:backgroundTint="#212121"
             android:textColor="@android:color/white"
             android:layout_marginBottom="20dp" />
 

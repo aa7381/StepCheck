@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -61,8 +62,11 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                     .setTitle("Connection Lost")
                     .setMessage("StepCheck requires internet connection. Please reconnect.")
                     .setCancelable(false)
-                    .setPositiveButton("Settings", (dialog, which) -> {
-                        activity.startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
+                    .setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            activity.startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
+                        }
                     })
                     .create();
             networkDialog.show();

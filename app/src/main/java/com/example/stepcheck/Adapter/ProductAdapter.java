@@ -1,17 +1,26 @@
 package com.example.stepcheck.Adapter;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.stepcheck.R;
 import com.example.stepcheck.models.Product;
+import com.example.stepcheck.utils.FBRef;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Adapter for the RecyclerView that displays a list of products.
@@ -21,6 +30,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     private final List<Product> masterList = new ArrayList<>();
     private final List<Product> filteredList = new ArrayList<>();
     private OnItemClickListener listener;
+
     /**
      * Interface for handling click events on items in the RecyclerView.
      */
@@ -31,6 +41,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
          */
         void onItemClick(Product product);
     }
+
     /**
      * Sets the listener for item click events.
      * @param listener The listener to set.
@@ -48,6 +59,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         masterList.addAll(products);
         filter("");
     }
+
     /**
      * Filters the list of products based on a query string.
      * @param query The query to filter the list by.
@@ -57,14 +69,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         if (query.isEmpty()) {
             filteredList.addAll(masterList);
         } else {
+            String lowerCaseQuery = query.toLowerCase();
             for (Product product : masterList) {
-                if (product.getName().toLowerCase().contains(query.toLowerCase())) {
+                // Search in both name and ID (barcode)
+                if (product.getName().toLowerCase().contains(lowerCaseQuery) ||
+                    product.getId().toLowerCase().contains(lowerCaseQuery)) {
                     filteredList.add(product);
                 }
             }
         }
         notifyDataSetChanged();
     }
+
     /**
      * Called when RecyclerView needs a new {@link ViewHolder} of the given type to represent
      * an item.
@@ -88,9 +104,47 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
      * @param position The position of the item within the adapter's data set.
      */
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Product product = filteredList.get(position);
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+        final Product product = filteredList.get(position);
         holder.productName.setText(product.getName());
+        holder.productPrice.setText(String.format(Locale.getDefault(), "Price: $%.2f", product.getPrice()));
+
+        // Clear previous image to avoid flickering
+        holder.productImage.setImageResource(R.mipmap.ic_launcher);
+
+        // Load image from Firebase Storage
+        StorageReference shoeFolderRef = FBRef.refStorage.child("shoes").child(product.getId());
+        
+        shoeFolderRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+            @Override
+            public void onSuccess(ListResult listResult) {
+                if (!listResult.getItems().isEmpty()) {
+                    listResult.getItems().get(0).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Glide.with(holder.itemView.getContext())
+                                    .load(uri)
+                                    .placeholder(R.mipmap.ic_launcher)
+                                    .error(R.mipmap.ic_launcher)
+                                    .centerCrop()
+                                    .into(holder.productImage);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            holder.productImage.setImageResource(R.mipmap.ic_launcher);
+                        }
+                    });
+                } else {
+                    holder.productImage.setImageResource(R.mipmap.ic_launcher);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                holder.productImage.setImageResource(R.mipmap.ic_launcher);
+            }
+        });
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,6 +155,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             }
         });
     }
+
     /**
      * Returns the total number of items in the data set held by the adapter.
      * @return The total number of items in this adapter.
@@ -115,6 +170,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView productName;
+        public TextView productPrice;
+        public ImageView productImage;
 
         /**
          * Constructs a new ViewHolder.
@@ -122,7 +179,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
          */
         public ViewHolder(View view) {
             super(view);
-            productName = view.findViewById(R.id.product_name);
+            productName = view.findViewById(R.id.tvProductName);
+            productPrice = view.findViewById(R.id.tvProductPrice);
+            productImage = view.findViewById(R.id.ivProduct);
         }
     }
 }

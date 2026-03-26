@@ -92,15 +92,14 @@ public class Worker_information extends AppCompatActivity implements OnMapReadyC
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+        
         Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String currentDate = sdf.format(calendar.getTime());
 
-        String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-        String month = String.format("%02d", calendar.get(Calendar.MONTH) + 1);
-        String year = String.valueOf(calendar.get(Calendar.YEAR));
+        // נתיב מעודכן - ללא פיצול ליום/חודש/שנה
         refBase5.child(user)
-                .child(day)
-                .child(month)
-                .child(year)
+                .child(currentDate)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -138,7 +137,7 @@ public class Worker_information extends AppCompatActivity implements OnMapReadyC
      */
     private void startListeningForLocation() {
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String currentDate = sdf.format(calendar.getTime());
 
         locationListener = new ValueEventListener() {
@@ -176,7 +175,7 @@ public class Worker_information extends AppCompatActivity implements OnMapReadyC
         super.onDestroy();
         if (locationListener != null) {
             Calendar calendar = Calendar.getInstance();
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             String currentDate = sdf.format(calendar.getTime());
             refBase5.child(user).child(currentDate).removeEventListener(locationListener);
         }

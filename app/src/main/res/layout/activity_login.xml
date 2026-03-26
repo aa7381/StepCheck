@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7F8FA"
+    android:background="@color/background_primary"
     android:padding="24dp"
     android:fillViewport="true">
 
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="Login"
-            android:textColor="#111827"
+            android:textColor="@color/text_primary"
             android:textSize="32sp"
             android:textStyle="bold" />
 
@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Welcome back, please log in to your account."
-            android:textColor="#6B7280"
+            android:textColor="@color/text_secondary"
             android:textSize="16sp" />
 
         <!-- Email Label -->
@@ -49,7 +49,7 @@
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
             android:text="Email address"
-            android:textColor="#111827"
+            android:textColor="@color/text_primary"
             android:textSize="16sp" />
 
         <!-- Email Input -->
@@ -70,13 +70,15 @@
                 android:background="@android:color/transparent"
                 android:inputType="textEmailAddress"
                 android:textDirection="rtl"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
                 android:padding="8dp" />
 
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_email"
-                android:tint="#6B7280" />
+                android:tint="@color/text_secondary" />
         </LinearLayout>
 
         <!-- Password Label -->
@@ -87,7 +89,7 @@
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
             android:text="Password"
-            android:textColor="#111827"
+            android:textColor="@color/text_primary"
             android:textSize="16sp" />
 
         <!-- Password Input -->
@@ -108,13 +110,15 @@
                 android:background="@android:color/transparent"
                 android:inputType="textPassword"
                 android:textDirection="rtl"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
                 android:padding="8dp" />
 
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_lock"
-                android:tint="#6B7280" />
+                android:tint="@color/text_secondary" />
         </LinearLayout>
 
         <!-- Remember Me -->
@@ -130,13 +134,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
                 android:text="Remember me "
-                android:textColor="#111827"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp" />
 
             <CheckBox
                 android:id="@+id/remember_checkbox"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/indigo_600" />
         </LinearLayout>
 
         <!-- Login Button -->
@@ -146,7 +151,7 @@
             android:layout_height="55dp"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="12dp"
-            android:backgroundTint="#5146F0"
+            android:backgroundTint="@color/indigo_600"
             android:onClick="Login_click"
             android:text="Login"
             android:textColor="#FFFFFF"
@@ -172,7 +177,7 @@
                 android:onClick="Sign_up"
                 android:text="Sign up now"
                 android:textAllCaps="false"
-                android:textColor="#5146F0"
+                android:textColor="@color/indigo_600"
                 android:textSize="16sp" />
 
             <TextView
@@ -181,7 +186,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:text="Don't have an account?"
-                android:textColor="#6B7280"
+                android:textColor="@color/text_secondary"
                 android:textSize="16sp" />
 
 

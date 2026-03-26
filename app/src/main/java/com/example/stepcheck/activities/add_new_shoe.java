@@ -10,10 +10,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanIntentResult;
 import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.UUID;
@@ -43,21 +48,30 @@ public class add_new_shoe extends MasterClass {
 
     private Button ScanQR ;
     private String qr_code_data = "";
-    private EditText etShoeName, etShoeType, etPrice, etmanufacturing_company, etColor;
+
+    private Spinner etShoeType;
+    private EditText etShoeName, etPrice, etmanufacturing_company, etColor;
     private static final int REQUEST_PICK_IMAGE = 300;
     private String fileName ;
     private String safeKey ;
     private Uri imageUri ;
     private int count_shoes =0 ;
 
+    private String[] shoeType = {"wide", "narrow", "casual, etc."};
+    private String shoeType2;
 
-    private final ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> {
-        if (result.getContents() != null) {
 
-            qr_code_data = result.getContents();
-            safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
 
-            Toast.makeText(this, "Scanned: " + qr_code_data, Toast.LENGTH_SHORT).show();
+    private final ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), new ActivityResultCallback<ScanIntentResult>() {
+        @Override
+        public void onActivityResult(ScanIntentResult result) {
+            if (result.getContents() != null) {
+
+                qr_code_data = result.getContents();
+                safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
+
+                Toast.makeText(add_new_shoe.this, "Scanned: " + qr_code_data, Toast.LENGTH_SHORT).show();
+            }
         }
     });
 
@@ -85,7 +99,19 @@ public class add_new_shoe extends MasterClass {
 
                 scanCode();
             }
-        });    }
+        });
+        ArrayAdapter<String> adp = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, shoeType);
+        etShoeType.setAdapter(adp);
+        etShoeType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                shoeType2 = shoeType[position];
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
     /**
      * Initiates the QR code scanning process.
      * Configures and launches the barcode scanner.
@@ -147,7 +173,7 @@ public class add_new_shoe extends MasterClass {
 
             StorageReference reFfile = refStorage.child("shoes").child(safeKey).child(fileName);
 
-            ProgressDialog pd = new ProgressDialog(this);
+            final ProgressDialog pd = new ProgressDialog(this);
             pd.setTitle("Uploading...");
             pd.show();
 
@@ -172,6 +198,8 @@ public class add_new_shoe extends MasterClass {
         }
     }
 
+
+
     /**
      * Saves the new shoe's information to the Firebase Realtime Database.
      * It validates the input fields, checks if a shoe with the same QR code already exists,
@@ -180,16 +208,15 @@ public class add_new_shoe extends MasterClass {
      */
     public void Save_shoe(View view) {
         String shoeName = etShoeName.getText().toString();
-        String shoeType = etShoeType.getText().toString();
         String color = etColor.getText().toString();
         String manufacturing_company = etmanufacturing_company.getText().toString();
         String priceStr = etPrice.getText().toString();
 
-        if (shoeName.isEmpty() || shoeType.isEmpty() || priceStr.isEmpty() || safeKey.isEmpty() || manufacturing_company.isEmpty() || color.isEmpty()) {
+        if (shoeName.isEmpty() ||  priceStr.isEmpty() || safeKey.isEmpty() || manufacturing_company.isEmpty() || color.isEmpty()) {
             Toast.makeText(this, "Information is missing", Toast.LENGTH_SHORT).show();
         } else {
             try {
-                double price = Double.parseDouble(priceStr);
+                final double price = Double.parseDouble(priceStr);
                 refBase2.child(safeKey).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -201,11 +228,19 @@ public class add_new_shoe extends MasterClass {
                             refBase3.child("count_shoes").setValue(count_shoes);
 
                             uploadImage(imageUri);
-                            Shoes shoes = new Shoes(safeKey, shoeName, color, shoeType, price, manufacturing_company);
-                            refBase2.child(safeKey).setValue(shoes).addOnSuccessListener(aVoid -> Toast.makeText(getApplicationContext(), "Shoe saved successfully", Toast.LENGTH_SHORT).show())
-                                    .addOnFailureListener(e ->
-                                            Toast.makeText(getApplicationContext(), "Failed to save shoe", Toast.LENGTH_SHORT).show()
-                                    );
+                            Shoes shoes = new Shoes(safeKey, etShoeName.getText().toString(), etColor.getText().toString(), shoeType2, price, etmanufacturing_company.getText().toString());
+                            refBase2.child(safeKey).setValue(shoes).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(getApplicationContext(), "Shoe saved successfully", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(getApplicationContext(), "Failed to save shoe", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
                     }
 

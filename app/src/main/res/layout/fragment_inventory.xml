@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FFFFFF"
+    android:background="@color/background_primary"
     android:padding="24dp">
 
     <!-- TITLE -->
@@ -16,6 +16,7 @@
         android:text="Stock Check"
         android:textSize="26sp"
         android:textStyle="bold"
+        android:textColor="@color/text_primary"
         android:gravity="center"
         android:layout_marginBottom="24dp"/>
 
@@ -25,6 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
+        android:background="@color/surface_primary"
         app:iconifiedByDefault="false"
         app:queryHint="Enter product name or barcode" />
 
@@ -32,37 +34,39 @@
         android:id="@+id/rvProducts"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:background="@color/surface_primary" />
 
-    <!-- SCAN QR -->
-    <Button
+    <!-- PRIMARY BUTTON -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnScanQr"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginTop="16dp"
         android:text="Scan QR"
         android:textStyle="bold"
-        android:backgroundTint="#6C6FF5"
+        app:backgroundTint="@color/blue_primary"
         android:textColor="@android:color/white" />
 
-    <!-- ADD NEW SHOE -->
-    <Button
+    <!-- SECONDARY -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/AddNewShoe"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginTop="8dp"
         android:text="Add New Shoe"
         android:textStyle="bold"
-        android:backgroundTint="#4CAF50"
-        android:textColor="@android:color/white"/>
+        app:backgroundTint="@color/divider_color"
+        android:textColor="@color/text_primary"/>
 
-    <Button
+    <!-- ACCENT -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/add_shoe_ai"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginTop="8dp"
-        android:backgroundTint="#03A9F4"
-        android:text="Add New Shoe With Ai"
+        app:backgroundTint="#607D8B"
+        android:text="Add New Shoe With AI"
         android:textColor="@android:color/white"
         android:textStyle="bold" />
 
