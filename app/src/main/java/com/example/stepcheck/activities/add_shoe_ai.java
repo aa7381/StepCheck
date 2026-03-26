@@ -60,23 +60,74 @@ import java.util.UUID;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Activity that uses Gemini AI to automatically identify shoe details and decode QR codes from photos.
+ * The user can take multiple photos or pick them from the gallery. The AI then processes these images 
+ * to extract information like shoe name, brand, color, price, and the QR code ID.
+ */
 public class add_shoe_ai extends AppCompatActivity {
 
+    /**
+     * Buttons for adding photos, starting analysis, saving the shoe, and exiting.
+     */
     private Button btnAddPhoto, btnAnalyze, btnAddShoe, btnExit;
+    
+    /**
+     * ImageView to display the most recently added photo.
+     */
     private ImageView imageView;
+    
+    /**
+     * TextViews to display the AI analysis result and the count of added photos.
+     */
     private TextView tvResult, tvCounter;
 
+    /**
+     * List of Bitmaps currently selected for analysis.
+     */
     private ArrayList<Bitmap> selectedBitmaps = new ArrayList<>();
+    
+    /**
+     * Request codes for image picking and camera capture.
+     */
     private static final int REQUEST_PICK_IMAGE = 300;
     private static final int REQUEST_CAMERA_IMAGE = 301;
+    
+    /**
+     * Permission code for camera access.
+     */
     private static final int PERMISSION_CODE = 100;
 
+    /**
+     * Path to the photo currently being captured by the camera.
+     */
     private String currentPhotoPath;
+    
+    /**
+     * Base64 encoded safe key derived from the decoded QR code.
+     */
     private String safeKey;
+    
+    /**
+     * JSONObject containing the parsed details of the shoe returned by the AI.
+     */
     private JSONObject shoeData;
+    
+    /**
+     * Tag for logging purposes.
+     */
     private final String TAG = "add_shoe_ai";
+    
+    /**
+     * Local counter for the total number of shoes in the database.
+     */
     private int count_shoes = 0;
 
+    /**
+     * Initializes the activity, sets up view references and click listeners.
+     * Also fetches the current shoe count from Firebase.
+     * @param savedInstanceState Saved instance state bundle.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +168,11 @@ public class add_shoe_ai extends AppCompatActivity {
         });
     }
 
+    /**
+     * Handles the click event for the 'Add Photo' button.
+     * Shows a dialog to choose between the camera and gallery.
+     * @param view The clicked view.
+     */
     public void add_photo(View view) {
         String[] options = {"Camera", "Gallery"};
         new AlertDialog.Builder(this)
@@ -133,11 +189,17 @@ public class add_shoe_ai extends AppCompatActivity {
                 }).show();
     }
 
+    /**
+     * Opens the device's image gallery.
+     */
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_PICK_IMAGE);
     }
 
+    /**
+     * Checks if camera permissions are granted. If so, starts the camera; otherwise, requests permissions.
+     */
     private void checkPermissionsAndCapture() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, PERMISSION_CODE);
@@ -146,6 +208,10 @@ public class add_shoe_ai extends AppCompatActivity {
         }
     }
 
+    /**
+     * Launches the camera activity to capture a new photo.
+     * Creates a temporary file to store the image.
+     */
     private void captureFromCamera() {
         try {
             File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -160,6 +226,13 @@ public class add_shoe_ai extends AppCompatActivity {
         }
     }
 
+    /**
+     * Callback for activity results (picking an image or capturing a photo).
+     * Adds the selected image to the list of bitmaps.
+     * @param requestCode The request code.
+     * @param resultCode The result code.
+     * @param data The intent containing the result data.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -181,6 +254,10 @@ public class add_shoe_ai extends AppCompatActivity {
         }
     }
 
+    /**
+     * Iterates through all selected bitmaps and attempts to decode a QR code from each.
+     * @return The decoded QR code text, or null if none was found.
+     */
     private String decodeQRCodeFromAllImages() {
         for (Bitmap bitmap : selectedBitmaps) {
             String qr = decodeQRCode(bitmap);
@@ -191,6 +268,11 @@ public class add_shoe_ai extends AppCompatActivity {
         return null;
     }
 
+    /**
+     * Attempts to decode a QR code from a single Bitmap using the ZXing library.
+     * @param bitmap The Bitmap to scan.
+     * @return The decoded text, or null if decoding failed.
+     */
     private String decodeQRCode(Bitmap bitmap) {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -206,6 +288,10 @@ public class add_shoe_ai extends AppCompatActivity {
         }
     }
 
+    /**
+     * Starts the AI analysis process.
+     * Decodes the QR code first, then sends the photos to Gemini AI for shoe identification.
+     */
     private void analyzeImage() {
         if (selectedBitmaps.isEmpty()) {
             Toast.makeText(this, "Please add a photo first", Toast.LENGTH_SHORT).show();
@@ -251,6 +337,11 @@ public class add_shoe_ai extends AppCompatActivity {
         });
     }
 
+    /**
+     * Parses the JSON response from the AI and displays the shoe details in the UI.
+     * @param result The raw string response from the AI.
+     * @param qrRawContent The previously decoded QR code content.
+     */
     private void parseAndProcessResult(String result, String qrRawContent) {
         try {
             String cleanJson = result.replace("```json", "").replace("```", "").trim();
@@ -273,6 +364,11 @@ public class add_shoe_ai extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles the click event for the 'Save' button.
+     * Validates that analysis has been performed, then checks Firebase for existing records before saving.
+     * @param view The clicked view.
+     */
     public void save_shoe(View view) {
         if (shoeData == null || safeKey == null) {
             Toast.makeText(this, "Please analyze first", Toast.LENGTH_SHORT).show();
@@ -302,6 +398,15 @@ public class add_shoe_ai extends AppCompatActivity {
         } catch (JSONException e) { e.printStackTrace(); }
     }
 
+    /**
+     * Uploads the representative shoe image to Firebase Storage and saves the shoe metadata to the Realtime Database.
+     * @param id Decoded QR ID.
+     * @param name Shoe name.
+     * @param color Shoe color.
+     * @param type Shoe type.
+     * @param price Shoe price.
+     * @param company Manufacturing company.
+     */
     private void uploadAndSave(final String id, final String name, final String color, final String type, final double price, final String company) {
         final ProgressDialog pd = new ProgressDialog(this);
         pd.setTitle("Saving...");
@@ -337,7 +442,16 @@ public class add_shoe_ai extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Closes the activity.
+     * @param view The clicked view.
+     */
     public void back(View view) { finish(); }
+    
+    /**
+     * Finds a representative image of the shoe from the list of bitmaps (the one that DOESN'T contain a QR code, if possible).
+     * @return A Bitmap image of the shoe.
+     */
     private Bitmap getShoeImage() {
         for (Bitmap bitmap : selectedBitmaps) {
             String qr = decodeQRCode(bitmap);

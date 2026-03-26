@@ -24,12 +24,25 @@ import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
 
-
+/**
+ * Singleton manager class for interacting with Google's Gemini AI.
+ * This class handles the initialization of the Gemini model and provides methods to send prompts with images for analysis.
+ */
 public class GeminiManager
 {
+    /**
+     * Singleton instance of GeminiManager.
+     */
     private static GeminiManager instance;
+    
+    /**
+     * The GenerativeModel instance used to interact with Gemini.
+     */
     private GenerativeModel gemini;
 
+    /**
+     * Private constructor to initialize the Gemini model using the API key from BuildConfig.
+     */
     private GeminiManager() {
 
         gemini = new GenerativeModel(
@@ -37,6 +50,11 @@ public class GeminiManager
         BuildConfig.Gemini_API_Key
         );
     }
+    
+    /**
+     * Returns the singleton instance of GeminiManager.
+     * @return The GeminiManager instance.
+     */
     public static GeminiManager getInstance() {
         if (instance == null) {
             instance = new GeminiManager();
@@ -44,7 +62,15 @@ public class GeminiManager
         return instance;
         }
 
-    public void sendTextWithPhotosPrompt(String prompt, ArrayList<Bitmap> photos, GeminiCallback callback) {
+    /**
+     * Sends a text prompt along with a list of bitmaps (photos) to the Gemini AI for analysis.
+     * Results are returned asynchronously via the provided {@link GeminiCallback}.
+     *
+     * @param prompt   The text instructions for the AI.
+     * @param photos   A list of Bitmap images to be analyzed.
+     * @param callback The callback to handle success or failure of the AI request.
+     */
+    public void sendTextWithPhotosPrompt(String prompt, ArrayList<Bitmap> photos, final GeminiCallback callback) {
         List<Part> parts = new ArrayList<>();
         parts.add(new TextPart(prompt));
         for (Bitmap photo : photos) {

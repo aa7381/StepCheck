@@ -32,9 +32,29 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException;
  */
 public class Login extends MasterClass {
 
+    /**
+     * Button to trigger the login process.
+     */
     Button login_button;
-    EditText email_input,password_input;
+
+    /**
+     * EditText for the user to input their email.
+     */
+    EditText email_input;
+
+    /**
+     * EditText for the user to input their password.
+     */
+    EditText password_input;
+
+    /**
+     * CheckBox to remember the user's login state.
+     */
     CheckBox remember_checkbox;
+
+    /**
+     * Boolean flag to indicate if "Remember Me" is checked.
+     */
     Boolean remember_me = false;
 
     /**
@@ -72,7 +92,7 @@ public class Login extends MasterClass {
         if (email.isEmpty() || pass.isEmpty()) {
             Toast.makeText(this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
         } else{
-            ProgressDialog pd = new ProgressDialog(this);
+            final ProgressDialog pd = new ProgressDialog(this);
             pd.setTitle("Connecting");
             pd.show();
             pd.setCancelable(false);

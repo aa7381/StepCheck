@@ -27,8 +27,20 @@ import java.util.Locale;
  * This adapter manages the data and creates the views for each item in the list.
  */
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
+    
+    /**
+     * The master list of all products.
+     */
     private final List<Product> masterList = new ArrayList<>();
+    
+    /**
+     * The list of products after filtering.
+     */
     private final List<Product> filteredList = new ArrayList<>();
+    
+    /**
+     * Listener for item click events.
+     */
     private OnItemClickListener listener;
 
     /**
@@ -51,7 +63,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
 
     /**
-     * Sets the data for the adapter.
+     * Sets the data for the adapter and updates the filtered list.
      * @param products The list of products to display.
      */
     public void setData(List<Product> products) {
@@ -62,6 +74,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     /**
      * Filters the list of products based on a query string.
+     * Searches in both name and ID (barcode).
      * @param query The query to filter the list by.
      */
     public void filter(String query) {
@@ -169,12 +182,23 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
      * A ViewHolder describes an item view and metadata about its place within the RecyclerView.
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        /**
+         * TextView for displaying the product name.
+         */
         public TextView productName;
+        
+        /**
+         * TextView for displaying the product price.
+         */
         public TextView productPrice;
+        
+        /**
+         * ImageView for displaying the product image.
+         */
         public ImageView productImage;
 
         /**
-         * Constructs a new ViewHolder.
+         * Constructs a new ViewHolder and initializes its views.
          * @param view The view that this ViewHolder will hold.
          */
         public ViewHolder(View view) {

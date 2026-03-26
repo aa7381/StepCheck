@@ -1,6 +1,14 @@
 package com.example.stepcheck.utils;
 
+/**
+ * A utility class that holds prompt strings and schemas for AI analysis.
+ * This class contains the JSON schema and the prompt used for identifying shoe details and decoding QR codes via Gemini AI.
+ */
 public class Prompts {
+    /**
+     * JSON schema defining the expected structure of the AI's response when analyzing a shoe.
+     * Includes fields for id (QR content), name, color, type, price, and manufacturing company.
+     */
     public static final String SHOE_SCHEMA = "{\n" +
             "  \"type\": \"object\",\n" +
             "  \"properties\": {\n" +
@@ -28,6 +36,10 @@ public class Prompts {
             "  \"required\": [\"id\", \"shoe_name\", \"color\", \"type\", \"price\", \"manufacturing_company\"]\n" +
             "}";
 
+    /**
+     * The full prompt sent to the Gemini AI to perform shoe analysis and QR decoding.
+     * Instructs the AI to identify shoe details and return them in a specific JSON format based on {@link #SHOE_SCHEMA}.
+     */
     public static final String SHOE_PROMPT =
             "You are a professional QR scanner and shoe expert.\n\n" +
             "IMAGE ANALYSIS RULES:\n" +
