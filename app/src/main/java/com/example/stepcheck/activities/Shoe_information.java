@@ -51,7 +51,7 @@ public class Shoe_information extends MasterClass {
     private ArrayList<Button> sizeButtons = new ArrayList<>();
 
 
-    private String[] sizeType = {"Adult", "Adult_kids", "Youngerkids","Babies"};
+    private String[] sizeType = {"Adult","Adult kids","Younger kids","Babies"};
     private String[] adult_sizes = { "UsMen", "UsWomen", "EuSizes", "UkSizes",};
     private String[] adult_kids_sizes = {"UsKidsY","UkKidsY","EuKidsY"};
     private String[] youngerkids_sizes = {"UsYoungerKids","UkYoungerKids","EuYoungerKids"};

@@ -48,7 +48,7 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
         private  String qr_code_data;
     private static final int REQUEST_PICK_IMAGE = 300;
     private Uri imageUri;
-    private String[] sizeType = {"Adult", "Adult_kids", "Youngerkids","Babies"};
+    private String[] sizeType = {"Adult", "Adult kids", "Younger kids","Babies"};
     private String[] adult_sizes = { "UsMen", "UsWomen", "EuSizes", "UkSizes",};
     private String[] adult_kids_sizes = {"UsKidsY","UkKidsY","EuKidsY"};
     private String[] youngerkids_sizes = {"UsYoungerKids","UkYoungerKids","EuYoungerKids"};
