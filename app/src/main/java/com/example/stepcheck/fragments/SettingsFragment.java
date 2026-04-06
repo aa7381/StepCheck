@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.stepcheck.activities.CreditsActivity;
 import com.example.stepcheck.utils.FBRef;
 import com.example.stepcheck.R;
 import com.example.stepcheck.activities.Welcome_app;
@@ -47,7 +48,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
     private Button Sign_out;
     private ListView lvSettings;
     int position = 0;
-    private String[] list_information = {"Change Name", "Change Email", "Change Password","Change Rank"};
+    private String[] list_information = {"Change Name", "Change Email", "Change Password", "Change Rank", "Credits"};
     
     private Handler timeoutHandler = new Handler(Looper.getMainLooper());
     private Runnable timeoutRunnable;
@@ -114,6 +115,13 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int pos, long rowid) {
         position = pos;
+        
+        if (position == 4) { // Credits
+            Intent intent = new Intent(requireContext(), CreditsActivity.class);
+            startActivity(intent);
+            return;
+        }
+
         final FirebaseUser user = FBRef.refAuth.getCurrentUser();
 
         if (user == null)

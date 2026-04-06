@@ -93,6 +93,10 @@
             android:name=".activities.Login"
             android:exported="false" />
         <activity
+            android:name=".activities.CreditsActivity"
+            android:exported="false"
+            android:label="Credits" />
+        <activity
             android:name=".utils.CaptureAct"
             android:exported="false"
             android:screenOrientation="portrait"
