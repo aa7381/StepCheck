@@ -57,9 +57,6 @@ public class add_new_shoe extends MasterClass {
     private int count_shoes =0 ;
 
 
-
-
-
     private final ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), new ActivityResultCallback<ScanIntentResult>() {
         @Override
         public void onActivityResult(ScanIntentResult result) {
