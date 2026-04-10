@@ -49,6 +49,7 @@
         android:background="@drawable/input_bg"
         android:hint="Full Name"
         android:padding="12dp"
+        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_secondary" />
 
