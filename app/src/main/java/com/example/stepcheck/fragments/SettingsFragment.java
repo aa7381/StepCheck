@@ -237,6 +237,12 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
                     FBRef.refBase.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String currentRank = snapshot.child(workerId).child("job_rank").getValue(String.class);
+                            if (selectedRank.equals(currentRank)) {
+                                Toast.makeText(getContext(), "You are already " + currentRank, Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             String tempManagerName = "";
                             String tempManagerId = "";
                             String requesterName = snapshot.child(workerId).child("username").getValue(String.class);
