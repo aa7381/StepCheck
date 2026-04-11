@@ -26,35 +26,19 @@ import kotlin.coroutines.EmptyCoroutineContext;
 
 /**
  * Singleton manager class for interacting with Google's Gemini AI.
- * This class handles the initialization of the Gemini model and provides methods to send prompts with images for analysis.
  */
 public class GeminiManager
 {
-    /**
-     * Singleton instance of GeminiManager.
-     */
     private static GeminiManager instance;
-    
-    /**
-     * The GenerativeModel instance used to interact with Gemini.
-     */
     private GenerativeModel gemini;
 
-    /**
-     * Private constructor to initialize the Gemini model using the API key from BuildConfig.
-     */
     private GeminiManager() {
-
         gemini = new GenerativeModel(
                 "gemini-2.5-flash",
         BuildConfig.Gemini_API_Key
         );
     }
     
-    /**
-     * Returns the singleton instance of GeminiManager.
-     * @return The GeminiManager instance.
-     */
     public static GeminiManager getInstance() {
         if (instance == null) {
             instance = new GeminiManager();
@@ -62,47 +46,54 @@ public class GeminiManager
         return instance;
         }
 
-    /**
-     * Sends a text prompt along with a list of bitmaps (photos) to the Gemini AI for analysis.
-     * Results are returned asynchronously via the provided {@link GeminiCallback}.
-     *
-     * @param prompt   The text instructions for the AI.
-     * @param photos   A list of Bitmap images to be analyzed.
-     * @param callback The callback to handle success or failure of the AI request.
-     */
     public void sendTextWithPhotosPrompt(String prompt, ArrayList<Bitmap> photos, final GeminiCallback callback) {
         List<Part> parts = new ArrayList<>();
         parts.add(new TextPart(prompt));
-        for (Bitmap photo : photos) {
-            parts.add(new ImagePart(photo));
+        if (photos != null) {
+            for (Bitmap photo : photos) {
+                if (photo != null) {
+                    parts.add(new ImagePart(photo));
+                }
+            }
         }
 
-        // Convert the List to an array if needed, or use the constructor that accepts a List
         Content content = new Content(parts);
 
-        gemini.generateContent(new Content[]{content},
-                new Continuation<GenerateContentResponse>() {
-                    @NonNull
-                    @Override
-                    public CoroutineContext getContext() {
-                        return EmptyCoroutineContext.INSTANCE;
-                    }
+        try {
+            gemini.generateContent(new Content[]{content},
+                    new Continuation<GenerateContentResponse>() {
+                        @NonNull
+                        @Override
+                        public CoroutineContext getContext() {
+                            return EmptyCoroutineContext.INSTANCE;
+                        }
 
-                    @Override
-                    public void resumeWith(@NonNull Object result) {
-                        if (result instanceof Result.Failure) {
-                            Log.e(TAG, "Gemini Error: " + ((Result.Failure) result).exception.getMessage());
-                            callback.onFailure(((Result.Failure) result).exception);
-                        } else {
-                            GenerateContentResponse response = (GenerateContentResponse) result;
-                            String text = response.getText();
-                            if (text != null) {
-                                callback.onSuccess(text);
+                        @Override
+                        public void resumeWith(@NonNull Object result) {
+                            if (result instanceof Result.Failure) {
+                                Throwable exception = ((Result.Failure) result).exception;
+                                Log.e(TAG, "Gemini Error: " + (exception != null ? exception.getMessage() : "Unknown error"));
+                                callback.onFailure(exception != null ? exception : new Exception("Unknown Gemini error"));
+                            } else if (result instanceof GenerateContentResponse) {
+                                GenerateContentResponse response = (GenerateContentResponse) result;
+                                try {
+                                    String text = response.getText();
+                                    if (text != null) {
+                                        callback.onSuccess(text);
+                                    } else {
+                                        callback.onFailure(new Exception("Response text is null"));
+                                    }
+                                } catch (Exception e) {
+                                    callback.onFailure(e);
+                                }
                             } else {
-                                callback.onFailure(new Exception("Response text is null"));
+                                callback.onFailure(new Exception("Unexpected result type from Gemini"));
                             }
                         }
-                    }
-                });
+                    });
+        } catch (Exception e) {
+            Log.e(TAG, "Error initiating Gemini request", e);
+            callback.onFailure(e);
+        }
     }
 }

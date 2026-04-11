@@ -1,0 +1,566 @@
+@startuml
+class com.example.stepcheck.activities.Welcome_app {
+~ Button register_button
+# void onCreate(Bundle)
+# void onStart()
++ void Login(View)
++ void Sign_up(View)
+}
+
+
+interface com.example.stepcheck.utils.GeminiCallback {
++ void onSuccess(String)
++ void onFailure(Throwable)
+}
+
+class com.example.stepcheck.fragments.InventoryFragment {
+- Button AddNewShoe
+- SearchView productSearchView
+- RecyclerView rvProducts
+- ProductAdapter adapter
+- String safeKey
+- ActivityResultLauncher<ScanOptions> barLauncher
++ View onCreateView(LayoutInflater,ViewGroup,Bundle)
++ void onViewCreated(View,Bundle)
+- void fetchProducts()
+- void scanCode()
+- void addNewShoe()
+- void add_shoe_ai()
+- void check()
+}
+
+
+class com.example.stepcheck.models.Shoes {
+- String id
+- String shoe_name
+- String color
+- String type
+- double price
+- String manufacturing_company
++ <<Create>> Shoes(String,String,String,String,double,String)
++ <<Create>> Shoes()
++ String getId()
++ String getShoe_name()
++ String getColor()
++ String getType()
++ double getPrice()
++ String getManufacturing_company()
++ void setId(String)
++ void setShoe_name(String)
++ void setColor(String)
++ void setType(String)
++ void setPrice(double)
++ void setManufacturing_company(String)
+}
+
+
+abstract class com.example.stepcheck.utils.MasterClass {
+# BottomNavigationView bottomNavigationView
+- NetworkChangeReceiver networkReceiver
+- ValueEventListener rankRequestListener
+- ValueEventListener shiftStatusListener
+- AlertDialog currentRankDialog
+# boolean isInShift
+# void onCreate(Bundle)
+- void observeShiftStatus()
+# void initBottomNavigationView(int)
+- void handleInitialFragment()
+# void setupPermissions()
+- void listenForRankRequests(String)
+# boolean loadFragment(Fragment)
++ boolean onNavigationItemSelected(MenuItem)
+# void onStart()
+# void onStop()
+}
+
+
+class com.example.stepcheck.activities.add_new_shoe {
+- Button ScanQR
+- String qr_code_data
+- EditText etShoeName
+- {static} int REQUEST_PICK_IMAGE
+- String fileName
+- String safeKey
+- Uri imageUri
+- int count_shoes
+- ActivityResultLauncher<ScanOptions> barLauncher
+# void onCreate(Bundle)
+- void scanCode()
++ void upload_image(View)
+# void onActivityResult(int,int,Intent)
+- void uploadImage(Uri)
++ void Save_shoe(View)
++ void back(View)
+}
+
+
+class com.example.stepcheck.utils.ShiftService {
+- {static} String CHANNEL_ID
+- {static} String FIXED_START_TIME
+- {static} String FIXED_END_TIME
+- FusedLocationProviderClient fusedLocationClient
+- LocationCallback locationCallback
+- ValueEventListener shiftListener
+- DatabaseReference shiftRef
+- double workLat
+- double workLon
+- {static} float MAX_DISTANCE_METERS
+- boolean isOnBreak
+- Runnable autoEndRunnable
+- boolean autoEndScheduled
+- Handler handler
++ void onCreate()
+- {static} boolean isWorkDay()
+- void scheduleEndOfDaySync()
+- void observeShiftStatus()
+- void updateNotification(String)
++ {static} void checkEndOfDayAndSync(String)
++ int onStartCommand(Intent,int,int)
+- void setupLocationUpdates()
+- void updateWorkerLocationInFirebase(Location)
+- void checkDistance(Location)
+- void scheduleAutoEnd()
+- void cancelAutoEnd()
+- void autoEndShift()
+- void startLocationUpdates()
++ void onDestroy()
++ IBinder onBind(Intent)
+- void createNotificationChannel()
+}
+
+
+class com.example.stepcheck.activities.Register {
+~ EditText email
+~ EditText fullName
+~ EditText password
+~ Spinner roleSpinner
+~ String[] roles
+~ int role
+# void onCreate(Bundle)
++ void go_Login(View)
++ void onItemSelected(AdapterView<?>,View,int,long)
++ void onNothingSelected(AdapterView<?>)
++ void Register_click(View)
+}
+
+
+class com.example.stepcheck.utils.FBRef {
++ {static} FirebaseAuth refAuth
++ {static} FirebaseDatabase FBDB
++ {static} DatabaseReference refBase
++ {static} DatabaseReference refBase2
++ {static} DatabaseReference refBase4
++ {static} DatabaseReference refBase3
++ {static} DatabaseReference refBase5
++ {static} FirebaseStorage Storage
++ {static} StorageReference refStorage
+}
+
+class com.example.stepcheck.models.Product {
+- String id
+- String name
+- double price
++ <<Create>> Product(String,String,double)
++ String getId()
++ String getName()
++ double getPrice()
+}
+
+
+class com.example.stepcheck.utils.GeminiManager {
+- {static} GeminiManager instance
+- GenerativeModel gemini
+- <<Create>> GeminiManager()
++ {static} GeminiManager getInstance()
++ void sendTextWithPhotosPrompt(String,ArrayList<Bitmap>,GeminiCallback)
+}
+
+
+class com.example.stepcheck.Receiver.ShiftSyncReceiver {
++ void onReceive(Context,Intent)
+}
+
+class com.example.stepcheck.activities.employee_management_acticity {
+- ListView lvEmployees
+- Button btnRefresh
+- ArrayAdapter<String> adapter
+- List<String> employeeNames
+- List<String> employeeIds
++ View onCreateView(LayoutInflater,ViewGroup,Bundle)
+- void loadEmployeesInShift()
+- void open_inform_worker(String)
++ boolean onItemLongClick(AdapterView<?>,View,int,long)
+}
+
+
+class com.example.stepcheck.activities.CreditsActivity {
+# void onCreate(Bundle)
++ boolean onOptionsItemSelected(MenuItem)
+}
+
+class com.example.stepcheck.Receiver.NetworkChangeReceiver {
++ {static} boolean isConnected
+- {static} AlertDialog networkDialog
+- Activity activity
++ <<Create>> NetworkChangeReceiver(Activity)
++ void onReceive(Context,Intent)
+- void showDialog()
+- void dismissDialog()
+}
+
+
+class com.example.stepcheck.activities.shoe_data_screen {
+- Spinner spinnerQuantitySize
+- EditText ShoeType
+- ImageView imgShoe
+- String qr_code_data
+- {static} int REQUEST_PICK_IMAGE
+- Uri imageUri
+- String[] sizeType
+- String[] adult_sizes
+- String[] adult_kids_sizes
+- String[] youngerkids_sizes
+- String[] babies_sizes
+- int selectedSizeTypePosition
+~ int selectedSizeGenderPosition
+- String[] euSizes
+- String[] ukSizes
+- String[] usMenSizes
+- String[] usWomenSizes
+- String[] usKidsY
+- String[] ukKidsY
+- String[] euKidsY
+- String[] usYoungerKids
+- String[] ukYoungerKids
+- String[] euYoungerKids
+- String[] usBabies
+- String[] ukBabies
+- String[] euBabies
+- String[][] sizes
+# void onCreate(Bundle)
++ void onItemSelected(AdapterView<?>,View,int,long)
+- void down()
+- void give_all_inform()
+- void give_count_shoe()
+- void saveAllSizesToFirebase()
++ void save_size(View)
+- void loadSizes(String)
++ void save_update(View)
++ void backScreen(View)
++ void onNothingSelected(AdapterView<?>)
+- void replaceShoeImage(Uri)
+# void onActivityResult(int,int,Intent)
++ void change_photo(View)
+}
+
+
+class com.example.stepcheck.fragments.ShiftEntryFragment {
+- {static} int LOCATION_PERMISSION_REQUEST_CODE
+~ Button button_start_shift
+- String currentDate
+- Presences presences
+- boolean inBreak
++ View onCreateView(LayoutInflater,ViewGroup,Bundle)
++ void onViewCreated(View,Bundle)
+- void disableAllButtons()
+- void checkLocationPermissions()
+- void infrom()
+- void updatePauseButtonText()
+- void startShift()
+- void pauseShift()
+- void pauseShiftEnd()
+- void endShift()
+- void save()
+- void startService()
+- void stopService()
+}
+
+
+class com.example.stepcheck.activities.Shoe_information {
+- TextView shoeTitle
+- String qr_code_data
+- ImageView shoeImage
+- Spinner spinnerSizeType
+- GridLayout sizeGrid
+- ActivityResultLauncher<ScanOptions> barLauncher
+- ArrayList<Button> sizeButtons
+- String[] sizeType
+- String[] adult_sizes
+- String[] adult_kids_sizes
+- String[] youngerkids_sizes
+- String[] babies_sizes
+- String[] euSizes
+- String[] ukSizes
+- String[] usMenSizes
+- String[] usWomenSizes
+- String[] usKidsY
+- String[] ukKidsY
+- String[] euKidsY
+- String[] usYoungerKids
+- String[] ukYoungerKids
+- String[] euYoungerKids
+- String[] usBabies
+- String[] ukBabies
+- String[] euBabies
+- String safeKey
+- int selectedSizeTypePosition
+# void onCreate(Bundle)
+- void scanCode()
++ void ScanAgain(View)
+- void give_all_inform()
+- void showSizes(String[],String,String)
++ void Close_Scan(View)
+- void down()
+- void open_inform_shoe2()
+}
+
+
+class com.example.stepcheck.activities.Login {
+~ Button login_button
+~ EditText email_input
+~ EditText password_input
+~ CheckBox remember_checkbox
+~ Boolean remember_me
+# void onCreate(Bundle)
++ void Login_click(View)
++ void Sign_up(View)
+}
+
+
+class com.example.stepcheck.activities.Main_connect_fragment_activity {
+# void onCreate(Bundle)
+}
+
+class com.example.stepcheck.models.Shift {
+- String Shift_Id
+- ArrayList<Worker> workers
+- String Start_shift
+- String end_shift
++ <<Create>> Shift(String,ArrayList<Worker>,String,String)
++ <<Create>> Shift()
++ String getShift_Id()
++ ArrayList<Worker> getWorkers()
++ String getStart_shift()
++ String getEnd_shift()
++ void setShift_Id(String)
++ void setWorkers(ArrayList<Worker>)
++ void setStart_shift(String)
++ void setEnd_shift(String)
+}
+
+
+class com.example.stepcheck.models.Presences {
+- String worker_id
+- String start_your_Shift
+- Boolean is_startShift
+- Boolean buttonPauseEnabled
+- Boolean buttonPauseEndEnabled
+- Boolean buttonEndEnabled
+- String pause_time
+- String pause_end_time
+- String end_your_Shift
+- String date
+- double latitude
+- double longitude
++ <<Create>> Presences(String,String,String,String,String,Boolean,Boolean,Boolean,Boolean,String)
++ <<Create>> Presences()
++ Boolean getButtonEndEnabled()
++ void setButtonEndEnabled(Boolean)
++ Boolean getButtonPauseEnabled()
++ void setButtonPauseEnabled(Boolean)
++ Boolean getButtonPauseEndEnabled()
++ void setButtonPauseEndEnabled(Boolean)
++ Boolean getIs_startShift()
++ void setIs_startShift(Boolean)
++ String getPause_end_time()
++ void setPause_end_time(String)
++ String getPause_time()
++ void setPause_time(String)
++ String getTime()
++ void setTime(String)
++ String getWorker_id()
++ String getStart_your_Shift()
++ String getEnd_your_Shift()
++ void setWorker_id(String)
++ void setStart_your_Shift(String)
++ void setEnd_your_Shift(String)
++ double getLatitude()
++ void setLatitude(double)
++ double getLongitude()
++ void setLongitude(double)
+}
+
+
+class com.example.stepcheck.utils.CaptureAct {
+}
+class com.example.stepcheck.fragments.SettingsFragment {
+~ AlertDialog.Builder adb
+- Button Sign_out
+- ListView lvSettings
+~ int position
+- String[] list_information
+- Handler timeoutHandler
+- Runnable timeoutRunnable
++ View onCreateView(LayoutInflater,ViewGroup,Bundle)
++ void onViewCreated(View,Bundle)
+- void logout()
++ void onItemClick(AdapterView<?>,View,int,long)
++ void onDestroy()
+}
+
+
+class com.example.stepcheck.models.Size {
+- String[][] sizes
++ <<Create>> Size(String[][])
++ <<Create>> Size()
++ String[][] getSizes()
++ void setSizes(String[][])
+}
+
+
+class com.example.stepcheck.models.Worker {
+- String id
+- String username
+- String job_rank
+- boolean inShift
+- boolean canEditInventory
+- boolean can_manage_shift
++ <<Create>> Worker(String,String,String,boolean,boolean,boolean)
++ <<Create>> Worker()
++ String getJob_rank()
++ void setJob_rank(String)
++ String getId()
++ void setId(String)
++ String getUsername()
++ void setUsername(String)
++ boolean getInShift()
++ void setInShift(boolean)
++ boolean getCanEditInventory()
++ void setCanEditInventory(boolean)
++ boolean getCan_manage_shift()
++ void setCan_manage_shift(boolean)
+}
+
+
+class com.example.stepcheck.utils.Prompts {
++ {static} String SHOE_SCHEMA
++ {static} String SHOE_PROMPT
+}
+
+class com.example.stepcheck.Adapter.ProductAdapter {
+- List<Product> masterList
+- List<Product> filteredList
+- OnItemClickListener listener
++ void setOnItemClickListener(OnItemClickListener)
++ void setData(List<Product>)
++ void filter(String)
++ ViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(ViewHolder,int)
++ int getItemCount()
+}
+
+
+interface com.example.stepcheck.Adapter.ProductAdapter$OnItemClickListener {
+~ void onItemClick(Product)
+}
+
+class com.example.stepcheck.Adapter.ProductAdapter$ViewHolder {
++ TextView productName
++ TextView productPrice
++ ImageView productImage
++ <<Create>> ViewHolder(View)
+}
+
+
+class com.example.stepcheck.activities.Worker_information {
+- String user
+~ TextView etName
+~ Button btnBack
+- GoogleMap mMap
+- Marker workerMarker
+- ValueEventListener locationListener
+# void onCreate(Bundle)
+- void give_all_inform()
++ void onMapReady(GoogleMap)
+- void startListeningForLocation()
+# void onDestroy()
++ void back(View)
+}
+
+
+class com.example.stepcheck.activities.add_shoe_ai {
+- Button btnAddPhoto
+- ImageView imageView
+- TextView tvResult
+- ArrayList<Bitmap> selectedBitmaps
+- {static} int REQUEST_PICK_IMAGE
+- {static} int REQUEST_CAMERA_IMAGE
+- {static} int PERMISSION_CODE
+- String currentPhotoPath
+- String safeKey
+- JSONObject shoeData
+- String TAG
+- int count_shoes
+# void onCreate(Bundle)
++ void add_photo(View)
+- void openGallery()
+- void checkPermissionsAndCapture()
+- void captureFromCamera()
+# void onActivityResult(int,int,Intent)
+- String decodeQRCodeFromAllImages()
+- String decodeQRCode(Bitmap)
+- void analyzeImage()
+- void parseAndProcessResult(String,String)
++ void save_shoe(View)
+- void uploadAndSave(String,String,String,String,double,String)
++ void back(View)
+- Bitmap getShoeImage()
+}
+
+
+class com.example.stepcheck.fragments.QrCodeMainScreenFragment {
+- Button btn_start_scanning
+- String qr_code_data
+- ActivityResultLauncher<ScanOptions> barLauncher
+- String safeKey
++ View onCreateView(LayoutInflater,ViewGroup,Bundle)
++ void onViewCreated(View,Bundle)
+- void scanCode()
+- void open_inform_shoe()
+}
+
+
+
+
+com.example.stepcheck.utils.MasterClass <|-- com.example.stepcheck.activities.Welcome_app
+androidx.fragment.app.Fragment <|-- com.example.stepcheck.fragments.InventoryFragment
+com.example.stepcheck.utils.OnItemSelectedListener <|.. com.example.stepcheck.utils.MasterClass
+androidx.appcompat.app.AppCompatActivity <|-- com.example.stepcheck.utils.MasterClass
+com.example.stepcheck.utils.MasterClass <|-- com.example.stepcheck.activities.add_new_shoe
+android.app.Service <|-- com.example.stepcheck.utils.ShiftService
+com.example.stepcheck.activities.OnItemSelectedListener <|.. com.example.stepcheck.activities.Register
+com.example.stepcheck.utils.MasterClass <|-- com.example.stepcheck.activities.Register
+android.content.BroadcastReceiver <|-- com.example.stepcheck.Receiver.ShiftSyncReceiver
+com.example.stepcheck.activities.OnItemLongClickListener <|.. com.example.stepcheck.activities.employee_management_acticity
+androidx.fragment.app.Fragment <|-- com.example.stepcheck.activities.employee_management_acticity
+com.example.stepcheck.utils.MasterClass <|-- com.example.stepcheck.activities.CreditsActivity
+android.content.BroadcastReceiver <|-- com.example.stepcheck.Receiver.NetworkChangeReceiver
+com.example.stepcheck.activities.OnItemSelectedListener <|.. com.example.stepcheck.activities.shoe_data_screen
+com.example.stepcheck.utils.MasterClass <|-- com.example.stepcheck.activities.shoe_data_screen
+androidx.fragment.app.Fragment <|-- com.example.stepcheck.fragments.ShiftEntryFragment
+com.example.stepcheck.utils.MasterClass <|-- com.example.stepcheck.activities.Shoe_information
+com.example.stepcheck.utils.MasterClass <|-- com.example.stepcheck.activities.Login
+com.example.stepcheck.utils.MasterClass <|-- com.example.stepcheck.activities.Main_connect_fragment_activity
+com.journeyapps.barcodescanner.CaptureActivity <|-- com.example.stepcheck.utils.CaptureAct
+com.example.stepcheck.fragments.OnItemClickListener <|.. com.example.stepcheck.fragments.SettingsFragment
+com.example.stepcheck.fragments.OnCreateContextMenuListener <|.. com.example.stepcheck.fragments.SettingsFragment
+androidx.fragment.app.Fragment <|-- com.example.stepcheck.fragments.SettingsFragment
+com.example.stepcheck.Adapter.Adapter <|-- com.example.stepcheck.Adapter.ProductAdapter
+com.example.stepcheck.Adapter.ProductAdapter +.. com.example.stepcheck.Adapter.ProductAdapter$OnItemClickListener
+com.example.stepcheck.Adapter.ProductAdapter +.. com.example.stepcheck.Adapter.ProductAdapter$ViewHolder
+com.example.stepcheck.Adapter.ViewHolder <|-- com.example.stepcheck.Adapter.ProductAdapter$ViewHolder
+com.google.android.gms.maps.OnMapReadyCallback <|.. com.example.stepcheck.activities.Worker_information
+androidx.appcompat.app.AppCompatActivity <|-- com.example.stepcheck.activities.Worker_information
+androidx.appcompat.app.AppCompatActivity <|-- com.example.stepcheck.activities.add_shoe_ai
+androidx.fragment.app.Fragment <|-- com.example.stepcheck.fragments.QrCodeMainScreenFragment
+@enduml

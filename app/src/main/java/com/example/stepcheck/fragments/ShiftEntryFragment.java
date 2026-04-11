@@ -115,13 +115,12 @@ public class ShiftEntryFragment extends Fragment {
                 presences = snapshot.getValue(Presences.class);
                 if (presences == null) presences = new Presences();
 
-                boolean started = presences.getStart_your_Shift() != null && !presences.getStart_your_Shift().isEmpty();
-                boolean ended = presences.getEnd_your_Shift() != null && !presences.getEnd_your_Shift().isEmpty();
+                boolean started = Boolean.TRUE.equals(presences.getIs_startShift());
+                boolean ended = Boolean.TRUE.equals(presences.getButtonEndEnabled());
 
-                inBreak = presences.getPause_time() != null && !presences.getPause_time().isEmpty()
-                        && (presences.getPause_end_time() == null || presences.getPause_end_time().isEmpty());
+                inBreak = Boolean.TRUE.equals(presences.getButtonPauseEnabled()) && !Boolean.TRUE.equals(presences.getButtonPauseEndEnabled());
 
-                button_start_shift.setEnabled(!started);
+                button_start_shift.setEnabled(!started && !ended);
                 button_pause_shift.setEnabled(started && !ended);
                 button_end_shift.setEnabled(started && !ended);
 
@@ -155,6 +154,9 @@ public class ShiftEntryFragment extends Fragment {
 
         presences.setStart_your_Shift(time);
         presences.setIs_startShift(true);
+        presences.setButtonEndEnabled(false);
+        presences.setButtonPauseEnabled(false);
+        presences.setButtonPauseEndEnabled(false);
         presences.setWorker_id(workerId);
         presences.setTime(currentDate);
 
@@ -178,6 +180,8 @@ public class ShiftEntryFragment extends Fragment {
 
         String time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Calendar.getInstance().getTime());
         presences.setPause_time(time);
+        presences.setButtonPauseEnabled(true);
+        presences.setButtonPauseEndEnabled(false);
 
         save();
     }
@@ -188,6 +192,7 @@ public class ShiftEntryFragment extends Fragment {
 
         String time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Calendar.getInstance().getTime());
         presences.setPause_end_time(time);
+        presences.setButtonPauseEndEnabled(true);
 
         save();
     }
@@ -201,6 +206,8 @@ public class ShiftEntryFragment extends Fragment {
 
         String time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Calendar.getInstance().getTime());
         presences.setEnd_your_Shift(time);
+        presences.setIs_startShift(false);
+        presences.setButtonEndEnabled(true);
 
         shiftRef.setValue(presences);
         

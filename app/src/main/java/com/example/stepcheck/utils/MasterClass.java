@@ -5,7 +5,6 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -38,6 +37,7 @@ public abstract class MasterClass extends AppCompatActivity implements BottomNav
     private ValueEventListener shiftStatusListener;
     private AlertDialog currentRankDialog;
     protected boolean isInShift = false;
+    protected String userRank = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +58,7 @@ public abstract class MasterClass extends AppCompatActivity implements BottomNav
                     Worker worker = snapshot.getValue(Worker.class);
                     if (worker != null) {
                         isInShift = worker.getInShift();
+                        userRank = worker.getJob_rank();
                     }
                 }
                 @Override
@@ -162,19 +163,15 @@ public abstract class MasterClass extends AppCompatActivity implements BottomNav
         if (bottomNavigationView == null) return false;
         int id = item.getItemId();
 
-        // Check if user is Manager - Managers have access to everything even without being in shift
-        // If you want even Manager to be in shift, remove the first condition.
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null) {
-             // We use the isInShift variable which is updated from observeShiftStatus
-             // Let's add a check for Manager rank here if needed, but the request was "access to all fragments"
-             // Usually access control is better handled by checking the rank from the snapshot
-        }
-
-        if (!isInShift && id != R.id.navigation_shift_entry && id != R.id.navigation_settings) {
-            // Need to check if user is manager to bypass this
-            // Since we don't have the rank sync here easily, let's assume the UI visibility handles the logic
-            // and we only need to ensure the Manager sees all items.
+        // חסימת ניווט אם לא במשמרת (למעט דף כניסה למשמרת, הגדרות, ואם המשתמש מנהל)
+        boolean isManager = "Manager".equals(userRank);
+        if (!isInShift && !isManager && id != R.id.navigation_shift_entry && id != R.id.navigation_settings) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Access Denied")
+                    .setMessage("You must start a shift to access this feature.")
+                    .setPositiveButton("OK", null)
+                    .show();
+            return false;
         }
 
         Fragment fragment = null;
