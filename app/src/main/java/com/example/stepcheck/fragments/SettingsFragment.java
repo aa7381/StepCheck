@@ -233,13 +233,35 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
                     // Generate a random code each time
                     final String verificationCode = String.valueOf((int)(Math.random() * 9000) + 1000);
 
-                    // Search for a Shift Manager who is CURRENTLY IN SHIFT
+                    // Search for a Manager who is CURRENTLY IN SHIFT
                     FBRef.refBase.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             String currentRank = snapshot.child(workerId).child("job_rank").getValue(String.class);
+                            
+                            // Prevent Manager from downgrading via app
+                            if ("Manager".equals(currentRank)) {
+                                Toast.makeText(getContext(), "Manager cannot change rank through the app", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             if (selectedRank.equals(currentRank)) {
                                 Toast.makeText(getContext(), "You are already " + currentRank, Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            // Define rank weights to prevent downgrading (Optional, based on your logic)
+                            // Worker = 0, ShiftManager = 1, SupplyManager = 2
+                            Map<String, Integer> rankWeights = new HashMap<>();
+                            rankWeights.put("Worker", 0);
+                            rankWeights.put("ShiftManager", 1);
+                            rankWeights.put("SupplyManager", 2);
+
+                            Integer currentWeight = rankWeights.get(currentRank);
+                            Integer selectedWeight = rankWeights.get(selectedRank);
+
+                            if (currentWeight != null && selectedWeight != null && selectedWeight < currentWeight) {
+                                Toast.makeText(getContext(), "You cannot downgrade your rank", Toast.LENGTH_SHORT).show();
                                 return;
                             }
 
@@ -252,7 +274,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
                                 String rank = ds.child("job_rank").getValue(String.class);
                                 Boolean inShift = ds.child("inShift").getValue(Boolean.class);
                                 
-                                if ("ShiftManager".equals(rank) && Boolean.TRUE.equals(inShift)) {
+                                if ("Manager".equals(rank) && Boolean.TRUE.equals(inShift)) {
                                     tempManagerName = ds.child("username").getValue(String.class);
                                     tempManagerId = ds.getKey();
                                     break;
@@ -340,7 +362,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
 
                                 codeDialog.show();
                             } else {
-                                Toast.makeText(getContext(), "No Shift Manager currently in shift to approve change", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), "No Manager currently in shift to approve change", Toast.LENGTH_LONG).show();
                             }
                         }
 
