@@ -1,5 +1,6 @@
 package com.example.stepcheck.activities;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
 import static com.example.stepcheck.utils.FBRef.refBase2;
 import static com.example.stepcheck.utils.FBRef.refBase4;
 import static com.example.stepcheck.utils.FBRef.refStorage;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,17 +20,25 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 
+import com.example.stepcheck.utils.CaptureAct;
 import com.example.stepcheck.utils.MasterClass;
 import com.example.stepcheck.R;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanIntentResult;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
 
@@ -48,6 +58,9 @@ public class Shoe_information extends MasterClass {
     private Spinner spinnerSizeType, spinnerSizeGender;
 
     private GridLayout sizeGrid;
+
+    private ActivityResultLauncher<ScanOptions> barLauncher;
+
     private ArrayList<Button> sizeButtons = new ArrayList<>();
 
 
@@ -147,6 +160,19 @@ public class Shoe_information extends MasterClass {
         spinnerSizeType = findViewById(R.id.SizeType);
         spinnerSizeGender = findViewById(R.id.spinnerGenderType);
         sizeGrid = findViewById(R.id.sizeGrid);
+
+
+        barLauncher = registerForActivityResult(new ScanContract(), new ActivityResultCallback<ScanIntentResult>() {
+            @Override
+            public void onActivityResult(ScanIntentResult result) {
+                if (result != null && result.getContents() != null) {
+                    qr_code_data = result.getContents();
+                    safeKey = Base64.encodeToString(qr_code_data.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
+                    open_inform_shoe2();
+                }
+            }
+        });
+
 
         for (int i = 0; i < sizeGrid.getChildCount(); i++) {
             View v = sizeGrid.getChildAt(i);
@@ -297,6 +323,21 @@ public class Shoe_information extends MasterClass {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
     }
+
+    private void scanCode() {
+        ScanOptions options = new ScanOptions();
+        options.setPrompt("Volume up to flash on");
+        options.setBeepEnabled(true);
+        options.setOrientationLocked(true);
+        options.setCaptureActivity(CaptureAct.class);
+        barLauncher.launch(options);
+    }
+
+    public void ScanAgain(View view)
+    {
+        scanCode();
+    }
+
     /**
      * Fetches and displays all information about the shoe from the Firebase database.
      */
@@ -324,6 +365,7 @@ public class Shoe_information extends MasterClass {
             }
         });
     }
+
 
     /**
      * Displays the available sizes for the selected shoe category and type.
@@ -430,5 +472,32 @@ public class Shoe_information extends MasterClass {
                     }
                 });
     }
+
+    private void open_inform_shoe2() {
+        if (safeKey != null && !safeKey.isEmpty()) {
+
+            refBase2.child(safeKey).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DataSnapshot snapshot = task.getResult();
+                        if (snapshot.exists()) {
+                            Intent intent = new Intent(Shoe_information.this, Shoe_information.class);
+                            intent.putExtra("qr_code_data", safeKey);
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(Shoe_information.this, "נעל לא קיימת במערכת", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(Shoe_information.this, "שגיאה בגישה לשרת", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        } else {
+            Toast.makeText(Shoe_information.this, "לא נמצא QR Code תקין", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 
 }
