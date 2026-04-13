@@ -143,6 +143,13 @@ public class ShiftEntryFragment extends Fragment {
     }
 
     private void startShift() {
+        // בדיקת הרשאות מיקום לפני התחלת משמרת
+        if (getActivity() != null && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(getActivity(), "חובה לאשר הרשאת מיקום כדי להתחיל משמרת", Toast.LENGTH_LONG).show();
+            checkLocationPermissions();
+            return;
+        }
+
         FirebaseUser user = FBRef.refAuth.getCurrentUser();
         if (user == null) return;
 

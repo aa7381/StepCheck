@@ -253,6 +253,13 @@ public class ShiftService extends Service {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        // בדיקת הרשאות מיקום - אם אין הרשאה, לא ניתן להתחיל משמרת והשירות יסתיים
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.e("ShiftService", "Location permission missing. Ending shift.");
+            autoEndShift();
+            return START_NOT_STICKY;
+        }
+
         if (intent != null && intent.hasExtra("workLat")) {
             workLat = intent.getDoubleExtra("workLat", workLat);
             workLon = intent.getDoubleExtra("workLon", workLon);
@@ -267,8 +274,6 @@ public class ShiftService extends Service {
 
         startForeground(1, notification);
         startLocationUpdates();
-
-        // הסרנו את הקריאה ל-checkEndOfDayAndSync מפה כדי שלא יסיים משמרות בטעות באמצע היום
 
         return START_NOT_STICKY;
     }
@@ -368,7 +373,11 @@ public class ShiftService extends Service {
         ref.child("is_startShift").setValue(false);
         FBRef.refBase.child(workerId).child("inShift").setValue(false);
 
-        stopForeground(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            stopForeground(STOP_FOREGROUND_REMOVE);
+        } else {
+            stopForeground(true);
+        }
         stopSelf();
     }
 
@@ -392,21 +401,28 @@ public class ShiftService extends Service {
         super.onDestroy();
         if (fusedLocationClient != null && locationCallback != null) fusedLocationClient.removeLocationUpdates(locationCallback);
         if (shiftRef != null && shiftListener != null) shiftRef.removeEventListener(shiftListener);
-        cancelAutoEnd();
     }
 
     @Nullable
     @Override
-    public IBinder onBind(Intent intent) { return null; }
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
     /**
-     * Creates a notification channel for the foreground service (required for Android O and above).
+     * Creates a notification channel for the foreground service.
      */
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel serviceChannel = new NotificationChannel(CHANNEL_ID, "Shift Service", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Shift Service Channel",
+                    NotificationManager.IMPORTANCE_LOW
+            );
             NotificationManager manager = getSystemService(NotificationManager.class);
-            if (manager != null) manager.createNotificationChannel(serviceChannel);
+            if (manager != null) {
+                manager.createNotificationChannel(serviceChannel);
+            }
         }
     }
 }
