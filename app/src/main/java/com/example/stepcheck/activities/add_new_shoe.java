@@ -125,6 +125,7 @@ public class add_new_shoe extends MasterClass {
         {
             Intent si = new Intent(Intent.ACTION_PICK, android. provider.MediaStore. Images.Media. EXTERNAL_CONTENT_URI);
             startActivityForResult(si, REQUEST_PICK_IMAGE);
+
         }
     }
 

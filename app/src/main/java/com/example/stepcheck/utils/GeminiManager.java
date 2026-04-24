@@ -44,6 +44,7 @@ public class GeminiManager
             instance = new GeminiManager();
             }
         return instance;
+
         }
 
     public void sendTextWithPhotosPrompt(String prompt, ArrayList<Bitmap> photos, final GeminiCallback callback) {

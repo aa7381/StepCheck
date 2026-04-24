@@ -178,7 +178,9 @@ public class InventoryFragment extends Fragment {
                     String shoeName = snapshot.child("shoe_name").getValue(String.class);
                     Double price = snapshot.child("price").getValue(Double.class);
                     if (shoeName != null) {
-                        productList.add(new Product(snapshot.getKey(), shoeName, price != null ? price : 0.0));
+                        double finalPrice = 0.0;
+                        if (price != null) finalPrice = price;
+                        productList.add(new Product(snapshot.getKey(), shoeName, finalPrice));
                     }
                 }
                 adapter.setData(productList);
