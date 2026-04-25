@@ -474,25 +474,37 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
             return;
         }
 
+        //  לולאה שעוברת על כל שורה במערך sizes (כל שורה = מוצר/נעל אחת)
         for (int i = 0; i < sizes.length; i++) {
+
             String qr = sizes[i][0];
             String sizeGender = sizes[i][1];
             String sizeType = sizes[i][2];
 
             if (qr != null && sizeGender != null && sizeType != null) {
 
+                //  לולאה שעוברת על כל המידות בתוך אותה שורה
+                // מתחיל מ-3 כי 0-2 זה מידע כללי (QR, gender, type)
+                // וקופץ ב-2 כי כל זוג = מידה + כמות
                 for (int j = 3; j + 1 < sizes[i].length; j += 2) {
+
                     String sizeValue = sizes[i][j];
                     String qtyValue = sizes[i][j + 1];
 
                     if (sizeValue != null) {
+
                         if (qtyValue == null || qtyValue.isEmpty()) {
                             qtyValue = "0";
                         }
 
                         String safeSizeValue = sizeValue.replace(".", "_");
 
-                        refBase4.child(qr).child(sizeGender).child(sizeType).child(safeSizeValue).setValue(qtyValue);
+                        refBase4
+                                .child(qr)
+                                .child(sizeGender)
+                                .child(sizeType)
+                                .child(safeSizeValue)
+                                .setValue(qtyValue);
                     }
                 }
             }
@@ -500,7 +512,6 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
 
         Toast.makeText(this, "All sizes saved to Firebase", Toast.LENGTH_SHORT).show();
     }
-
 
     /**
      * Saves the selected size and quantity to the local sizes array.
@@ -522,21 +533,27 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
             case 2: sizeGender = "youngerkids_size"; break;
             case 3: sizeGender = "babies_size"; break;
         }
+
         sizeType = spinnerSizeType.getSelectedItem().toString();
 
         int row = -1;
 
+        //  לולאה ראשונה:
+        // מחפשת אם כבר קיימת שורה במערך שמתאימה לאותו מוצר (QR + gender + type)
         for (int i = 0; i < sizes.length; i++) {
             if (sizes[i][0] != null &&
                     sizes[i][0].equals(qr_code_data) &&
                     sizes[i][1].equals(sizeGender) &&
                     sizes[i][2].equals(sizeType)) {
+
                 if (row == -1) {
                     row = i;
                 }
             }
         }
 
+        //  אם לא נמצאה שורה מתאימה:
+        // מחפשת שורה ריקה ומכניסה שם נתונים חדשים
         if (row == -1) {
             for (int i = 0; i < sizes.length; i++) {
                 if (sizes[i][0] == null) {
@@ -549,18 +566,27 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
             }
         }
 
+        //  אם אין מקום בכלל במערך
         if (row == -1) {
             Toast.makeText(this, "No space for new shoe", Toast.LENGTH_SHORT).show();
             return;
         }
 
         boolean added = false;
+
+        //  לולאה שנייה:
+        // עוברת על כל המידות בתוך אותה שורה
+        // כל 2 תאים = מידה + כמות
         for (int k = 3; k + 1 < sizes[row].length; k += 2) {
+
+            // 🟡 אם התא ריק → מוסיף מידה חדשה
             if (sizes[row][k] == null) {
                 sizes[row][k] = selectedSize;
                 sizes[row][k + 1] = quantity;
                 added = true;
                 break;
+
+                // 🟡 אם המידה כבר קיימת → מעדכן כמות
             } else if (sizes[row][k].equals(selectedSize)) {
                 sizes[row][k + 1] = quantity;
                 added = true;
@@ -568,13 +594,13 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
             }
         }
 
+        //  הודעת הצלחה או כישלון
         if (added) {
             Toast.makeText(this, "Size saved", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "No space in this row for more sizes", Toast.LENGTH_SHORT).show();
         }
     }
-
 
 
 
@@ -585,30 +611,44 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
     private void loadSizes(String qrCode) {
         if (sizes == null) return;
 
+        // פנייה ל-Firebase לפי QR Code
         refBase4.child(qrCode).addListenerForSingleValueEvent(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                // אם אין נתונים בכלל ב-Firebase
                 if (!snapshot.exists()) return;
 
+                // לולאה ראשונה:
+                // עוברת על כל קטגוריה של gender (adult/kids/babies וכו')
                 for (DataSnapshot genderSnap : snapshot.getChildren()) {
+
                     String sizeGender = genderSnap.getKey();
 
+                    // לולאה שנייה:
+                    // עוברת על כל סוג נעל בתוך ה-gender
                     for (DataSnapshot typeSnap : genderSnap.getChildren()) {
+
                         String sizeType = typeSnap.getKey();
 
                         int row = -1;
 
+                        // לולאה שלישית:
+                        // מחפשת אם כבר קיימת שורה מתאימה במערך
                         for (int i = 0; i < sizes.length; i++) {
                             if (sizes[i][0] != null &&
                                     sizes[i][0].equals(qrCode) &&
                                     sizes[i][1].equals(sizeGender) &&
                                     sizes[i][2].equals(sizeType)) {
+
                                 if (row == -1) {
                                     row = i;
                                 }
                             }
                         }
 
+                        // אם לא נמצאה שורה → יוצרת חדשה
                         if (row == -1) {
                             for (int i = 0; i < sizes.length; i++) {
                                 if (sizes[i][0] == null) {
@@ -621,13 +661,20 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
                             }
                         }
 
+                        // אם אין מקום במערך
                         if (row == -1) {
-                            Toast.makeText(shoe_data_screen.this, "No space in sizes array", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(shoe_data_screen.this,
+                                    "No space in sizes array",
+                                    Toast.LENGTH_SHORT).show();
                             return;
                         }
 
                         int col = 3;
+
+                        // לולאה רביעית:
+                        // עוברת על כל המידות בתוך הסוג
                         for (DataSnapshot sizeSnap : typeSnap.getChildren()) {
+
                             String sizeValue = sizeSnap.getKey();
                             Object qtyObj = sizeSnap.getValue();
                             String qtyValue;
@@ -638,22 +685,26 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
                                 qtyValue = qtyObj.toString();
                             }
 
+                            // שמירה במערך (מידה + כמות)
                             sizes[row][col] = sizeValue;
                             sizes[row][col + 1] = qtyValue;
 
+                            // מציג את הכמות הראשונה במסך
                             if (col == 3) {
                                 etQuantity.setText(qtyValue);
                             }
 
                             col += 2;
-
                         }
                     }
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(shoe_data_screen.this, "Failed to load sizes: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(shoe_data_screen.this,
+                        "Failed to load sizes: " + error.getMessage(),
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -735,8 +786,7 @@ public class shoe_data_screen extends MasterClass implements AdapterView.OnItemS
                                         Toast.LENGTH_SHORT).show();
 
                                 try {
-                                    Bitmap bitmap = BitmapFactory.decodeStream(
-                                            getContentResolver().openInputStream(newImageUri));
+                                    Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(newImageUri));
                                     imgShoe.setImageBitmap(bitmap);
                                 } catch (Exception e) {
                                     e.printStackTrace();
