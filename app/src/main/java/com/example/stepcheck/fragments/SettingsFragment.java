@@ -250,20 +250,20 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
                                 return;
                             }
 
-                            // Define rank weights to prevent downgrading (Optional, based on your logic)
-                            // Worker = 0, ShiftManager = 1, SupplyManager = 2
-                            Map<String, Integer> rankWeights = new HashMap<>();
-                            rankWeights.put("Worker", 0);
-                            rankWeights.put("ShiftManager", 1);
-                            rankWeights.put("SupplyManager", 2);
-
-                            Integer currentWeight = rankWeights.get(currentRank);
-                            Integer selectedWeight = rankWeights.get(selectedRank);
-
-                            if (currentWeight != null && selectedWeight != null && selectedWeight < currentWeight) {
-                                Toast.makeText(getContext(), "You cannot downgrade your rank", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
+//                            // Define rank weights to prevent downgrading (Optional, based on your logic)
+//                            // Worker = 0, ShiftManager = 1, SupplyManager = 2
+//                            Map<String, Integer> rankWeights = new HashMap<>();
+//                            rankWeights.put("Worker", 0);
+//                            rankWeights.put("ShiftManager", 1);
+//                            rankWeights.put("SupplyManager", 2);
+//
+//                            Integer currentWeight = rankWeights.get(currentRank);
+//                            Integer selectedWeight = rankWeights.get(selectedRank);
+//
+//                            if (currentWeight != null && selectedWeight != null && selectedWeight < currentWeight) {
+//                                Toast.makeText(getContext(), "You cannot downgrade your rank", Toast.LENGTH_SHORT).show();
+//                                return;
+//                            }
 
                             String tempManagerName = "";
                             String tempManagerId = "";
