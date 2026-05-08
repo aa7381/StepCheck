@@ -3,14 +3,18 @@ package com.example.stepcheck.activities;
 import static com.example.stepcheck.utils.FBRef.refBase;
 import static com.example.stepcheck.utils.FBRef.refBase5;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.example.stepcheck.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -33,23 +37,14 @@ import java.util.Locale;
  * It shows the worker's name, job rank, shift start time, and current real-time location on a map.
  */
 public class Worker_information extends AppCompatActivity implements OnMapReadyCallback {
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private String user;
-    TextView etName, etRank,etWorkTime;
+    TextView etName, etRank, etWorkTime;
     Button btnBack;
     private GoogleMap mMap;
     private Marker workerMarker;
     private ValueEventListener locationListener;
 
-    /**
-     * Called when the activity is first created.
-     * Initializes the UI components, retrieves the worker ID from the intent,
-     * and sets up the Google Map.
-     *
-     * @param savedInstanceState If the activity is being re-initialized after
-     *                           previously being shut down then this Bundle
-     *                           contains the data it most recently supplied in
-     *                           onSaveInstanceState(Bundle).
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,10 +66,6 @@ public class Worker_information extends AppCompatActivity implements OnMapReadyC
         give_all_inform();
     }
 
-    /**
-     * Fetches and displays the worker's basic information (name, rank)
-     * and today's shift start time from Firebase.
-     */
     private void give_all_inform() {
         refBase.child(user).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -82,59 +73,73 @@ public class Worker_information extends AppCompatActivity implements OnMapReadyC
                 if (snapshot.exists()) {
                     String Name = snapshot.child("username").getValue(String.class);
                     String rank = snapshot.child("job_rank").getValue(String.class);
-
-                    etName.setText(  Name);
-                    etRank.setText( rank);
+                    etName.setText(Name);
+                    etRank.setText(rank);
                 }
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
         
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String currentDate = sdf.format(calendar.getTime());
 
-        // נתיב מעודכן - ללא פיצול ליום/חודש/שנה
-        refBase5.child(user)
-                .child(currentDate)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            String startShift = snapshot.child("start_your_Shift").getValue(String.class);
-
-                            if (startShift != null) {
-                                etWorkTime.setText( startShift);
-                            }
-                        }
+        refBase5.child(user).child(currentDate).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String startShift = snapshot.child("start_your_Shift").getValue(String.class);
+                    if (startShift != null) {
+                        etWorkTime.setText(startShift);
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                    }
-                });
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
     }
 
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     *
-     * @param googleMap A non-null instance of a GoogleMap.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        enableMyLocation();
         startListeningForLocation();
     }
 
     /**
-     * Starts listening for real-time location updates of the worker from Firebase.
-     * Updates the marker position on the map accordingly.
+     * Checks for location permissions and enables the "My Location" layer on the map.
+     * Requests permissions if they are not already granted.
      */
+    private void enableMyLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            
+            ActivityCompat.requestPermissions(this, 
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 
+                    LOCATION_PERMISSION_REQUEST_CODE);
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (mMap != null && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+                    mMap.setMyLocationEnabled(true);
+                    mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                }
+            } else {
+                Toast.makeText(this, "Location permission denied. Map might not show your position.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     private void startListeningForLocation() {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -158,18 +163,12 @@ public class Worker_information extends AppCompatActivity implements OnMapReadyC
                     }
                 }
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         };
-
         refBase5.child(user).child(currentDate).addValueEventListener(locationListener);
     }
 
-    /**
-     * Removes the location listener when the activity is destroyed to prevent memory leaks.
-     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -181,11 +180,6 @@ public class Worker_information extends AppCompatActivity implements OnMapReadyC
         }
     }
 
-    /**
-     * Closes the current activity and returns to the previous screen.
-     *
-     * @param view The view that was clicked.
-     */
     public void back(View view) {
         finish();
     }

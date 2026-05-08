@@ -190,7 +190,6 @@ public class Shoe_information extends MasterClass {
         Intent intent = getIntent();
         qr_code_data = intent.getStringExtra("qr_code_data");
 
-        Toast.makeText(Shoe_information.this, safeKey, Toast.LENGTH_SHORT).show();
 
         if (qr_code_data != null && !qr_code_data.isEmpty()) {
             give_all_inform();
@@ -356,7 +355,6 @@ public class Shoe_information extends MasterClass {
                     Toast.makeText(Shoe_information.this, "Shoe name: " + shoeName, Toast.LENGTH_SHORT).show();
                     shoeTitle.setText(shoeName);
                     fitType.setText(shoeType);
-                    Toast.makeText(Shoe_information.this, safeKey, Toast.LENGTH_SHORT).show();
                 }
             }
 

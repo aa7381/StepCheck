@@ -38,7 +38,7 @@ public class GeminiManager
         BuildConfig.Gemini_API_Key
         );
     }
-    
+
     public static GeminiManager getInstance() {
         if (instance == null) {
             instance = new GeminiManager();

@@ -28,13 +28,13 @@ import com.google.firebase.database.ValueEventListener;
 
 /**
  * מסגרת בסיסית לכל המסכים הראשיים של האפליקציה.
- * כולל ניהול BottomNavigationView ובדיקת סטטוס משמרת.
+ * כולל ניהול BottomNavigationView ובדיקת סטטוס משמרת ודרגה בזמן אמת.
  */
 public abstract class MasterClass extends AppCompatActivity implements BottomNavigationView.OnItemSelectedListener {
     protected BottomNavigationView bottomNavigationView;
     private NetworkChangeReceiver networkReceiver;
     private ValueEventListener rankRequestListener;
-    private ValueEventListener shiftStatusListener;
+    private ValueEventListener workerDataListener;
     private AlertDialog currentRankDialog;
     protected boolean isInShift = false;
     protected String userRank = "";
@@ -43,22 +43,28 @@ public abstract class MasterClass extends AppCompatActivity implements BottomNav
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         networkReceiver = new NetworkChangeReceiver(this);
-        observeShiftStatus();
+        observeWorkerData();
     }
 
     /**
-     * פונקציית הבדיקה - מעדכנת את isInShift לפי הנתונים ב-Firebase
+     * מאזין לשינויים בנתוני העובד ב-Firebase (משמרת, דרגה, הרשאות) ומעדכן את ה-UI בהתאם.
      */
-    private void observeShiftStatus() {
+    private void observeWorkerData() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
-            shiftStatusListener = FBRef.refBase.child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+            String uid = currentUser.getUid();
+            workerDataListener = FBRef.refBase.child(uid).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     Worker worker = snapshot.getValue(Worker.class);
                     if (worker != null) {
                         isInShift = worker.getInShift();
                         userRank = worker.getJob_rank();
+                        
+                        // עדכון תפריט הניווט אם הוא כבר קיים
+                        if (bottomNavigationView != null) {
+                            updateMenuVisibility(worker);
+                        }
                     }
                 }
                 @Override
@@ -71,8 +77,9 @@ public abstract class MasterClass extends AppCompatActivity implements BottomNav
         bottomNavigationView = findViewById(bottomNavId);
         if (bottomNavigationView != null) {
             bottomNavigationView.setOnItemSelectedListener(this);
+            // קריאה ראשונית לעדכון תפריט (במקרה שהנתונים כבר הגיעו)
+            refreshPermissions();
         }
-        setupPermissions();
         handleInitialFragment();
     }
 
@@ -82,38 +89,51 @@ public abstract class MasterClass extends AppCompatActivity implements BottomNav
         }
     }
 
-    protected void setupPermissions() {
-        if (bottomNavigationView == null) return;
-
+    /**
+     * פונקציה לרענון הרשאות ידני (בשימוש בטעינה ראשונית)
+     */
+    protected void refreshPermissions() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
-            String uid = currentUser.getUid();
-            FBRef.refBase.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            FBRef.refBase.child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     Worker worker = snapshot.getValue(Worker.class);
                     if (worker != null) {
-                        Menu navMenu = bottomNavigationView.getMenu();
-                        
-                        // Check if Manager
-                        if ("Manager".equals(worker.getJob_rank())) {
-                            navMenu.findItem(R.id.navigation_inventory).setVisible(true);
-                            navMenu.findItem(R.id.navigation_manage_shift).setVisible(true);
-                            listenForRankRequests(uid);
-                        } else {
-                            if (worker.getCanEditInventory()) {
-                                navMenu.findItem(R.id.navigation_inventory).setVisible(true);
-                            }
-                            if (worker.getCan_manage_shift()) {
-                                navMenu.findItem(R.id.navigation_manage_shift).setVisible(true);
-                                listenForRankRequests(uid);
-                            }
-                        }
+                        updateMenuVisibility(worker);
                     }
                 }
                 @Override
-                public void onCancelled(@NonNull DatabaseError error) { }
+                public void onCancelled(@NonNull DatabaseError error) {}
             });
+        }
+    }
+
+    /**
+     * מעדכן את הנראות של כפתורי הניווט לפי הרשאות העובד
+     */
+    private void updateMenuVisibility(Worker worker) {
+        if (bottomNavigationView == null) return;
+        Menu navMenu = bottomNavigationView.getMenu();
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // איפוס נראות ברירת מחדל
+        navMenu.findItem(R.id.navigation_inventory).setVisible(false);
+        navMenu.findItem(R.id.navigation_manage_shift).setVisible(false);
+
+        // בדיקה לפי דרגה והרשאות
+        if ("Manager".equals(worker.getJob_rank())) {
+            navMenu.findItem(R.id.navigation_inventory).setVisible(true);
+            navMenu.findItem(R.id.navigation_manage_shift).setVisible(true);
+            listenForRankRequests(uid);
+        } else {
+            if (worker.getCanEditInventory()) {
+                navMenu.findItem(R.id.navigation_inventory).setVisible(true);
+            }
+            if (worker.getCan_manage_shift()) {
+                navMenu.findItem(R.id.navigation_manage_shift).setVisible(true);
+                listenForRankRequests(uid);
+            }
         }
     }
 
@@ -163,7 +183,6 @@ public abstract class MasterClass extends AppCompatActivity implements BottomNav
         if (bottomNavigationView == null) return false;
         int id = item.getItemId();
 
-        // חסימת ניווט אם לא במשמרת (למעט דף כניסה למשמרת, הגדרות, ואם המשתמש מנהל)
         boolean isManager = "Manager".equals(userRank);
         if (!isInShift && !isManager && id != R.id.navigation_shift_entry && id != R.id.navigation_settings) {
             new AlertDialog.Builder(this)
@@ -201,10 +220,15 @@ public abstract class MasterClass extends AppCompatActivity implements BottomNav
     protected void onStop() {
         super.onStop();
         if (networkReceiver != null) unregisterReceiver(networkReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             if (rankRequestListener != null) FBRef.FBDB.getReference("RankRequests").child(currentUser.getUid()).removeEventListener(rankRequestListener);
-            if (shiftStatusListener != null) FBRef.refBase.child(currentUser.getUid()).removeEventListener(shiftStatusListener);
+            if (workerDataListener != null) FBRef.refBase.child(currentUser.getUid()).removeEventListener(workerDataListener);
         }
     }
 }
