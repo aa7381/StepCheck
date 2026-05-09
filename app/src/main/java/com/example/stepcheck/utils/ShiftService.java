@@ -62,8 +62,9 @@ public class ShiftService extends Service {
     private ValueEventListener shiftListener;
     private DatabaseReference shiftRef;
 
-    private double workLat = 32.0853;
-    private double workLon = 34.7818;
+    // מיקום העבודה: הרב חיים שושנה 10, באר שבע
+    private double workLat = 31.250555;
+    private double workLon = 34.799757;
     private static final float MAX_DISTANCE_METERS = 200;
 
     private boolean isOnBreak = false;
